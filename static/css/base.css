@@ -15,10 +15,10 @@
     --soft: rgba(255, 255, 255, 0.56);
     --faint: rgba(255, 255, 255, 0.42);
 
-    --pink: #f61aa2;
-    --rose: #cb4154;
-    --cyan: #01d2fd;
-    --wine: #98005e;
+    --pink: #ff2fab;
+    --rose: #ff5a6b;
+    --cyan: #17dcff;
+    --wine: #b00068;
 
     --shadow-xl: 0 30px 90px rgba(0, 0, 0, 0.48);
     --shadow-lg: 0 18px 50px rgba(0, 0, 0, 0.34);
@@ -55,21 +55,23 @@ body {
     color: var(--text);
     overflow-x: hidden;
     background:
-            radial-gradient(circle at 15% 18%, rgba(246, 26, 162, 0.10), transparent 22%),
-            radial-gradient(circle at 84% 16%, rgba(1, 210, 253, 0.11), transparent 24%),
-            radial-gradient(circle at 50% 88%, rgba(152, 0, 94, 0.14), transparent 28%),
-            linear-gradient(180deg, #030406 0%, #08090d 45%, #040507 100%);
+            radial-gradient(circle at 20% 20%, rgba(246, 26, 162, 0.22), transparent 24%),
+            radial-gradient(circle at 82% 18%, rgba(1, 210, 253, 0.24), transparent 26%),
+            radial-gradient(circle at 50% 78%, rgba(203, 65, 84, 0.20), transparent 24%),
+            linear-gradient(180deg, #020203 0%, #06070a 38%, #020203 100%);
 }
 
 body::before {
     content: "";
     position: fixed;
     inset: 0;
-    pointer-events: none;
     z-index: 0;
+    pointer-events: none;
     background:
-            linear-gradient(rgba(4, 5, 8, 0.58), rgba(4, 5, 8, 0.82)),
-            radial-gradient(circle at center, rgba(255,255,255,0.02), transparent 55%);
+            linear-gradient(rgba(3, 4, 6, 0.42), rgba(3, 4, 6, 0.72)),
+            url("../logos/sse.png") center 38% / 540px auto no-repeat;
+    opacity: 0.14;
+    filter: blur(0.5px) saturate(1.2);
 }
 
 a {
@@ -83,9 +85,10 @@ img {
 }
 
 .display {
-    font-family: Impact, Haettenschweiler, "Arial Narrow Bold", sans-serif;
-    letter-spacing: 0.04em;
-    text-transform: uppercase;
+    font-family: "Inter", "Helvetica Neue", Helvetica, Arial, sans-serif;
+    font-weight: 700;
+    letter-spacing: -0.03em;
+    text-transform: none;
 }
 
 .site-wrap {
@@ -148,14 +151,17 @@ img {
     position: relative;
     overflow: hidden;
     border-radius: var(--radius-xl);
-    border: 1px solid var(--border);
+    border: 1px solid rgba(255,255,255,0.14);
     background:
-            linear-gradient(180deg, rgba(255,255,255,0.04), rgba(255,255,255,0.015)),
-            linear-gradient(135deg, rgba(34, 14, 28, 0.28), rgba(7, 15, 22, 0.26)),
-            var(--panel);
-    backdrop-filter: blur(18px) saturate(125%);
-    -webkit-backdrop-filter: blur(18px) saturate(125%);
-    box-shadow: var(--shadow-xl);
+            linear-gradient(180deg, rgba(255,255,255,0.16) 0%, rgba(255,255,255,0.06) 16%, rgba(255,255,255,0.03) 100%),
+            linear-gradient(135deg, rgba(246, 26, 162, 0.10), rgba(1, 210, 253, 0.08) 55%, rgba(203, 65, 84, 0.08)),
+            rgba(12, 13, 18, 0.74);
+    backdrop-filter: blur(24px) saturate(145%);
+    -webkit-backdrop-filter: blur(24px) saturate(145%);
+    box-shadow:
+            0 30px 90px rgba(0,0,0,0.48),
+            inset 0 1px 0 rgba(255,255,255,0.22),
+            inset 0 -1px 0 rgba(255,255,255,0.05);
 }
 
 .glass::before {
@@ -164,9 +170,10 @@ img {
     inset: 0;
     pointer-events: none;
     background:
-            radial-gradient(circle at top left, rgba(246, 26, 162, 0.10), transparent 28%),
-            radial-gradient(circle at bottom right, rgba(1, 210, 253, 0.10), transparent 30%);
-    opacity: 0.9;
+            linear-gradient(120deg, rgba(255,255,255,0.20) 0%, rgba(255,255,255,0.04) 22%, transparent 40%),
+            radial-gradient(circle at top left, rgba(246, 26, 162, 0.20), transparent 30%),
+            radial-gradient(circle at bottom right, rgba(1, 210, 253, 0.18), transparent 32%);
+    opacity: 1;
 }
 
 .glass > * {
