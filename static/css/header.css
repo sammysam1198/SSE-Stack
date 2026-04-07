@@ -1,0 +1,98 @@
+.site-header {
+    position: sticky;
+    top: 0;
+    z-index: 40;
+    height: var(--nav-height);
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+    background: linear-gradient(to bottom, rgba(4, 5, 8, 0.92), rgba(4, 5, 8, 0.62));
+    border-bottom: 1px solid rgba(255,255,255,0.06);
+    box-shadow: 0 10px 40px rgba(0,0,0,0.22);
+}
+
+.site-header .container {
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 20px;
+}
+
+.brand {
+    display: inline-flex;
+    align-items: center;
+    gap: 14px;
+}
+
+.brand-orb {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    background-image: url("../logos/sse.png");
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    box-shadow: var(--glow-pink), var(--glow-cyan);
+    flex: 0 0 auto;
+    background-color: rgba(255,255,255,0.06);
+}
+
+.brand-copy {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.brand-title {
+    margin: 0;
+    font-size: 1rem;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: rgba(255,255,255,0.96);
+}
+
+.brand-subtitle {
+    margin: 0;
+    font-size: 0.72rem;
+    letter-spacing: 0.20em;
+    text-transform: uppercase;
+    color: rgba(255,255,255,0.48);
+}
+
+.nav {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+.nav a {
+    padding: 10px 16px;
+    border-radius: 999px;
+    border: 1px solid rgba(255,255,255,0.12);
+    background: rgba(255,255,255,0.04);
+    color: rgba(255,255,255,0.9);
+    transition:
+            transform var(--ease),
+            border-color var(--ease),
+            background var(--ease),
+            box-shadow var(--ease);
+}
+
+.nav a:hover {
+    transform: translateY(-2px);
+    background: rgba(255,255,255,0.08);
+    border-color: rgba(255,255,255,0.18);
+    box-shadow: 0 0 18px rgba(1,210,253,0.08);
+}
+
+.nav a.active {
+    background: rgba(255,255,255,0.09);
+    border-color: rgba(255,255,255,0.16);
+    color: #ffffff;
+}
+
+@media (max-width: 860px) {
+    .nav {
+        display: none;
+    }
+}
