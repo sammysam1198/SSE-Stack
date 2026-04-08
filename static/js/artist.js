@@ -1,22 +1,27 @@
-const sheenCards = document.querySelectorAll('.sheen-card');
+const flipSheenCards = document.querySelectorAll('.flip-sheen');
 
-function updateSheen() {
-    const scrollY = window.scrollY;
-    const viewportH = window.innerHeight;
+function updateFlipSheen() {
+    const viewportHeight = window.innerHeight;
 
-    sheenCards.forEach((card) => {
-    const rect = card.getBoundingClientRect();
-    const centerY = rect.top + rect.height / 2;
-    const progress = Math.max(0, Math.min(1, centerY / viewportH));
+    flipSheenCards.forEach((card) => {
+        const rect = card.getBoundingClientRect();
+        const center = rect.top + rect.height / 2;
 
-    const sheenX = 20 + (progress * 60);
-    const sheenY = 12 + (progress * 28);
+        let progress = center / viewportHeight;
+        progress = Math.max(0, Math.min(1, progress));
 
-    card.style.setProperty('--sheen-x', `${sheenX}%`);
-    card.style.setProperty('--sheen-y', `${sheenY}%`);
-});
+        const leftY = progress * 100;
+        const rightY = 100 - (progress * 100);
+
+        card.style.setProperty('--glow-left-y', `${leftY}%`);
+        card.style.setProperty('--glow-right-y', `${rightY}%`);
+    });
 }
 
-    window.addEventListener('scroll', updateSheen, { passive: true });
-    window.addEventListener('resize', updateSheen);
-    window.addEventListener('load', updateSheen);
+window.addEventListener('scroll', updateFlipSheen, { passive: true });
+window.addEventListener('resize', updateFlipSheen);
+window.addEventListener('load', updateFlipSheen);
+
+
+
+
