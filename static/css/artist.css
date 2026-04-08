@@ -11,65 +11,67 @@
 
 /* Moving border FX */
 
+/*
+.motion-card {
+    border: 1px solid rgba(255,255,255,0.16);
+    box-shadow:
+            0 0 0 1px rgba(255,255,255,0.04) inset,
+            0 0 22px rgba(255, 47, 171, 0.18),
+            0 0 26px rgba(23, 220, 255, 0.16),
+            0 24px 70px rgba(0,0,0,0.42);
+}
+*/
+
 .motion-card {
     position: relative;
     overflow: hidden;
     isolation: isolate;
-    --cyan-top: 70%;
-    --cyan-right: -90px;
-    --magenta-top: -90px;
-    --magenta-left: -90px;
+    --cyan-x: 100%;
+    --cyan-y: 100%;
+    --magenta-x: 0%;
+    --magenta-y: 0%;
 }
 
-.artist-base-art {
+.motion-card .artist-image-overlay {
     position: absolute;
-    inset: 0;
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    z-index: 1;
+    inset: auto 0 0 0;
+    z-index: 4;
+    padding: 28px;
 }
 
 .motion-layer {
     position: absolute;
-    width: 340px;
-    height: 340px;
+    inset: -8%;
     pointer-events: none;
-    filter: blur(72px);
-    opacity: 0.85;
     z-index: 2;
-    will-change: transform;
+    opacity: 1;
+    mix-blend-mode: screen;
 }
 
 .motion-cyan {
-    top: var(--cyan-top);
-    right: var(--cyan-right);
-    background: radial-gradient(
-            circle,
-            rgba(23,220,255,0.34) 0%,
-            rgba(23,220,255,0.18) 34%,
-            rgba(23,220,255,0.08) 54%,
-            transparent 74%
-    );
+    background:
+            radial-gradient(
+                    520px circle at var(--cyan-x) var(--cyan-y),
+                    rgba(23, 220, 255, 0.90) 0%,
+                    rgba(23, 220, 255, 0.55) 10%,
+                    rgba(23, 220, 255, 0.25) 22%,
+                    rgba(23, 220, 255, 0.10) 34%,
+                    transparent 48%
+            );
+    filter: blur(30px) saturate(1.35);
 }
 
 .motion-magenta {
-    top: var(--magenta-top);
-    left: var(--magenta-left);
-    background: radial-gradient(
-            circle,
-            rgba(255,47,171,0.32) 0%,
-            rgba(255,47,171,0.18) 34%,
-            rgba(255,47,171,0.08) 54%,
-            transparent 74%
-    );
-}
-
-.artist-image-overlay {
-    position: absolute;
-    inset: auto 0 0 0;
-    z-index: 3;
-    padding: 28px;
+    background:
+            radial-gradient(
+                    520px circle at var(--magenta-x) var(--magenta-y),
+                    rgba(255, 47, 171, 0.92) 0%,
+                    rgba(255, 47, 171, 0.56) 10%,
+                    rgba(255, 47, 171, 0.26) 22%,
+                    rgba(255, 47, 171, 0.10) 34%,
+                    transparent 48%
+            );
+    filter: blur(30px) saturate(1.35);
 }
 
 /* OPTIONAL IMAGE ABOUT LAYOUT */
@@ -153,26 +155,9 @@
     object-fit: cover;
 }
 
-.artist-image-card::before {
-    content: "";
-    position: absolute;
-    inset: 0;
-    z-index: 1;
-    background:
-            linear-gradient(to top, rgba(5,6,10,0.92) 10%, rgba(5,6,10,0.44) 48%, rgba(5,6,10,0.12) 75%, rgba(5,6,10,0.06) 100%),
-            linear-gradient(135deg, rgba(255,47,171,0.12), transparent 34%, transparent 68%, rgba(23,220,255,0.12));
-}
-
-.artist-image-card::after {
-    content: "";
-    position: absolute;
-    inset: 0;
-    z-index: 1;
-    pointer-events: none;
-    background:
-            linear-gradient(120deg, rgba(255,255,255,0.24) 0%, rgba(255,255,255,0.08) 18%, transparent 38%),
-            radial-gradient(circle at top left, rgba(255,47,171,0.18), transparent 28%),
-            radial-gradient(circle at bottom right, rgba(23,220,255,0.16), transparent 32%);
+.motion-card::before,
+.motion-card::after {
+    content: none !important;
 }
 
 .artist-image-overlay {
