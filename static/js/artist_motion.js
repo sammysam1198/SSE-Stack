@@ -13,27 +13,27 @@ function updateMotionCard(card) {
   let cyanX, cyanY;
 
   // MAGENTA
-  // path: (0,100) -> (0,0) -> (100,0)
-  if (progress < 0.5) {
-    const p = progress / 0.5;
+  // top-left -> bottom-left -> bottom-right
+  if (progress < 0.8) {
+    const p = progress / 0.8;
     magentaX = 0;
-    magentaY = 100 - (p * 100);
+    magentaY = p * 100;
   } else {
-    const p = (progress - 0.5) / 0.5;
+    const p = (progress - 0.8) / 0.8;
     magentaX = p * 100;
-    magentaY = 0;
+    magentaY = 100;
   }
 
   // CYAN
-  // path: (100,0) -> (100,100) -> (0,100)
-  if (progress < 0.5) {
-    const p = progress / 0.5;
+  // bottom-right -> top-right -> top-left
+  if (progress < 0.8) {
+    const p = progress / 0.8;
     cyanX = 100;
-    cyanY = p * 100;
+    cyanY = 100 - (p * 100);
   } else {
-    const p = (progress - 0.5) / 0.5;
+    const p = (progress - 0.8) / 0.8;
     cyanX = 100 - (p * 100);
-    cyanY = 100;
+    cyanY = 0;
   }
 
   card.style.setProperty("--magenta-x", `${magentaX}%`);
