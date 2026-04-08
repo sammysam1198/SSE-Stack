@@ -12,24 +12,10 @@ function updateMotionCard(card) {
     let cyanX, cyanY;
     let magentaX, magentaY;
 
-    // CYAN
-    // starts bottom-right
-    // moves to top-right at 2x feel
-    // then travels left across the top
-    if (progress < 0.5) {
-        const p = progress / 0.5;
-        cyanX = 100;
-        cyanY = 100 - (p * 100);
-    } else {
-        const p = (progress - 0.5) / 0.5;
-        cyanX = 100 - (p * 100);
-        cyanY = 0;
-    }
-
     // MAGENTA
-    // starts top-left
-    // moves to bottom-left
-    // then travels right across the bottom
+    // start: top-left
+    // move down left side
+    // then move right across bottom
     if (progress < 0.5) {
         const p = progress / 0.5;
         magentaX = 0;
@@ -40,10 +26,24 @@ function updateMotionCard(card) {
         magentaY = 100;
     }
 
-    card.style.setProperty("--cyan-x", `${cyanX}%`);
-    card.style.setProperty("--cyan-y", `${cyanY}%`);
+    // CYAN
+    // start: bottom-right
+    // move up right side faster
+    // then move left across top
+    if (progress < 0.5) {
+        const p = progress / 0.5;
+        cyanX = 100;
+        cyanY = 100 - (p * 100);
+    } else {
+        const p = (progress - 0.5) / 0.5;
+        cyanX = 100 - (p * 100);
+        cyanY = 0;
+    }
+
     card.style.setProperty("--magenta-x", `${magentaX}%`);
     card.style.setProperty("--magenta-y", `${magentaY}%`);
+    card.style.setProperty("--cyan-x", `${cyanX}%`);
+    card.style.setProperty("--cyan-y", `${cyanY}%`);
 }
 
 function updateAllMotionCards() {
