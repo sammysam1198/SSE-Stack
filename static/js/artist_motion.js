@@ -4,34 +4,44 @@ function clamp(value, min, max) {
 
 function updateMotionCard(card) {
   const rect = card.getBoundingClientRect();
-  const viewportHeight = window.innerHeight;
 
-  const rawProgress = (viewportHeight - rect.top) / (viewportHeight + rect.height);
-  const progress = clamp(rawProgress, 0, 1);
+  // Start animating only after the card begins moving upward past this line.
+  // This keeps the initial state locked to:
+  // magenta = top-left
+  // cyan = bottom-right
+  const startLine = 120;
 
-  let magentaX, magentaY;
+  // Progress is 0 until the card top reaches startLine.
+  // Progress becomes 1 by the time one full card height has scrolled past that line.
+  const progress = clamp((startLine - rect.top) / rect.height, 0, 1);
+
   let cyanX, cyanY;
+  let magentaX, magentaY;
 
   // MAGENTA
-  // top-left -> bottom-left -> bottom-right
-  if (progress < 0.8) {
-    const p = progress / 0.8;
+  // starts top-left
+  // moves down left side at normal speed
+  // then moves right across the bottom
+  if (progress < 0.5) {
+    const p = progress / 0.5;
     magentaX = 0;
     magentaY = p * 100;
   } else {
-    const p = (progress - 0.8) / 0.8;
+    const p = (progress - 0.5) / 0.5;
     magentaX = p * 100;
     magentaY = 100;
   }
 
   // CYAN
-  // bottom-right -> top-right -> top-left
-  if (progress < 0.8) {
-    const p = progress / 0.8;
+  // starts bottom-right
+  // moves up right side faster
+  // then moves left across the top
+  if (progress < 0.25) {
+    const p = progress / 0.25;
     cyanX = 100;
     cyanY = 100 - (p * 100);
   } else {
-    const p = (progress - 0.8) / 0.8;
+    const p = (progress - 0.25) / 0.75;
     cyanX = 100 - (p * 100);
     cyanY = 0;
   }
