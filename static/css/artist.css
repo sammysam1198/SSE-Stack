@@ -9,6 +9,106 @@
     align-items: stretch;
 }
 
+/* OPTIONAL IMAGE ABOUT LAYOUT */
+.artist-about-layout {
+    display: grid;
+    grid-template-columns: 1.1fr 0.9fr;
+    gap: 24px;
+    align-items: stretch;
+}
+
+.artist-about-copy {
+    min-width: 0;
+}
+
+.artist-about-visual {
+    min-height: 100%;
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+    border: 1px solid rgba(255,255,255,0.10);
+    background:
+            linear-gradient(180deg, rgba(255,255,255,0.08), rgba(255,255,255,0.02)),
+            linear-gradient(135deg, rgba(255,47,171,0.08), rgba(23,220,255,0.08)),
+            rgba(10,12,18,0.76);
+    box-shadow:
+            0 18px 40px rgba(0, 0, 0, 0.30),
+            inset 0 1px 0 rgba(255,255,255,0.16),
+            inset 0 -1px 0 rgba(255,255,255,0.04);
+}
+
+.artist-about-visual img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.artist-about-visual.is-empty {
+    display: none;
+}
+
+/* ACCENT VARIANTS */
+.accent-magenta {
+    background:
+            linear-gradient(180deg, rgba(255,255,255,0.06), rgba(255,255,255,0.02)),
+            linear-gradient(135deg, rgba(255,47,171,0.18), rgba(176,0,104,0.10) 62%, rgba(255,255,255,0.02)),
+            rgba(12,14,20,0.72);
+}
+
+.accent-cyan {
+    background:
+            linear-gradient(180deg, rgba(255,255,255,0.06), rgba(255,255,255,0.02)),
+            linear-gradient(135deg, rgba(23,220,255,0.16), rgba(77,125,255,0.10) 62%, rgba(255,255,255,0.02)),
+            rgba(12,14,20,0.72);
+}
+
+/* MOVING LIGHT / SHEEN */
+.sheen-card {
+    position: relative;
+    overflow: hidden;
+    --sheen-x: 50%;
+    --sheen-y: 20%;
+}
+
+.sheen-card::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    z-index: 2;
+    background:
+            radial-gradient(
+                    520px circle at var(--sheen-x) var(--sheen-y),
+                    rgba(255,255,255,0.16) 0%,
+                    rgba(255,255,255,0.08) 14%,
+                    rgba(255,47,171,0.10) 26%,
+                    rgba(23,220,255,0.08) 40%,
+                    transparent 62%
+            ),
+            linear-gradient(
+                    120deg,
+                    rgba(255,255,255,0.22) 0%,
+                    rgba(255,255,255,0.06) 14%,
+                    transparent 32%
+            );
+    mix-blend-mode: screen;
+    opacity: 0.75;
+    transition: opacity var(--ease);
+}
+
+.sheen-card:hover::before {
+    opacity: 0.95;
+}
+
+@media (max-width: 1100px) {
+    .artist-about-layout {
+        grid-template-columns: 1fr;
+    }
+
+    .artist-about-visual.is-empty {
+        display: none;
+    }
+}
+
 .artist-image-card {
     position: relative;
     min-height: 680px;
