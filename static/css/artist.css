@@ -27,9 +27,9 @@
     overflow: hidden;
     isolation: isolate;
     --cyan-x: 100%;
-    --cyan-y: 100%;
+    --cyan-y: 0%;
     --magenta-x: 0%;
-    --magenta-y: 0%;
+    --magenta-y: 100%;
 }
 
 .motion-card .artist-image-overlay {
