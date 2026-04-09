@@ -1,1 +1,259 @@
-artists
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Artists | Spaced Out Studios</title>
+
+    <link rel="stylesheet" href="static/css/base.css">
+    <link rel="stylesheet" href="static/css/header.css">
+    <link rel="stylesheet" href="static/css/artist_directory.css">
+</head>
+<body>
+<div class="site-wrap">
+    <header class="site-header">
+        <div class="container">
+            <a class="brand" href="/">
+                <span class="brand-orb" aria-hidden="true"></span>
+                <div class="brand-copy">
+                    <p class="brand-title">Spaced Out Studios</p>
+                    <p class="brand-subtitle">Artist Roster</p>
+                </div>
+            </a>
+
+            <nav class="nav" aria-label="Main navigation">
+                <a href="/">Home</a>
+                <a href="/artists" class="active">Artists</a>
+                <a href="/about">About</a>
+                <a href="/submissions">Submissions</a>
+                <a href="/contact">Contact</a>
+            </nav>
+        </div>
+    </header>
+
+    <main class="page-shell">
+        <section class="section">
+            <div class="section-head">
+                <p class="eyebrow">Roster</p>
+                <h1 class="display section-title">Artists</h1>
+                <p class="section-copy">
+                    A curated roster of artists across synthwave, ambient, dream-pop, electronic, and experimental worlds.
+                </p>
+            </div>
+
+            <div class="artist-filter-row">
+                <button class="filter-chip active" data-filter="all" type="button">All</button>
+                <button class="filter-chip" data-filter="electronic" type="button">Electronic</button>
+                <button class="filter-chip" data-filter="vocals" type="button">Vocals</button>
+                <button class="filter-chip" data-filter="producer" type="button">Producers</button>
+                <button class="filter-chip" data-filter="experimental" type="button">Experimental</button>
+            </div>
+
+            <div class="artist-directory-grid" id="artistDirectory">
+                <article class="artist-directory-card glass" data-tags="electronic producer synthwave">
+                    <div class="artist-card-image">
+                        <img src="static/artists/4nzekFace.png" alt="4nzek artist portrait">
+                    </div>
+                    <div class="artist-card-body">
+                        <h2 class="artist-card-title">4nzek</h2>
+                        <p class="artist-card-tagline">Textural producer with a moody, cinematic electronic edge.</p>
+
+                        <div class="tag-row">
+                            <span class="tag">Electronic</span>
+                            <span class="tag">Producer</span>
+                            <span class="tag">EDM</span>
+                        </div>
+
+                        <div class="artist-card-actions">
+                            <a class="button primary" href="/artists/4nzek">Read More</a>
+                        </div>
+                    </div>
+                </article>
+
+                <article class="artist-directory-card glass" data-tags="electronic producer chillsynth">
+                    <div class="artist-card-image">
+                        <img src="/static/logos/chroma.png" alt="Chroma Glow logo">
+                    </div>
+                    <div class="artist-card-body">
+                        <h2 class="artist-card-title">Chroma Glow</h2>
+                        <p class="artist-card-tagline">Chillsynth and nostalgic neon atmosphere with emotional melodic focus.</p>
+
+                        <div class="tag-row">
+                            <span class="tag">Chillsynth</span>
+                            <span class="tag">Producer</span>
+                            <span class="tag">Guitar</span>
+                        </div>
+
+                        <div class="artist-card-actions">
+                            <a class="button primary" href="/artists/chroma">Read More</a>
+                        </div>
+                    </div>
+                </article>
+
+                <article class="artist-directory-card glass" data-tags="experimental producer electronic">
+                    <div class="artist-card-image">
+                        <img src="static/artists/dorzi.png" alt="Dorzi artist portrait">
+                    </div>
+                    <div class="artist-card-body">
+                        <h2 class="artist-card-title">Dorzi</h2>
+                        <p class="artist-card-tagline">Sharp-edged electronic work with a dark, modern pulse.</p>
+
+                        <div class="tag-row">
+                            <span class="tag">Experimental</span>
+                            <span class="tag">Electronic</span>
+                            <span class="tag">Producer</span>
+                        </div>
+
+                        <div class="artist-card-actions">
+                            <a class="button primary" href="/artists/dorzi">Read More</a>
+                        </div>
+                    </div>
+                </article>
+
+                <article class="artist-directory-card glass" data-tags="vocals alternative dreamy">
+                    <div class="artist-card-image">
+                        <img src="static/artists/rum.png" alt="Rumour artist portrait">
+                    </div>
+                    <div class="artist-card-body">
+                        <h2 class="artist-card-title">Rumour</h2>
+                        <p class="artist-card-tagline">Dreamy and emotionally sharp with a late-night edge.</p>
+
+                        <div class="tag-row">
+                            <span class="tag">Vocals</span>
+                            <span class="tag">Dreamy</span>
+                            <span class="tag">Alt</span>
+                        </div>
+
+                        <div class="artist-card-actions">
+                            <a class="button primary" href="/artists/rumor">Read More</a>
+                        </div>
+                    </div>
+                </article>
+
+                <article class="artist-directory-card glass" data-tags="vocals electronic international">
+                    <div class="artist-card-image artist-card-placeholder">
+                        <span>iKatrin</span>
+                    </div>
+                    <div class="artist-card-body">
+                        <h2 class="artist-card-title">iKatrin</h2>
+                        <p class="artist-card-tagline">Polished electronic presence with a bright modern vocal identity.</p>
+
+                        <div class="tag-row">
+                            <span class="tag">Vocals</span>
+                            <span class="tag">Electronic</span>
+                            <span class="tag">Modern</span>
+                        </div>
+
+                        <div class="artist-card-actions">
+                            <a class="button primary" href="/artists/ikatrin">Read More</a>
+                        </div>
+                    </div>
+                </article>
+
+                <article class="artist-directory-card glass" data-tags="electronic producer experimental">
+                    <div class="artist-card-image">
+                        <img src="static/artists/madgas.png" alt="Madgas artist portrait">
+                    </div>
+                    <div class="artist-card-body">
+                        <h2 class="artist-card-title">Madgas</h2>
+                        <p class="artist-card-tagline">Bold production energy with a glossy underground finish.</p>
+
+                        <div class="tag-row">
+                            <span class="tag">Producer</span>
+                            <span class="tag">Electronic</span>
+                            <span class="tag">Underground</span>
+                        </div>
+
+                        <div class="artist-card-actions">
+                            <a class="button primary" href="/artists/madgas">Read More</a>
+                        </div>
+                    </div>
+                </article>
+
+                <article class="artist-directory-card glass" data-tags="electronic producer melodic">
+                    <div class="artist-card-image">
+                        <img src="static/artists/erik.png" alt="Erikih artist portrait">
+                    </div>
+                    <div class="artist-card-body">
+                        <h2 class="artist-card-title">Erikih</h2>
+                        <p class="artist-card-tagline">Melodic production and immersive sound with sleek emotional detail.</p>
+
+                        <div class="tag-row">
+                            <span class="tag">Producer</span>
+                            <span class="tag">Melodic</span>
+                            <span class="tag">Electronic</span>
+                        </div>
+
+                        <div class="artist-card-actions">
+                            <a class="button primary" href="/artists/erikih">Read More</a>
+                        </div>
+                    </div>
+                </article>
+
+                <article class="artist-directory-card glass" data-tags="vocals pop electronic">
+                    <div class="artist-card-image">
+                        <img src="static/artists/kayla.png" alt="Kayla Jay artist portrait">
+                    </div>
+                    <div class="artist-card-body">
+                        <h2 class="artist-card-title">Kayla Jay</h2>
+                        <p class="artist-card-tagline">Bright vocal-led energy with polished pop-electronic momentum.</p>
+
+                        <div class="tag-row">
+                            <span class="tag">Vocals</span>
+                            <span class="tag">Pop</span>
+                            <span class="tag">Electronic</span>
+                        </div>
+
+                        <div class="artist-card-actions">
+                            <a class="button primary" href="/artists/kayla">Read More</a>
+                        </div>
+                    </div>
+                </article>
+
+                <article class="artist-directory-card glass" data-tags="vocals sweet alternative">
+                    <div class="artist-card-image artist-card-placeholder">
+                        <span>2Confections</span>
+                    </div>
+                    <div class="artist-card-body">
+                        <h2 class="artist-card-title">2Confections</h2>
+                        <p class="artist-card-tagline">Sweet, stylized identity with a playful but intentional edge.</p>
+
+                        <div class="tag-row">
+                            <span class="tag">Vocals</span>
+                            <span class="tag">Alt</span>
+                            <span class="tag">Stylized</span>
+                        </div>
+
+                        <div class="artist-card-actions">
+                            <a class="button primary" href="/artists/2con">Read More</a>
+                        </div>
+                    </div>
+                </article>
+
+                <article class="artist-directory-card glass" data-tags="vocals identity pop">
+                    <div class="artist-card-image artist-card-placeholder">
+                        <span>Sammi Starlight</span>
+                    </div>
+                    <div class="artist-card-body">
+                        <h2 class="artist-card-title">Sammi Starlight</h2>
+                        <p class="artist-card-tagline">A separate artist identity centered on presence, voice, and emotion.</p>
+
+                        <div class="tag-row">
+                            <span class="tag">Vocals</span>
+                            <span class="tag">Identity</span>
+                            <span class="tag">Pop</span>
+                        </div>
+
+                        <div class="artist-card-actions">
+                            <a class="button primary" href="/artists/sammi">Read More</a>
+                        </div>
+                    </div>
+                </article>
+            </div>
+        </section>
+    </main>
+</div>
+
+<script src="static/js/artist_directory.js"></script>
+</body>
+</html>
