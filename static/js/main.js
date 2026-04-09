@@ -1,5 +1,5 @@
 
 
 document.addEventListener("DOMContentLoaded", () => {
-    console.log("SSE-Web loaded.");
+    console.log("SOS-Web loaded.");
 });
