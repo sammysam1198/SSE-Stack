@@ -1,4 +1,7 @@
 from flask import Blueprint, request, jsonify, session
+from repos.users_repo import get_user_by_email, update_last_login
+from utils.auth_utils import verify_password
+from utils.security_utils import get_request_ip
 
 auth_bp = Blueprint("auth", __name__)
 
@@ -13,26 +16,36 @@ def signin():
     if not email or not password:
         return jsonify({"error": "Email and password are required."}), 400
 
-    # TODO:
-    # 1. get user by email from users_repo
-    # 2. verify password with auth_utils.verify_password
-    # 3. check locked / active status
-    # 4. optionally start email challenge for suspicious login
-    # 5. store user session
+    user = get_user_by_email(email)
 
-    # placeholder session payload
-    session["user_id"] = 1
-    session["role"] = "developer"
+    if not user:
+        return jsonify({"error": "Invalid credentials."}), 401
+
+    if not user["is_active"]:
+        return jsonify({"error": "Account is inactive."}), 403
+
+    if user["is_locked"]:
+        return jsonify({"error": "Account is locked."}), 403
+
+    if not verify_password(password, user["password_hash"]):
+        return jsonify({"error": "Invalid credentials."}), 401
+
+    #  Create session
+    session["user_id"] = user["id"]
+    session["role"] = user["role"]
+
+    # Update login info
+    ip = get_request_ip()
+    update_last_login(user["id"], ip)
 
     return jsonify({
         "message": "Signed in successfully.",
         "user": {
-            "id": 1,
-            "email": email,
-            "role": session["role"],
+            "id": user["id"],
+            "email": user["email"],
+            "role": user["role"],
         }
     }), 200
-
 
 @auth_bp.post("/signout")
 def signout():
@@ -43,16 +56,22 @@ def signout():
 @auth_bp.get("/me")
 def me():
     user_id = session.get("user_id")
-    role = session.get("role")
 
     if not user_id:
         return jsonify({"error": "Not authenticated."}), 401
 
-    # TODO: fetch current user from repo
+    from repos.users_repo import get_user_by_id
+
+    user = get_user_by_id(user_id)
+
+    if not user:
+        return jsonify({"error": "User not found."}), 404
+
     return jsonify({
         "user": {
-            "id": user_id,
-            "role": role,
+            "id": user["id"],
+            "email": user["email"],
+            "role": user["role"],
         }
     }), 200
 
