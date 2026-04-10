@@ -53,4 +53,4 @@ def execute_returning_one(query: str, params: tuple[Any, ...] = ()):
             cur.execute(query, params)
             return cur.fetchone()
     finally:
-        conn.close()4w
+        conn.close()
