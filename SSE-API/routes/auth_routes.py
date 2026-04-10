@@ -5,16 +5,6 @@ from utils.security_utils import get_request_ip
 
 auth_bp = Blueprint("auth", __name__)
 
-
-from flask import Blueprint, request, jsonify, session
-
-from repos.users_repo import get_user_by_email, update_last_login
-from utils.auth_utils import verify_password
-from utils.security_utils import get_request_ip
-
-auth_bp = Blueprint("auth", __name__)
-
-
 @auth_bp.post("/signin")
 def signin():
     data = request.get_json(silent=True) or {}
