@@ -6,20 +6,38 @@ from utils.security_utils import get_request_ip
 auth_bp = Blueprint("auth", __name__)
 
 
+from flask import Blueprint, request, jsonify, session
+
+from repos.users_repo import get_user_by_email, update_last_login
+from utils.auth_utils import verify_password
+from utils.security_utils import get_request_ip
+
+auth_bp = Blueprint("auth", __name__)
+
+
 @auth_bp.post("/signin")
 def signin():
     data = request.get_json(silent=True) or {}
 
-    email = (data.get("email") or "").strip().lower()
+    raw_email = data.get("email")
+    email = (raw_email or "").strip().lower()
     password = data.get("password") or ""
+
+    print("DEBUG SIGNIN raw_email =", repr(raw_email))
+    print("DEBUG SIGNIN normalized_email =", repr(email))
 
     if not email or not password:
         return jsonify({"error": "Email and password are required."}), 400
 
     user = get_user_by_email(email)
 
+    print("DEBUG SIGNIN db_user =", user)
+
     if not user:
-        return jsonify({"error": "Invalid credentials."}), 401
+        return jsonify({
+            "error": "User not found.",
+            "debug_email": email
+        }), 404
 
     if not user["is_active"]:
         return jsonify({"error": "Account is inactive."}), 403
@@ -27,14 +45,15 @@ def signin():
     if user["is_locked"]:
         return jsonify({"error": "Account is locked."}), 403
 
-    if not verify_password(password, user["password_hash"]):
+    password_ok = verify_password(password, user["password_hash"])
+    print("DEBUG SIGNIN password_ok =", password_ok)
+
+    if not password_ok:
         return jsonify({"error": "Invalid credentials."}), 401
 
-    #  Create session
     session["user_id"] = user["id"]
     session["role"] = user["role"]
 
-    # Update login info
     ip = get_request_ip()
     update_last_login(user["id"], ip)
 
