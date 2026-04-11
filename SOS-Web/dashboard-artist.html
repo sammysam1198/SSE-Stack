@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Artist Dashboard | Spaced Out Studios</title>
+    <link rel="stylesheet" href="/static/css/base.css" />
+    <link rel="stylesheet" href="/static/css/header.css" />
+    <link rel="stylesheet" href="/static/css/auth.css" />
+</head>
+<body>
+<header>
+    <div id="auth-slot"></div>
+</header>
+
+<main style="padding: 2rem; color: white;">
+    <h1>Artist Dashboard</h1>
+    <p>This is the first shell. Next we wire real modules into it.</p>
+</main>
+
+<div class="signin-modal" id="signin-modal" aria-hidden="true">
+    <div class="signin-panel">
+        <h2>Sign In</h2>
+        <p>Access your Spaced Out Studios account.</p>
+
+        <form class="signin-form" id="signin-form">
+            <label>
+                Email
+                <input type="email" name="email" required />
+            </label>
+
+            <label>
+                Password
+                <input type="password" name="password" required />
+            </label>
+
+            <div class="signin-error" id="signin-error"></div>
+
+            <div class="signin-actions">
+                <button class="signin-cancel" type="button" data-close-signin>Cancel</button>
+                <button class="signin-submit" type="submit">Sign In</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script src="/static/js/api.js"></script>
+<script src="/static/js/auth.js"></script>
+<script src="/static/js/header_auth.js"></script>
+</body>
+</html>

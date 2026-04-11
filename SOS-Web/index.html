@@ -16,6 +16,7 @@
     <link rel="stylesheet" href="static/css/header.css" />
     <link rel="stylesheet" href="static/css/home.css" />
     <link rel="stylesheet" href="static/css/social_grid.css" />
+    <link rel="stylesheet" href="static/css/auth.css" />
 </head>
 <body>
 <div class="site-wrap">
@@ -37,6 +38,7 @@
                 <a href="/submissions">Submissions</a>
                 <a href="/contact">Contact</a>
             </nav>
+            <div id="auth-slot"></div>
         </div>
     </header>
 
@@ -130,7 +132,7 @@
 
             <div class="artist-grid">
                 <article class="artist-feature">
-                    <img src="static/logos/chroma.png" alt="Chroma Glow">
+                    <img src="/static/logos/chroma.png" alt="Chroma Glow">
                     <div class="artist-overlay">
                         <h3 class="artist-name">Chroma Glow</h3>
                         <p class="artist-role">Chillsynth / Synthwave / Atmospheric Electronic</p>
@@ -234,39 +236,39 @@
 
             <div class="music-platform-grid">
                 <a class="music-tile tile-top spotify-tile" href="#" target="_blank" rel="noopener noreferrer">
-                    <img src="static/socials/spotify.png" alt="Spotify" class="music-logo">
+                    <img src="/static/socials/spotify.png" alt="Spotify" class="music-logo">
                 </a>
 
                 <a class="music-tile tile-top youtube-tile" href="#" target="_blank" rel="noopener noreferrer">
-                    <img src="static/socials/youtube%20full.png" alt="YouTube" class="music-logo">
+                    <img src="/static/socials/youtube%20full.png" alt="YouTube" class="music-logo">
                 </a>
 
                 <a class="music-tile tile-top instagram-tile" href="#" target="_blank" rel="noopener noreferrer">
-                    <img src="static/socials/instagram.png" alt="Instagram" class="music-logo">
+                    <img src="/static/socials/instagram.png" alt="Instagram" class="music-logo">
                 </a>
 
                 <a class="music-tile-small tile-small soundcloud-tile" href="#" target="_blank" rel="noopener noreferrer">
-                    <img src="static/socials/soundcloud.png" alt="SoundCloud" class="music-logo">
+                    <img src="/static/socials/soundcloud.png" alt="SoundCloud" class="music-logo">
                 </a>
 
                 <a class="music-tile-small tile-small bandcamp-tile" href="#" target="_blank" rel="noopener noreferrer">
-                    <img src="static/socials/bandcamp.png" alt="Bandcamp" class="music-logo">
+                    <img src="/static/socials/bandcamp.png" alt="Bandcamp" class="music-logo">
                 </a>
 
                 <a class="music-tile-small tile-small ytmusic-tile" href="#" target="_blank" rel="noopener noreferrer">
-                    <img src="static/socials/ytmusic.png" alt="YouTube Music" class="music-logo">
+                    <img src="/static/socials/ytmusic.png" alt="YouTube Music" class="music-logo">
                 </a>
 
                 <a class="music-tile-small tile-small threads-tile" href="#" target="_blank" rel="noopener noreferrer">
-                    <img src="static/socials/threads.png" alt="Threads" class="music-logo">
+                    <img src="/static/socials/threads.png" alt="Threads" class="music-logo">
                 </a>
 
                 <a class="music-tile-small tile-small tidal-tile" href="#" target="_blank" rel="noopener noreferrer">
-                    <img src="static/socials/tidal.png" alt="TIDAL" class="music-logo">
+                    <img src="/static/socials/tidal.png" alt="TIDAL" class="music-logo">
                 </a>
 
                 <a class="music-tile-small tile-small apple-tile" href="#" target="_blank" rel="noopener noreferrer">
-                    <img src="static/socials/apple.png" alt="Apple Music" class="music-logo">
+                    <img src="/static/socials/apple.png" alt="Apple Music" class="music-logo">
                 </a>
             </div>
         </section>
@@ -277,6 +279,16 @@
         </section>
     </main>
 </div>
+
+<div id="signin-modal-container"></div>
+<script src="/static/js/partials.js"></script>
+<script>
+    loadPartial("signin-modal-container", "/static/partials/signin_modal.html");
+</script>
+
+<script src="/static/js/api.js"></script>
+<script src="/static/js/auth.js"></script>
+<script src="/static/js/header_auth.js"></script>
 
 <script src="static/js/main.js"></script>
 </body>

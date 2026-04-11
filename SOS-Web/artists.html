@@ -8,6 +8,7 @@
     <link rel="stylesheet" href="static/css/base.css">
     <link rel="stylesheet" href="static/css/header.css">
     <link rel="stylesheet" href="static/css/artist_directory.css">
+    <link rel="stylesheet" href="static/css/auth.css" />
 </head>
 <body>
 <div class="site-wrap">
@@ -53,7 +54,7 @@
             <div class="artist-directory-grid" id="artistDirectory">
                 <article class="artist-directory-card glass" data-tags="electronic producer synthwave">
                     <div class="artist-card-image">
-                        <img src="static/artists/4nzekFace.png" alt="4nzek artist portrait">
+                        <img src="/static/artists/4nzekFace.png" alt="4nzek artist portrait">
                     </div>
                     <div class="artist-card-body">
                         <h2 class="artist-card-title">4nzek</h2>
@@ -73,7 +74,7 @@
 
                 <article class="artist-directory-card glass" data-tags="electronic producer chillsynth">
                     <div class="artist-card-image">
-                        <img src="/logos/chroma.png" alt="Chroma Glow logo">
+                        <img src="/static/logos/chroma.png" alt="Chroma Glow logo">
                     </div>
                     <div class="artist-card-body">
                         <h2 class="artist-card-title">Chroma Glow</h2>
@@ -93,7 +94,7 @@
 
                 <article class="artist-directory-card glass" data-tags="experimental producer electronic">
                     <div class="artist-card-image">
-                        <img src="static/artists/dorzi.png" alt="Dorzi artist portrait">
+                        <img src="/static/artists/dorzi.png" alt="Dorzi artist portrait">
                     </div>
                     <div class="artist-card-body">
                         <h2 class="artist-card-title">Dorzi</h2>
@@ -106,7 +107,7 @@
                         </div>
 
                         <div class="artist-card-actions">
-                            <a class="button primary" href="/artists/dorzi">Read More</a>
+                            <a class="button primary" href="static/artists/dorzi">Read More</a>
                         </div>
                     </div>
                 </article>
@@ -126,7 +127,7 @@
                         </div>
 
                         <div class="artist-card-actions">
-                            <a class="button primary" href="/artists/rumor">Read More</a>
+                            <a class="button primary" href="static/artists/rumor">Read More</a>
                         </div>
                     </div>
                 </article>
@@ -146,7 +147,7 @@
                         </div>
 
                         <div class="artist-card-actions">
-                            <a class="button primary" href="/artists/ikatrin">Read More</a>
+                            <a class="button primary" href="static/logos/ikatrin">Read More</a>
                         </div>
                     </div>
                 </article>
@@ -252,8 +253,42 @@
                 </article>
             </div>
         </section>
+        <div class="signin-modal" id="signin-modal" aria-hidden="true">
+            <div class="signin-panel">
+                <h2>Sign In</h2>
+                <p>Access your Spaced Out Studios account.</p>
+
+                <form class="signin-form" id="signin-form">
+                    <label>
+                        Email
+                        <input type="email" name="email" required />
+                    </label>
+
+                    <label>
+                        Password
+                        <input type="password" name="password" required />
+                    </label>
+
+                    <div class="signin-error" id="signin-error"></div>
+
+                    <div class="signin-actions">
+                        <button class="signin-cancel" type="button" data-close-signin>Cancel</button>
+                        <button class="signin-submit" type="submit">Sign In</button>
+                    </div>
+                </form>
+            </div>
+        </div>
     </main>
 </div>
+<div id="signin-modal-container"></div>
+<script src="/static/js/partials.js"></script>
+<script>
+    loadPartial("signin-modal-container", "/static/partials/signin_modal.html");
+</script>
+
+<script src="/static/js/api.js"></script>
+<script src="/static/js/auth.js"></script>
+<script src="/static/js/header_auth.js"></script>
 
 <script src="static/js/artist_directory.js"></script>
 </body>

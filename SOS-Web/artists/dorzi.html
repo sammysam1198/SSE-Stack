@@ -16,6 +16,7 @@
     <link rel="stylesheet" href="/css/header.css" />
     <link rel="stylesheet" href="/css/social_grid.css" />
     <link rel="stylesheet" href="/css/artist.css" />
+    <link rel="stylesheet" href="static/css/auth.css" />
 </head>
 <body>
 <div class="site-wrap">
@@ -37,13 +38,14 @@
                 <a href="/submissions">Submissions</a>
                 <a href="/contact">Contact</a>
             </nav>
+            <div id="auth-slot"></div>
         </div>
     </header>
 
     <main class="page-shell artist-page">
         <section class="artist-hero">
             <article class="artist-image-card motion-card">
-                <img class="artist-base-art" src="/artists/dorzi.png" alt="4nzek" />
+                <img class="artist-base-art" src="/static/artists/dorzi.png" alt="4nzek" />
 
                 <div class="motion-layer motion-cyan"></div>
                 <div class="motion-layer motion-magenta"></div>
@@ -207,27 +209,27 @@
                 </a>
 
                 <a class="music-tile tile-top youtube-tile" href="https://www.youtube.com/@DorziOfficial" target="_blank" rel="noopener noreferrer">
-                    <img src="/socials/youtube%20full.png" alt="YouTube" class="music-logo">
+                    <img src="/static/socials/youtube%20full.png" alt="YouTube" class="music-logo">
                 </a>
 
                 <a class="music-tile tile-top instagram-tile" href="#" target="_blank" rel="noopener noreferrer">
-                    <img src="/socials/instagram.png" alt="Instagram" class="music-logo">
+                    <img src="/static/socials/instagram.png" alt="Instagram" class="music-logo">
                 </a>
 
                 <a class="music-tile-small tile-small soundcloud-tile" href="#" target="_blank" rel="noopener noreferrer">
-                    <img src="/socials/soundcloud.png" alt="SoundCloud" class="music-logo">
+                    <img src="/static/socials/soundcloud.png" alt="SoundCloud" class="music-logo">
                 </a>
 
                 <a class="music-tile-small tile-small bandcamp-tile" href="#" target="_blank" rel="noopener noreferrer">
-                    <img src="/socials/bandcamp.png" alt="Bandcamp" class="music-logo">
+                    <img src="/static/socials/bandcamp.png" alt="Bandcamp" class="music-logo">
                 </a>
 
                 <a class="music-tile-small tile-small ytmusic-tile" href="#" target="_blank" rel="noopener noreferrer">
-                    <img src="/socials/ytmusic.png" alt="YouTube Music" class="music-logo">
+                    <img src="/static/socials/ytmusic.png" alt="YouTube Music" class="music-logo">
                 </a>
 
                 <a class="music-tile-small tile-small threads-tile" href="#" target="_blank" rel="noopener noreferrer">
-                    <img src="/socials/threads.png" alt="Threads" class="music-logo">
+                    <img src="/static/socials/threads.png" alt="Threads" class="music-logo">
                 </a>
 
                 <a class="music-tile-small tile-small tidal-tile" href="#" target="_blank" rel="noopener noreferrer">
@@ -241,6 +243,15 @@
         </section>
     </main>
 </div>
+<div id="signin-modal-container"></div>
+<script src="/static/js/partials.js"></script>
+<script>
+    loadPartial("signin-modal-container", "/static/partials/signin_modal.html");
+</script>
+
+<script src="/static/js/api.js"></script>
+<script src="/static/js/auth.js"></script>
+<script src="/static/js/header_auth.js"></script>
 <script src="/js/artist.js"></script>
 <script src="/js/artist_motion.js"></script>
 </body>
