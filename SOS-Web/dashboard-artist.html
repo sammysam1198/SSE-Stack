@@ -51,29 +51,80 @@
 
         <section class="dashboard-grid">
             <article class="dashboard-card dashboard-card--wide">
-                <h3>Artist Page Controls</h3>
+                <h3>Edit Artist Page</h3>
                 <p>
-                    This is where the artist will eventually be able to update the public artist page.
+                    Update the core content that appears on your public artist page.
                 </p>
 
-                <div class="dashboard-meta">
-                    <div class="dashboard-meta__row">
-                        <span>Bio</span>
-                        <span>Editable later</span>
+                <form class="artist-editor-form" id="artist-editor-form">
+                    <div class="artist-editor-grid">
+                        <label class="artist-editor-field">
+                            <span>Artist Name</span>
+                            <input type="text" id="artist-name-input" name="artist_name" placeholder="Forensic" />
+                        </label>
+
+                        <label class="artist-editor-field">
+                            <span>Short Tagline</span>
+                            <input type="text" id="artist-tagline-input" name="tagline" placeholder="Dark electronic producer and sonic architect" />
+                        </label>
+
+                        <label class="artist-editor-field artist-editor-field--full">
+                            <span>Bio</span>
+                            <textarea id="artist-bio-input" name="bio" rows="6" placeholder="Write your artist bio here..."></textarea>
+                        </label>
+
+                        <label class="artist-editor-field">
+                            <span>Hero Image URL</span>
+                            <input type="text" id="artist-hero-image-input" name="hero_image_url" placeholder="/static/logos/4nzek.png" />
+                        </label>
+
+                        <label class="artist-editor-field">
+                            <span>Portrait Image URL</span>
+                            <input type="text" id="artist-portrait-image-input" name="portrait_image_url" placeholder="/static/artists/4nzekFace.png" />
+                        </label>
+
+                        <label class="artist-editor-field">
+                            <span>Tag 1</span>
+                            <input type="text" id="artist-tag-1-input" name="tag_1" placeholder="Electronic" />
+                        </label>
+
+                        <label class="artist-editor-field">
+                            <span>Tag 2</span>
+                            <input type="text" id="artist-tag-2-input" name="tag_2" placeholder="Producer" />
+                        </label>
+
+                        <label class="artist-editor-field">
+                            <span>Tag 3</span>
+                            <input type="text" id="artist-tag-3-input" name="tag_3" placeholder="Dark Atmosphere" />
+                        </label>
+
+                        <label class="artist-editor-field">
+                            <span>Spotify URL</span>
+                            <input type="text" id="artist-spotify-input" name="spotify_url" placeholder="https://open.spotify.com/..." />
+                        </label>
+
+                        <label class="artist-editor-field">
+                            <span>YouTube URL</span>
+                            <input type="text" id="artist-youtube-input" name="youtube_url" placeholder="https://youtube.com/..." />
+                        </label>
+
+                        <label class="artist-editor-field artist-editor-field--full">
+                            <span>Instagram URL</span>
+                            <input type="text" id="artist-instagram-input" name="instagram_url" placeholder="https://instagram.com/..." />
+                        </label>
                     </div>
-                    <div class="dashboard-meta__row">
-                        <span>Hero Image</span>
-                        <span>Upload later</span>
+
+                    <div class="artist-editor-actions">
+                        <button type="button" class="artist-editor-button artist-editor-button--ghost" id="artist-preview-button">
+                            Preview Hero
+                        </button>
+                        <button type="submit" class="artist-editor-button artist-editor-button--primary">
+                            Save Changes
+                        </button>
                     </div>
-                    <div class="dashboard-meta__row">
-                        <span>Tags / Pills</span>
-                        <span>Editable later</span>
-                    </div>
-                    <div class="dashboard-meta__row">
-                        <span>Spotify / YouTube</span>
-                        <span>Editable later</span>
-                    </div>
-                </div>
+
+                    <div class="artist-editor-status" id="artist-editor-status"></div>
+                </form>
             </article>
 
             <article class="dashboard-card">
@@ -151,6 +202,77 @@
     document.addEventListener("DOMContentLoaded", async () => {
         const user = await getCurrentUser();
         if (!requireRole(user, ["artist", "developer"])) return;
+
+        const defaultArtistName = user.artist_name || "Forensic";
+        const defaultEmailName = user.email?.split("@")[0] || "artist";
+
+        setText("artist-display-name", defaultArtistName || defaultEmailName);
+        setHeroImage("/static/logos/4nzek.png");
+
+        const form = document.getElementById("artist-editor-form");
+        const statusEl = document.getElementById("artist-editor-status");
+        const previewButton = document.getElementById("artist-preview-button");
+
+        const artistNameInput = document.getElementById("artist-name-input");
+        const taglineInput = document.getElementById("artist-tagline-input");
+        const bioInput = document.getElementById("artist-bio-input");
+        const heroImageInput = document.getElementById("artist-hero-image-input");
+        const portraitImageInput = document.getElementById("artist-portrait-image-input");
+        const tag1Input = document.getElementById("artist-tag-1-input");
+        const tag2Input = document.getElementById("artist-tag-2-input");
+        const tag3Input = document.getElementById("artist-tag-3-input");
+        const spotifyInput = document.getElementById("artist-spotify-input");
+        const youtubeInput = document.getElementById("artist-youtube-input");
+        const instagramInput = document.getElementById("artist-instagram-input");
+
+        artistNameInput.value = "Forensic";
+        taglineInput.value = "Dark electronic producer and sonic architect";
+        bioInput.value = "Forensic creates immersive electronic soundscapes with a sharp visual identity and a moody, cinematic edge.";
+        heroImageInput.value = "/static/logos/4nzek.png";
+        portraitImageInput.value = "/static/artists/4nzekFace.png";
+        tag1Input.value = "Electronic";
+        tag2Input.value = "Producer";
+        tag3Input.value = "Dark Atmosphere";
+        spotifyInput.value = "";
+        youtubeInput.value = "";
+        instagramInput.value = "";
+
+        previewButton.addEventListener("click", () => {
+            const liveName = artistNameInput.value.trim() || "Artist";
+            const liveHero = heroImageInput.value.trim();
+
+            setText("artist-display-name", liveName, "Artist");
+            setHeroImage(liveHero || null);
+
+            statusEl.textContent = "Hero preview updated.";
+        });
+
+        form.addEventListener("submit", async (event) => {
+            event.preventDefault();
+
+            const payload = {
+                artist_name: artistNameInput.value.trim(),
+                tagline: taglineInput.value.trim(),
+                bio: bioInput.value.trim(),
+                hero_image_url: heroImageInput.value.trim(),
+                portrait_image_url: portraitImageInput.value.trim(),
+                tags: [
+                    tag1Input.value.trim(),
+                    tag2Input.value.trim(),
+                    tag3Input.value.trim()
+                ].filter(Boolean),
+                spotify_url: spotifyInput.value.trim(),
+                youtube_url: youtubeInput.value.trim(),
+                instagram_url: instagramInput.value.trim()
+            };
+
+            console.log("Artist profile payload:", payload);
+
+            setText("artist-display-name", payload.artist_name || "Artist");
+            setHeroImage(payload.hero_image_url || null);
+
+            statusEl.textContent = "Form shell working. Next step is wiring backend save.";
+        });
     });
 </script>
 </body>

@@ -189,6 +189,99 @@
     padding-top: 0.7rem;
 }
 
+.artist-editor-form {
+    margin-top: 1rem;
+    display: grid;
+    gap: 1rem;
+}
+
+.artist-editor-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 1rem;
+}
+
+.artist-editor-field {
+    display: grid;
+    gap: 0.45rem;
+}
+
+.artist-editor-field--full {
+    grid-column: 1 / -1;
+}
+
+.artist-editor-field span {
+    font-size: 0.92rem;
+    color: rgba(255, 255, 255, 0.78);
+}
+
+.artist-editor-field input,
+.artist-editor-field textarea {
+    width: 100%;
+    border-radius: 16px;
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    background: rgba(255, 255, 255, 0.05);
+    color: white;
+    padding: 0.9rem 1rem;
+    font: inherit;
+    resize: vertical;
+}
+
+.artist-editor-field input:focus,
+.artist-editor-field textarea:focus {
+    outline: none;
+    border-color: rgba(255, 90, 200, 0.45);
+    box-shadow: 0 0 0 3px rgba(255, 90, 200, 0.10);
+}
+
+.artist-editor-actions {
+    display: flex;
+    gap: 0.75rem;
+    justify-content: flex-end;
+    flex-wrap: wrap;
+}
+
+.artist-editor-button {
+    border: none;
+    border-radius: 999px;
+    padding: 0.85rem 1.2rem;
+    font: inherit;
+    cursor: pointer;
+    transition: 0.2s ease;
+}
+
+.artist-editor-button--ghost {
+    background: rgba(255, 255, 255, 0.08);
+    color: white;
+    border: 1px solid rgba(255, 255, 255, 0.10);
+}
+
+.artist-editor-button--ghost:hover {
+    background: rgba(255, 255, 255, 0.12);
+}
+
+.artist-editor-button--primary {
+    background: linear-gradient(135deg, #ff4fcf, #6be7ff);
+    color: black;
+    font-weight: 700;
+}
+
+.artist-editor-button--primary:hover {
+    transform: translateY(-1px);
+}
+
+.artist-editor-status {
+    min-height: 1.2rem;
+    color: rgba(255, 255, 255, 0.72);
+    font-size: 0.92rem;
+}
+
+@media (max-width: 760px) {
+    .artist-editor-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
 @media (max-width: 980px) {
     .dashboard-shell {
         grid-template-columns: 1fr;
