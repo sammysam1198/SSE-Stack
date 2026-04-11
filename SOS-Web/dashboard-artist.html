@@ -15,22 +15,64 @@
     <div id="auth-slot"></div>
 </header>
 
-<main class="dashboard-shell">
-    <aside class="dashboard-sidebar">
-        <div class="dashboard-sidebar__brand">SPACED OUT STUDIOS</div>
-        <div class="dashboard-sidebar__role">ARTIST PORTAL</div>
+<main class="artist-dashboard-page">
+    <div class="artist-dashboard-container">
 
-        <nav class="dashboard-nav">
-            <a href="#" class="is-active">Overview</a>
-            <a href="#">Artist Page</a>
-            <a href="#">Releases</a>
-            <a href="#">Collaborations</a>
-            <a href="#">Links & Media</a>
-            <a href="#">Account</a>
-        </nav>
-    </aside>
+        <section class="artist-dashboard-topbar">
+            <div class="artist-dashboard-topbar__left"></div>
 
-    <section class="dashboard-main">
+            <div class="artist-dashboard-topbar__right">
+                <div class="artist-profile-menu" id="artist-profile-menu">
+                    <button
+                            class="artist-profile-menu__trigger"
+                            id="artist-profile-trigger"
+                            type="button"
+                            aria-haspopup="true"
+                            aria-expanded="false"
+                    >
+                        <img
+                                src="/static/logos/4nzek.png"
+                                alt="Profile picture"
+                                class="artist-profile-menu__avatar"
+                                id="artist-profile-avatar"
+                        />
+                    </button>
+
+                    <div class="artist-profile-menu__dropdown" id="artist-profile-dropdown">
+                        <div class="artist-profile-menu__section">
+                            <p class="artist-profile-menu__label">Account</p>
+                            <button type="button" class="artist-profile-menu__item">
+                                Edit Profile Picture
+                            </button>
+                            <button type="button" class="artist-profile-menu__item">
+                                Edit Artist Page
+                            </button>
+                            <button type="button" class="artist-profile-menu__item">
+                                Account Settings
+                            </button>
+                        </div>
+
+                        <div class="artist-profile-menu__section">
+                            <p class="artist-profile-menu__label">Security</p>
+                            <button type="button" class="artist-profile-menu__item">
+                                Change Password
+                            </button>
+                            <button type="button" class="artist-profile-menu__item">
+                                Change Email
+                            </button>
+                            <button type="button" class="artist-profile-menu__item">
+                                Change Username
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <button class="artist-signout-button" id="artist-signout-button" type="button">
+                    Sign Out
+                </button>
+            </div>
+        </section>
+
         <section
                 class="dashboard-hero"
                 id="dashboard-hero"
@@ -40,27 +82,136 @@
             <div class="dashboard-hero__overlay"></div>
 
             <div class="dashboard-hero__content">
-                <p class="dashboard-hero__eyebrow">Artist Dashboard</p>
-                <h1 class="dashboard-hero__title">Forensic</h1>
+                <p class="dashboard-hero__eyebrow">Artist Portal</p>
+                <h1 class="dashboard-hero__title" id="artist-display-name">Forensic</h1>
                 <div class="dashboard-hero__plate"></div>
                 <p class="dashboard-hero__subtext">
-                    Manage your artist page, links, releases, visuals, and platform presence from one place.
+                    Manage your artist page, releases, visuals, and platform presence from one place.
                 </p>
             </div>
         </section>
 
-        <section class="dashboard-grid">
-            <article class="dashboard-card dashboard-card--wide">
+        <section class="artist-quick-actions">
+            <button class="artist-action-button artist-action-button--primary" type="button">
+                Edit Artist Page
+            </button>
+            <button class="artist-action-button" type="button">
+                Upload Release
+            </button>
+            <button class="artist-action-button" type="button">
+                Update Links
+            </button>
+            <button class="artist-action-button" type="button">
+                Manage Images
+            </button>
+        </section>
+
+        <section class="artist-dashboard-grid">
+            <article class="dashboard-card dashboard-card--spotlight">
+                <div class="release-spotlight">
+                    <div class="release-spotlight__art-wrap">
+                        <img
+                                src="/static/logos/4nzek.png"
+                                alt="Release artwork"
+                                class="release-spotlight__art"
+                                id="release-spotlight-art"
+                        />
+                    </div>
+
+                    <div class="release-spotlight__content">
+                        <p class="release-spotlight__eyebrow">Current Release Spotlight</p>
+                        <h2 class="release-spotlight__title">Untitled Release</h2>
+                        <p class="release-spotlight__meta">Releases in 21 days</p>
+                        <p class="release-spotlight__desc">
+                            This section will eventually show the current or latest release, cover art,
+                            timing, and performance stats.
+                        </p>
+
+                        <div class="release-spotlight__stats">
+                            <div class="release-stat">
+                                <span class="release-stat__label">Status</span>
+                                <span class="release-stat__value">Draft</span>
+                            </div>
+                            <div class="release-stat">
+                                <span class="release-stat__label">Streams</span>
+                                <span class="release-stat__value">Coming Later</span>
+                            </div>
+                            <div class="release-stat">
+                                <span class="release-stat__label">Playlists</span>
+                                <span class="release-stat__value">Coming Later</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </article>
+
+            <article class="dashboard-card">
+                <h3>Artist Page Status</h3>
+                <p class="dashboard-card__intro">
+                    Quick progress on the public artist page.
+                </p>
+
+                <div class="page-status-list">
+                    <div class="page-status-row">
+                        <span>Bio</span>
+                        <span>Added</span>
+                    </div>
+                    <div class="page-status-row">
+                        <span>Hero Image</span>
+                        <span>Missing Upload Flow</span>
+                    </div>
+                    <div class="page-status-row">
+                        <span>Portrait Image</span>
+                        <span>Missing Upload Flow</span>
+                    </div>
+                    <div class="page-status-row">
+                        <span>Tags</span>
+                        <span>3 Added</span>
+                    </div>
+                    <div class="page-status-row">
+                        <span>Spotify</span>
+                        <span>Not Linked</span>
+                    </div>
+                    <div class="page-status-row">
+                        <span>YouTube</span>
+                        <span>Not Linked</span>
+                    </div>
+                </div>
+            </article>
+
+            <article class="dashboard-card">
+                <h3>Recent Activity</h3>
+                <p class="dashboard-card__intro">
+                    What needs your attention.
+                </p>
+
+                <div class="activity-list">
+                    <div class="activity-item">
+                        <strong>Artist page editor</strong>
+                        <span>Ready for first save flow</span>
+                    </div>
+                    <div class="activity-item">
+                        <strong>Release uploads</strong>
+                        <span>Not wired yet</span>
+                    </div>
+                    <div class="activity-item">
+                        <strong>Images</strong>
+                        <span>Upload UI needed</span>
+                    </div>
+                </div>
+            </article>
+
+            <article class="dashboard-card dashboard-card--full">
                 <h3>Edit Artist Page</h3>
-                <p>
-                    Update the core content that appears on your public artist page.
+                <p class="dashboard-card__intro">
+                    Update the public information that appears on your artist page.
                 </p>
 
                 <form class="artist-editor-form" id="artist-editor-form">
                     <div class="artist-editor-grid">
                         <label class="artist-editor-field">
                             <span>Artist Name</span>
-                            <input type="text" id="artist-name-input" name="artist_name" placeholder="Forensic" />
+                            <input type="text" id="artist-name-input" name="artist_name" placeholder="4nzek" />
                         </label>
 
                         <label class="artist-editor-field">
@@ -73,15 +224,19 @@
                             <textarea id="artist-bio-input" name="bio" rows="6" placeholder="Write your artist bio here..."></textarea>
                         </label>
 
-                        <label class="artist-editor-field">
-                            <span>Hero Image URL</span>
-                            <input type="text" id="artist-hero-image-input" name="hero_image_url" placeholder="/static/logos/4nzek.png" />
-                        </label>
+                        <div class="artist-editor-field">
+                            <span>Hero Image</span>
+                            <div class="artist-upload-row">
+                                <input type="file" id="artist-hero-image-input" name="hero_image" accept="image/*" />
+                            </div>
+                        </div>
 
-                        <label class="artist-editor-field">
-                            <span>Portrait Image URL</span>
-                            <input type="text" id="artist-portrait-image-input" name="portrait_image_url" placeholder="/static/artists/4nzekFace.png" />
-                        </label>
+                        <div class="artist-editor-field">
+                            <span>Portrait Image</span>
+                            <div class="artist-upload-row">
+                                <input type="file" id="artist-portrait-image-input" name="portrait_image" accept="image/*" />
+                            </div>
+                        </div>
 
                         <label class="artist-editor-field">
                             <span>Tag 1</span>
@@ -116,7 +271,7 @@
 
                     <div class="artist-editor-actions">
                         <button type="button" class="artist-editor-button artist-editor-button--ghost" id="artist-preview-button">
-                            Preview Hero
+                            Preview Changes
                         </button>
                         <button type="submit" class="artist-editor-button artist-editor-button--primary">
                             Save Changes
@@ -126,45 +281,8 @@
                     <div class="artist-editor-status" id="artist-editor-status"></div>
                 </form>
             </article>
-
-            <article class="dashboard-card">
-                <h3>Artist Page Preview</h3>
-                <p>
-                    Later this can show a compact live preview of the public page so the artist sees what their changes look like.
-                </p>
-            </article>
-
-            <article class="dashboard-card">
-                <h3>Links & Embeds</h3>
-                <p>
-                    Spotify embed, YouTube links, socials, and platform links will live here.
-                </p>
-            </article>
-
-            <article class="dashboard-card">
-                <h3>Images</h3>
-                <p>
-                    Upload a portrait, alternate visual, logo, or hero background here later.
-                </p>
-            </article>
-
-            <article class="dashboard-card">
-                <h3>Releases</h3>
-                <p>
-                    Draft releases, submission history, and delivery status will live here.
-                </p>
-            </article>
-
-            <article class="dashboard-card dashboard-card--full">
-                <h3>Recommended Homepage Section</h3>
-                <p>
-                    For the artist homepage/dashboard landing area, the best first view is:
-                    hero at top, then artist page controls, then recent activity, then links/media, then releases.
-                    That gives the artist the most useful stuff first.
-                </p>
-            </article>
         </section>
-    </section>
+    </div>
 </main>
 
 <div class="signin-modal" id="signin-modal" aria-hidden="true">
@@ -203,33 +321,27 @@
         const user = await getCurrentUser();
         if (!requireRole(user, ["artist", "developer"])) return;
 
-        const defaultArtistName = user.artist_name || "Forensic";
-        const defaultEmailName = user.email?.split("@")[0] || "artist";
-
-        setText("artist-display-name", defaultArtistName || defaultEmailName);
-        setHeroImage("/static/logos/4nzek.png");
-
-        const form = document.getElementById("artist-editor-form");
-        const statusEl = document.getElementById("artist-editor-status");
-        const previewButton = document.getElementById("artist-preview-button");
-
+        const signoutButton = document.getElementById("artist-signout-button");
+        const profileTrigger = document.getElementById("artist-profile-trigger");
+        const profileDropdown = document.getElementById("artist-profile-dropdown");
         const artistNameInput = document.getElementById("artist-name-input");
         const taglineInput = document.getElementById("artist-tagline-input");
         const bioInput = document.getElementById("artist-bio-input");
-        const heroImageInput = document.getElementById("artist-hero-image-input");
-        const portraitImageInput = document.getElementById("artist-portrait-image-input");
         const tag1Input = document.getElementById("artist-tag-1-input");
         const tag2Input = document.getElementById("artist-tag-2-input");
         const tag3Input = document.getElementById("artist-tag-3-input");
         const spotifyInput = document.getElementById("artist-spotify-input");
         const youtubeInput = document.getElementById("artist-youtube-input");
         const instagramInput = document.getElementById("artist-instagram-input");
+        const previewButton = document.getElementById("artist-preview-button");
+        const form = document.getElementById("artist-editor-form");
+        const statusEl = document.getElementById("artist-editor-status");
+
+        setText("artist-display-name", user.artist_name || "Forensic");
 
         artistNameInput.value = "Forensic";
         taglineInput.value = "Dark electronic producer and sonic architect";
         bioInput.value = "Forensic creates immersive electronic soundscapes with a sharp visual identity and a moody, cinematic edge.";
-        heroImageInput.value = "/static/logos/4nzek.png";
-        portraitImageInput.value = "/static/artists/4nzekFace.png";
         tag1Input.value = "Electronic";
         tag2Input.value = "Producer";
         tag3Input.value = "Dark Atmosphere";
@@ -237,14 +349,36 @@
         youtubeInput.value = "";
         instagramInput.value = "";
 
+        if (profileTrigger && profileDropdown) {
+            profileTrigger.addEventListener("click", () => {
+                const isOpen = profileDropdown.classList.toggle("is-open");
+                profileTrigger.setAttribute("aria-expanded", String(isOpen));
+            });
+
+            document.addEventListener("click", (event) => {
+                const menu = document.getElementById("artist-profile-menu");
+                if (!menu.contains(event.target)) {
+                    profileDropdown.classList.remove("is-open");
+                    profileTrigger.setAttribute("aria-expanded", "false");
+                }
+            });
+        }
+
+        if (signoutButton) {
+            signoutButton.addEventListener("click", async () => {
+                try {
+                    await signout();
+                } catch (error) {
+                    console.error("Sign out failed:", error);
+                }
+                window.location.href = "/";
+            });
+        }
+
         previewButton.addEventListener("click", () => {
             const liveName = artistNameInput.value.trim() || "Artist";
-            const liveHero = heroImageInput.value.trim();
-
             setText("artist-display-name", liveName, "Artist");
-            setHeroImage(liveHero || null);
-
-            statusEl.textContent = "Hero preview updated.";
+            statusEl.textContent = "Preview updated.";
         });
 
         form.addEventListener("submit", async (event) => {
@@ -254,8 +388,6 @@
                 artist_name: artistNameInput.value.trim(),
                 tagline: taglineInput.value.trim(),
                 bio: bioInput.value.trim(),
-                hero_image_url: heroImageInput.value.trim(),
-                portrait_image_url: portraitImageInput.value.trim(),
                 tags: [
                     tag1Input.value.trim(),
                     tag2Input.value.trim(),
@@ -267,11 +399,8 @@
             };
 
             console.log("Artist profile payload:", payload);
-
             setText("artist-display-name", payload.artist_name || "Artist");
-            setHeroImage(payload.hero_image_url || null);
-
-            statusEl.textContent = "Form shell working. Next step is wiring backend save.";
+            statusEl.textContent = "Form shell working. Next step is wiring backend save and uploads.";
         });
     });
 </script>
