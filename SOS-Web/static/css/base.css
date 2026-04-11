@@ -73,7 +73,7 @@ body::before {
     pointer-events: none;
     background:
             linear-gradient(rgba(3, 4, 6, 0.36), rgba(3, 4, 6, 0.76)),
-            url("../logos/sse.png") center 34% / 520px auto no-repeat;
+            url("/static/logos/sse.png") center 34% / 520px auto no-repeat;
     opacity: 0.13;
     filter: saturate(1.2);
 }
@@ -282,7 +282,7 @@ img {
     body::before {
         background:
                 linear-gradient(rgba(3, 4, 6, 0.44), rgba(3, 4, 6, 0.78)),
-                url("../logos/sse.png") center 28% / 320px auto no-repeat;
+                url("/static/logos/sse.png") center 28% / 320px auto no-repeat;
         opacity: 0.12;
     }
 }

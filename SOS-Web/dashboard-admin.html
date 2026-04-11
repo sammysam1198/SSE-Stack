@@ -7,15 +7,75 @@
     <link rel="stylesheet" href="/static/css/base.css" />
     <link rel="stylesheet" href="/static/css/header.css" />
     <link rel="stylesheet" href="/static/css/auth.css" />
+    <link rel="stylesheet" href="/static/css/dashboard.css" />
 </head>
 <body>
 <header>
     <div id="auth-slot"></div>
 </header>
 
-<main style="padding: 2rem; color: white;">
-    <h1>Admin Dashboard</h1>
-    <p>This is the first shell. Next we wire real modules into it.</p>
+<main class="dashboard-shell">
+    <aside class="dashboard-sidebar">
+        <div class="dashboard-sidebar__brand">SPACED OUT STUDIOS</div>
+        <div class="dashboard-sidebar__role">ADMIN PORTAL</div>
+
+        <nav class="dashboard-nav">
+            <a href="#" class="is-active">Applications</a>
+            <a href="#">Artists</a>
+            <a href="#">Releases</a>
+            <a href="#">Requests</a>
+            <a href="#">News</a>
+            <a href="#">Security</a>
+        </nav>
+    </aside>
+
+    <section class="dashboard-main">
+        <section class="dashboard-hero" id="dashboard-hero">
+            <div class="dashboard-hero__bg"></div>
+            <div class="dashboard-hero__overlay"></div>
+
+            <div class="dashboard-hero__content">
+                <p class="dashboard-hero__eyebrow">Admin Dashboard</p>
+                <h1 class="dashboard-hero__title">Label Operations</h1>
+                <div class="dashboard-hero__plate"></div>
+                <p class="dashboard-hero__subtext">
+                    Review artist applications, manage releases, handle requests, and oversee platform activity.
+                </p>
+            </div>
+        </section>
+
+        <section class="dashboard-grid">
+            <article class="dashboard-card">
+                <h3>Applications</h3>
+                <p>Pending artist applications and approval actions will live here.</p>
+            </article>
+
+            <article class="dashboard-card">
+                <h3>Artists</h3>
+                <p>Artist accounts, profile access, and lock/unlock actions will live here.</p>
+            </article>
+
+            <article class="dashboard-card">
+                <h3>Releases</h3>
+                <p>Submission review, approvals, rejections, and change requests will live here.</p>
+            </article>
+
+            <article class="dashboard-card dashboard-card--wide">
+                <h3>Requests</h3>
+                <p>Contact requests, merch requests, and collaboration requests will be managed here.</p>
+            </article>
+
+            <article class="dashboard-card">
+                <h3>News</h3>
+                <p>News posts and editorial platform updates will live here.</p>
+            </article>
+
+            <article class="dashboard-card dashboard-card--full">
+                <h3>Security</h3>
+                <p>Audit visibility, account events, and platform security actions will live here.</p>
+            </article>
+        </section>
+    </section>
 </main>
 
 <div class="signin-modal" id="signin-modal" aria-hidden="true">
@@ -47,5 +107,14 @@
 <script src="/static/js/api.js"></script>
 <script src="/static/js/auth.js"></script>
 <script src="/static/js/header_auth.js"></script>
+<script src="/static/js/dashboard.js"></script>
+
+<script>
+    document.addEventListener("DOMContentLoaded", async () => {
+        const user = await getCurrentUser();
+        if (!requireRole(user, ["admin", "developer"])) return;
+        setHeroImage(null);
+    });
+</script>
 </body>
 </html>

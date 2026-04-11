@@ -7,15 +7,95 @@
     <link rel="stylesheet" href="/static/css/base.css" />
     <link rel="stylesheet" href="/static/css/header.css" />
     <link rel="stylesheet" href="/static/css/auth.css" />
+    <link rel="stylesheet" href="/static/css/dashboard.css" />
 </head>
 <body>
 <header>
     <div id="auth-slot"></div>
 </header>
 
-<main style="padding: 2rem; color: white;">
-    <h1>Artist Dashboard</h1>
-    <p>This is the first shell. Next we wire real modules into it.</p>
+<main class="dashboard-shell">
+    <aside class="dashboard-sidebar">
+        <div class="dashboard-sidebar__brand">SPACED OUT STUDIOS</div>
+        <div class="dashboard-sidebar__role">ARTIST PORTAL</div>
+
+        <nav class="dashboard-nav">
+            <a href="#" class="is-active">Overview</a>
+            <a href="#">Releases</a>
+            <a href="#">Collaborations</a>
+            <a href="#">Contact</a>
+            <a href="#">Merch Requests</a>
+            <a href="#">Account</a>
+        </nav>
+    </aside>
+
+    <section class="dashboard-main">
+        <section class="dashboard-hero" id="dashboard-hero">
+            <div class="dashboard-hero__bg"></div>
+            <div class="dashboard-hero__overlay"></div>
+
+            <div class="dashboard-hero__content">
+                <p class="dashboard-hero__eyebrow">Artist Dashboard</p>
+                <h1 class="dashboard-hero__title" id="artist-display-name">Artist Name</h1>
+                <div class="dashboard-hero__plate"></div>
+                <p class="dashboard-hero__subtext" id="artist-subtext">
+                    Welcome back. Manage releases, collaborations, requests, and your account from one place.
+                </p>
+            </div>
+        </section>
+
+        <section class="dashboard-grid">
+            <article class="dashboard-card dashboard-card--wide">
+                <h3>Overview</h3>
+                <p>
+                    This is your home base. Later this will show active releases, pending actions,
+                    and recent label updates.
+                </p>
+
+                <div class="dashboard-meta">
+                    <div class="dashboard-meta__row">
+                        <span>Email</span>
+                        <span id="artist-email">loading...</span>
+                    </div>
+                    <div class="dashboard-meta__row">
+                        <span>Role</span>
+                        <span id="artist-role">loading...</span>
+                    </div>
+                    <div class="dashboard-meta__row">
+                        <span>User ID</span>
+                        <span id="artist-user-id">loading...</span>
+                    </div>
+                </div>
+            </article>
+
+            <article class="dashboard-card">
+                <h3>Releases</h3>
+                <p>Drafts, submitted releases, statuses, and next delivery steps will live here.</p>
+            </article>
+
+            <article class="dashboard-card">
+                <h3>Collaborations</h3>
+                <p>Collab requests, partner visibility, and shared opportunities will live here.</p>
+            </article>
+
+            <article class="dashboard-card">
+                <h3>Contact</h3>
+                <p>Structured messages to the label team will live here.</p>
+            </article>
+
+            <article class="dashboard-card">
+                <h3>Merch Requests</h3>
+                <p>Branding, merch, promo materials, and support requests will live here.</p>
+            </article>
+
+            <article class="dashboard-card dashboard-card--full">
+                <h3>Account</h3>
+                <p>
+                    Password changes, email changes, and account preferences will live here once the full account module is wired.
+                </p>
+            </article>
+        </section>
+    </section>
 </main>
 
 <div class="signin-modal" id="signin-modal" aria-hidden="true">
@@ -47,5 +127,26 @@
 <script src="/static/js/api.js"></script>
 <script src="/static/js/auth.js"></script>
 <script src="/static/js/header_auth.js"></script>
+<script src="/static/js/dashboard.js"></script>
+
+<script>
+    document.addEventListener("DOMContentLoaded", async () => {
+        const user = await getCurrentUser();
+
+        if (!requireRole(user, ["artist", "developer"])) return;
+
+        setText("artist-display-name", user.artist_name || user.email?.split("@")[0] || "Artist");
+        setText("artist-email", user.email || "N/A");
+        setText("artist-role", user.role || "N/A");
+        setText("artist-user-id", user.id ?? "N/A");
+
+        setHeroImage(user.hero_image_url || null);
+
+        // Future version:
+        // const profile = await apiFetch("/api/artists/me");
+        // setText("artist-display-name", profile.artist_name || "Artist");
+        // setHeroImage(profile.hero_image_url || null);
+    });
+</script>
 </body>
 </html>

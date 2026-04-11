@@ -7,15 +7,69 @@
     <link rel="stylesheet" href="/static/css/base.css" />
     <link rel="stylesheet" href="/static/css/header.css" />
     <link rel="stylesheet" href="/static/css/auth.css" />
+    <link rel="stylesheet" href="/static/css/dashboard.css" />
 </head>
 <body>
 <header>
     <div id="auth-slot"></div>
 </header>
 
-<main style="padding: 2rem; color: white;">
-    <h1>Developer Dashboard</h1>
-    <p>This is the first shell. Next we wire real modules into it.</p>
+<main class="dashboard-shell">
+    <aside class="dashboard-sidebar">
+        <div class="dashboard-sidebar__brand">SPACED OUT STUDIOS</div>
+        <div class="dashboard-sidebar__role">DEVELOPER PORTAL</div>
+
+        <nav class="dashboard-nav">
+            <a href="#" class="is-active">System Overview</a>
+            <a href="#">Users</a>
+            <a href="#">Logs</a>
+            <a href="#">Mail Events</a>
+            <a href="#">Debug Tools</a>
+        </nav>
+    </aside>
+
+    <section class="dashboard-main">
+        <section class="dashboard-hero" id="dashboard-hero">
+            <div class="dashboard-hero__bg"></div>
+            <div class="dashboard-hero__overlay"></div>
+
+            <div class="dashboard-hero__content">
+                <p class="dashboard-hero__eyebrow">Developer Dashboard</p>
+                <h1 class="dashboard-hero__title">System Control</h1>
+                <div class="dashboard-hero__plate"></div>
+                <p class="dashboard-hero__subtext">
+                    View system state, auth events, request flow, and future internal diagnostics.
+                </p>
+            </div>
+        </section>
+
+        <section class="dashboard-grid">
+            <article class="dashboard-card">
+                <h3>System Overview</h3>
+                <p>High-level health, status, and operational metrics will live here.</p>
+            </article>
+
+            <article class="dashboard-card">
+                <h3>Users</h3>
+                <p>User records, role visibility, and future impersonation-safe tooling will live here.</p>
+            </article>
+
+            <article class="dashboard-card">
+                <h3>Logs</h3>
+                <p>Audit logs, auth events, and security activity will live here.</p>
+            </article>
+
+            <article class="dashboard-card dashboard-card--wide">
+                <h3>Mail Events</h3>
+                <p>Password resets, email changes, and outbound mail event visibility will live here.</p>
+            </article>
+
+            <article class="dashboard-card dashboard-card--full">
+                <h3>Debug Tools</h3>
+                <p>Developer-only diagnostic actions and internal utilities will live here.</p>
+            </article>
+        </section>
+    </section>
 </main>
 
 <div class="signin-modal" id="signin-modal" aria-hidden="true">
@@ -47,5 +101,14 @@
 <script src="/static/js/api.js"></script>
 <script src="/static/js/auth.js"></script>
 <script src="/static/js/header_auth.js"></script>
+<script src="/static/js/dashboard.js"></script>
+
+<script>
+    document.addEventListener("DOMContentLoaded", async () => {
+        const user = await getCurrentUser();
+        if (!requireRole(user, ["developer"])) return;
+        setHeroImage(null);
+    });
+</script>
 </body>
 </html>
