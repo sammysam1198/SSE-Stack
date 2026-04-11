@@ -4,6 +4,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Artist Dashboard | Spaced Out Studios</title>
+
     <link rel="stylesheet" href="/static/css/base.css" />
     <link rel="stylesheet" href="/static/css/header.css" />
     <link rel="stylesheet" href="/static/css/auth.css" />
@@ -21,77 +22,94 @@
 
         <nav class="dashboard-nav">
             <a href="#" class="is-active">Overview</a>
+            <a href="#">Artist Page</a>
             <a href="#">Releases</a>
             <a href="#">Collaborations</a>
-            <a href="#">Contact</a>
-            <a href="#">Merch Requests</a>
+            <a href="#">Links & Media</a>
             <a href="#">Account</a>
         </nav>
     </aside>
 
     <section class="dashboard-main">
-        <section class="dashboard-hero" id="dashboard-hero">
+        <section
+                class="dashboard-hero"
+                id="dashboard-hero"
+                style="--hero-image: url('/static/logos/4nzek.png');"
+        >
             <div class="dashboard-hero__bg"></div>
             <div class="dashboard-hero__overlay"></div>
 
             <div class="dashboard-hero__content">
                 <p class="dashboard-hero__eyebrow">Artist Dashboard</p>
-                <h1 class="dashboard-hero__title" id="artist-display-name">Artist Name</h1>
+                <h1 class="dashboard-hero__title">Forensic</h1>
                 <div class="dashboard-hero__plate"></div>
-                <p class="dashboard-hero__subtext" id="artist-subtext">
-                    Welcome back. Manage releases, collaborations, requests, and your account from one place.
+                <p class="dashboard-hero__subtext">
+                    Manage your artist page, links, releases, visuals, and platform presence from one place.
                 </p>
             </div>
         </section>
 
         <section class="dashboard-grid">
             <article class="dashboard-card dashboard-card--wide">
-                <h3>Overview</h3>
+                <h3>Artist Page Controls</h3>
                 <p>
-                    This is your home base. Later this will show active releases, pending actions,
-                    and recent label updates.
+                    This is where the artist will eventually be able to update the public artist page.
                 </p>
 
                 <div class="dashboard-meta">
                     <div class="dashboard-meta__row">
-                        <span>Email</span>
-                        <span id="artist-email">loading...</span>
+                        <span>Bio</span>
+                        <span>Editable later</span>
                     </div>
                     <div class="dashboard-meta__row">
-                        <span>Role</span>
-                        <span id="artist-role">loading...</span>
+                        <span>Hero Image</span>
+                        <span>Upload later</span>
                     </div>
                     <div class="dashboard-meta__row">
-                        <span>User ID</span>
-                        <span id="artist-user-id">loading...</span>
+                        <span>Tags / Pills</span>
+                        <span>Editable later</span>
+                    </div>
+                    <div class="dashboard-meta__row">
+                        <span>Spotify / YouTube</span>
+                        <span>Editable later</span>
                     </div>
                 </div>
             </article>
 
             <article class="dashboard-card">
+                <h3>Artist Page Preview</h3>
+                <p>
+                    Later this can show a compact live preview of the public page so the artist sees what their changes look like.
+                </p>
+            </article>
+
+            <article class="dashboard-card">
+                <h3>Links & Embeds</h3>
+                <p>
+                    Spotify embed, YouTube links, socials, and platform links will live here.
+                </p>
+            </article>
+
+            <article class="dashboard-card">
+                <h3>Images</h3>
+                <p>
+                    Upload a portrait, alternate visual, logo, or hero background here later.
+                </p>
+            </article>
+
+            <article class="dashboard-card">
                 <h3>Releases</h3>
-                <p>Drafts, submitted releases, statuses, and next delivery steps will live here.</p>
-            </article>
-
-            <article class="dashboard-card">
-                <h3>Collaborations</h3>
-                <p>Collab requests, partner visibility, and shared opportunities will live here.</p>
-            </article>
-
-            <article class="dashboard-card">
-                <h3>Contact</h3>
-                <p>Structured messages to the label team will live here.</p>
-            </article>
-
-            <article class="dashboard-card">
-                <h3>Merch Requests</h3>
-                <p>Branding, merch, promo materials, and support requests will live here.</p>
+                <p>
+                    Draft releases, submission history, and delivery status will live here.
+                </p>
             </article>
 
             <article class="dashboard-card dashboard-card--full">
-                <h3>Account</h3>
+                <h3>Recommended Homepage Section</h3>
                 <p>
-                    Password changes, email changes, and account preferences will live here once the full account module is wired.
+                    For the artist homepage/dashboard landing area, the best first view is:
+                    hero at top, then artist page controls, then recent activity, then links/media, then releases.
+                    That gives the artist the most useful stuff first.
                 </p>
             </article>
         </section>
@@ -132,20 +150,7 @@
 <script>
     document.addEventListener("DOMContentLoaded", async () => {
         const user = await getCurrentUser();
-
         if (!requireRole(user, ["artist", "developer"])) return;
-
-        setText("artist-display-name", user.artist_name || user.email?.split("@")[0] || "Artist");
-        setText("artist-email", user.email || "N/A");
-        setText("artist-role", user.role || "N/A");
-        setText("artist-user-id", user.id ?? "N/A");
-
-        setHeroImage(user.hero_image_url || null);
-
-        // Future version:
-        // const profile = await apiFetch("/api/artists/me");
-        // setText("artist-display-name", profile.artist_name || "Artist");
-        // setHeroImage(profile.hero_image_url || null);
     });
 </script>
 </body>
