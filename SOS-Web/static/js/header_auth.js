@@ -1,4 +1,4 @@
-document.addEventListener("DOMContentLoaded", async () => {
+window.addEventListener("load", async () => {
     const authSlot = document.getElementById("auth-slot");
     const signinModal = document.getElementById("signin-modal");
     const signinForm = document.getElementById("signin-form");
