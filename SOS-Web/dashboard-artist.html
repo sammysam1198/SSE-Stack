@@ -396,13 +396,15 @@
                 artist_name: artistNameInput.value.trim(),
                 tagline: taglineInput.value.trim(),
                 bio: bioInput.value.trim(),
-                tag_1: tag1Input.value.trim(),
-                tag_2: tag2Input.value.trim(),
-                tag_3: tag3Input.value.trim(),
+                primary_genre: tag1Input.value.trim(),
+                primary_instrument: tag2Input.value.trim(),
+                primary_vibe: tag3Input.value.trim(),
+                publisher: publisherInput.value.trim(),
+                location: locationInput.value.trim(),
                 spotify_url: spotifyInput.value.trim(),
                 youtube_url: youtubeInput.value.trim(),
-                instagram_url: instagramInput.value.trim()
-            };
+                soundcloud_url: soundcloudInput.value.trim()
+};
 
             try {
                 const savedProfile = await saveMyArtistProfile(payload);

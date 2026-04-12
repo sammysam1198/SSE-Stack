@@ -65,15 +65,13 @@ function populateArtistDashboard(profile) {
     const youtubeInput = document.getElementById("artist-youtube-input");
     const instagramInput = document.getElementById("artist-instagram-input");
 
-    if (artistNameInput) artistNameInput.value = profile.artist_name || "";
     if (taglineInput) taglineInput.value = profile.tagline || "";
-    if (bioInput) bioInput.value = profile.bio || "";
-    if (tag1Input) tag1Input.value = profile.tag_1 || "";
-    if (tag2Input) tag2Input.value = profile.tag_2 || "";
-    if (tag3Input) tag3Input.value = profile.tag_3 || "";
-    if (spotifyInput) spotifyInput.value = profile.spotify_url || "";
-    if (youtubeInput) youtubeInput.value = profile.youtube_url || "";
-    if (instagramInput) instagramInput.value = profile.instagram_url || "";
+    if (tag1Input) tag1Input.value = profile.primary_genre || "";
+    if (tag2Input) tag2Input.value = profile.primary_instrument || "";
+    if (tag3Input) tag3Input.value = profile.primary_vibe || "";
+    if (publisherInput) publisherInput.value = profile.publisher || "";
+    if (locationInput) locationInput.value = profile.location || "";
+    if (soundcloudInput) soundcloudInput.value = profile.soundcloud_url || "";
 
     updateArtistPageStatus(profile);
 }
