@@ -2,23 +2,26 @@ window.addEventListener("load", async () => {
     const authSlot = document.getElementById("auth-slot");
     const signinModal = document.getElementById("signin-modal");
     const signinForm = document.getElementById("signin-form");
-    const signinOpenButtons = document.querySelectorAll("[data-open-signin]");
-    const signinCloseButtons = document.querySelectorAll("[data-close-signin]");
     const signinError = document.getElementById("signin-error");
+    const passwordInput = document.getElementById("signin-password");
+    const passwordToggle = document.getElementById("signin-password-toggle");
+    const passwordToggleIcon = document.getElementById("signin-password-toggle-icon");
+
 
     let currentUser = await getCurrentUser();
     renderAuthUI();
 
-    signinOpenButtons.forEach((button) => {
-        button.addEventListener("click", () => {
+    document.addEventListener("click", (event) => {
+        const openBtn = event.target.closest("[data-open-signin]");
+        if (openBtn) {
             openSigninModal();
-        });
-    });
+            return;
+        }
 
-    signinCloseButtons.forEach((button) => {
-        button.addEventListener("click", () => {
+        const closeBtn = event.target.closest("[data-close-signin]");
+        if (closeBtn) {
             closeSigninModal();
-        });
+        }
     });
 
     if (signinModal) {
@@ -96,13 +99,32 @@ window.addEventListener("load", async () => {
         }
     }
 
+
+    if (passwordInput && passwordToggle && passwordToggleIcon) {
+        passwordToggle.addEventListener("click", () => {
+            const isHidden = passwordInput.type === "password";
+
+            passwordInput.type = isHidden ? "text" : "password";
+            passwordToggleIcon.src = isHidden
+                ? "/static/assets/show_password.png"
+                : "/static/assets/hide_password.png";
+
+            passwordToggle.setAttribute(
+                "aria-label",
+                isHidden ? "Hide password" : "Show password"
+            );
+        });
+    }
+
     function openSigninModal() {
-        if (!signinModal) return;
-        signinModal.classList.add("is-open");
+        const modal = document.getElementById("signin-modal");
+        if (!modal) return;
+        modal.classList.add("is-open");
     }
 
     function closeSigninModal() {
-        if (!signinModal) return;
-        signinModal.classList.remove("is-open");
+        const modal = document.getElementById("signin-modal");
+        if (!modal) return;
+        modal.classList.remove("is-open");
     }
 });

@@ -11,7 +11,12 @@
 
             <label>
                 Password
-                <input type="password" name="password" required />
+                <div class="password-field-wrap">
+                    <input type="password" name="password" id="signin-password" required />
+                    <button type="button" class="password-toggle" id="signin-password-toggle" aria-label="Show password">
+                        <img src="/static/assets/hide_password.png" alt="" id="signin-password-toggle-icon" />
+                    </button>
+                </div>
             </label>
 
             <div class="signin-error" id="signin-error"></div>

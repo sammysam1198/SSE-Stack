@@ -126,3 +126,38 @@
     color: #ff8fae;
     font-size: 0.92rem;
 }
+
+.password-field-wrap {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.password-field-wrap input {
+    width: 100%;
+    padding-right: 3rem;
+}
+
+.password-toggle {
+    position: absolute;
+    right: 0.75rem;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background: transparent;
+    border: none;
+    padding: 0;
+    cursor: pointer;
+}
+
+.password-toggle img {
+    width: 20px;
+    height: 20px;
+    display: block;
+    opacity: 0.85;
+    transition: opacity 0.2s ease;
+}
+
+.password-toggle:hover img {
+    opacity: 1;
+}
