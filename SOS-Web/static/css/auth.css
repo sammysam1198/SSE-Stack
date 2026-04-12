@@ -5,7 +5,8 @@
     background: rgba(255, 255, 255, 0.08);
     color: white;
     border-radius: 999px;
-    padding: 0.7rem 1.15rem;
+    padding: 0.65rem 1rem;
+    white-space: nowrap;
     text-decoration: none;
     font: inherit;
     cursor: pointer;
