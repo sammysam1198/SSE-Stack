@@ -1,6 +1,5 @@
 from config.db import (
     execute_returning_one,
-    execute_write,
     fetch_all,
     fetch_one,
 )
@@ -12,32 +11,23 @@ def list_active_artists():
             id,
             user_id,
             artist_name,
-            legal_name,
+            tagline,
             bio,
-            primary_genre,
-            primary_instrument,
-            vibe_tag,
-            location,
-            profile_image_url,
+            hero_image_url,
+            portrait_image_url,
+            tag_1,
+            tag_2,
+            tag_3,
             spotify_url,
             youtube_url,
-            soundcloud_url,
-            toolost_artist_id,
+            instagram_url,
+            slug,
             is_roster_active,
             created_at,
             updated_at
         FROM artist_profiles
         WHERE is_roster_active = TRUE
         ORDER BY artist_name ASC
-    """
-    return fetch_all(query)
-
-
-def list_all_artists():
-    query = """
-        SELECT *
-        FROM artist_profiles
-        ORDER BY created_at DESC
     """
     return fetch_all(query)
 
@@ -60,105 +50,104 @@ def get_artist_by_user_id(user_id: int):
     return fetch_one(query, (user_id,))
 
 
-def get_artist_by_name(artist_name: str):
+def get_artist_by_slug(slug: str):
     query = """
         SELECT *
         FROM artist_profiles
-        WHERE LOWER(artist_name) = LOWER(%s)
+        WHERE slug = %s
     """
-    return fetch_one(query, (artist_name,))
+    return fetch_one(query, (slug,))
 
 
-def create_artist_profile(
-    artist_name: str,
-    user_id: int | None = None,
-    legal_name: str | None = None,
-    bio: str | None = None,
-    primary_genre: str | None = None,
-    primary_instrument: str | None = None,
-    vibe_tag: str | None = None,
-    location: str | None = None,
-    profile_image_url: str | None = None,
-    spotify_url: str | None = None,
-    youtube_url: str | None = None,
-    soundcloud_url: str | None = None,
-):
+def create_artist_profile_for_user(user_id: int, artist_name: str | None = None):
     query = """
         INSERT INTO artist_profiles (
             user_id,
             artist_name,
-            legal_name,
+            tagline,
             bio,
-            primary_genre,
-            primary_instrument,
-            vibe_tag,
-            location,
-            profile_image_url,
+            hero_image_url,
+            portrait_image_url,
+            tag_1,
+            tag_2,
+            tag_3,
             spotify_url,
             youtube_url,
-            soundcloud_url
+            instagram_url,
+            is_roster_active
         )
-        VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+        VALUES (
+            %s,
+            %s,
+            '',
+            '',
+            '',
+            '',
+            '',
+            '',
+            '',
+            '',
+            '',
+            '',
+            TRUE
+        )
         RETURNING *
     """
     return execute_returning_one(
         query,
         (
             user_id,
-            artist_name,
-            legal_name,
-            bio,
-            primary_genre,
-            primary_instrument,
-            vibe_tag,
-            location,
-            profile_image_url,
-            spotify_url,
-            youtube_url,
-            soundcloud_url,
+            artist_name or "Untitled Artist",
         ),
     )
 
 
-def update_artist_profile(
-    artist_id: int,
-    bio: str | None = None,
-    primary_genre: str | None = None,
-    primary_instrument: str | None = None,
-    vibe_tag: str | None = None,
-    location: str | None = None,
-    profile_image_url: str | None = None,
-    spotify_url: str | None = None,
-    youtube_url: str | None = None,
-    soundcloud_url: str | None = None,
+def update_artist_profile_by_user_id(
+    user_id: int,
+    artist_name: str,
+    tagline: str,
+    bio: str,
+    hero_image_url: str,
+    portrait_image_url: str,
+    tag_1: str,
+    tag_2: str,
+    tag_3: str,
+    spotify_url: str,
+    youtube_url: str,
+    instagram_url: str,
 ):
     query = """
         UPDATE artist_profiles
         SET
+            artist_name = %s,
+            tagline = %s,
             bio = %s,
-            primary_genre = %s,
-            primary_instrument = %s,
-            vibe_tag = %s,
-            location = %s,
-            profile_image_url = %s,
+            hero_image_url = %s,
+            portrait_image_url = %s,
+            tag_1 = %s,
+            tag_2 = %s,
+            tag_3 = %s,
             spotify_url = %s,
             youtube_url = %s,
-            soundcloud_url = %s,
+            instagram_url = %s,
             updated_at = NOW()
-        WHERE id = %s
+        WHERE user_id = %s
+        RETURNING *
     """
-    execute_write(
+    return execute_returning_one(
         query,
         (
+            artist_name,
+            tagline,
             bio,
-            primary_genre,
-            primary_instrument,
-            vibe_tag,
-            location,
-            profile_image_url,
+            hero_image_url,
+            portrait_image_url,
+            tag_1,
+            tag_2,
+            tag_3,
             spotify_url,
             youtube_url,
-            soundcloud_url,
-            artist_id,
+            instagram_url,
+            user_id,
         ),
     )

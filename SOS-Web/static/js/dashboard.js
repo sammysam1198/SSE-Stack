@@ -32,3 +32,69 @@ function setHeroImage(imageUrl) {
         );
     }
 }
+
+async function getMyArtistProfile() {
+    const data = await apiFetch("/api/artists/me");
+    return data.artist_profile;
+}
+
+async function saveMyArtistProfile(payload) {
+    const data = await apiFetch("/api/artists/me", {
+        method: "PATCH",
+        body: payload
+    });
+    return data.artist_profile;
+}
+
+function populateArtistDashboard(profile) {
+    setText("artist-display-name", profile.artist_name || "Artist", "Artist");
+    setHeroImage(profile.hero_image_url || "");
+
+    const avatar = document.getElementById("artist-profile-avatar");
+    if (avatar && profile.portrait_image_url) {
+        avatar.src = profile.portrait_image_url;
+    }
+
+    const artistNameInput = document.getElementById("artist-name-input");
+    const taglineInput = document.getElementById("artist-tagline-input");
+    const bioInput = document.getElementById("artist-bio-input");
+    const tag1Input = document.getElementById("artist-tag-1-input");
+    const tag2Input = document.getElementById("artist-tag-2-input");
+    const tag3Input = document.getElementById("artist-tag-3-input");
+    const spotifyInput = document.getElementById("artist-spotify-input");
+    const youtubeInput = document.getElementById("artist-youtube-input");
+    const instagramInput = document.getElementById("artist-instagram-input");
+
+    if (artistNameInput) artistNameInput.value = profile.artist_name || "";
+    if (taglineInput) taglineInput.value = profile.tagline || "";
+    if (bioInput) bioInput.value = profile.bio || "";
+    if (tag1Input) tag1Input.value = profile.tag_1 || "";
+    if (tag2Input) tag2Input.value = profile.tag_2 || "";
+    if (tag3Input) tag3Input.value = profile.tag_3 || "";
+    if (spotifyInput) spotifyInput.value = profile.spotify_url || "";
+    if (youtubeInput) youtubeInput.value = profile.youtube_url || "";
+    if (instagramInput) instagramInput.value = profile.instagram_url || "";
+
+    updateArtistPageStatus(profile);
+}
+
+function updateArtistPageStatus(profile) {
+    const rows = document.querySelectorAll(".page-status-row");
+    if (!rows.length) return;
+
+    const values = [
+        profile.bio ? "Added" : "Missing",
+        profile.hero_image_url ? "Added" : "Missing",
+        profile.portrait_image_url ? "Added" : "Missing",
+        [profile.tag_1, profile.tag_2, profile.tag_3].filter(Boolean).length + " Added",
+        profile.spotify_url ? "Linked" : "Not Linked",
+        profile.youtube_url ? "Linked" : "Not Linked",
+    ];
+
+    rows.forEach((row, index) => {
+        const spans = row.querySelectorAll("span");
+        if (spans.length >= 2 && values[index] !== undefined) {
+            spans[1].textContent = values[index];
+        }
+    });
+}

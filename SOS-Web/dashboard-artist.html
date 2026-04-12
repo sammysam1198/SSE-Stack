@@ -337,17 +337,13 @@
         const form = document.getElementById("artist-editor-form");
         const statusEl = document.getElementById("artist-editor-status");
 
-        setText("artist-display-name", user.artist_name || "Forensic");
-
-        artistNameInput.value = "Forensic";
-        taglineInput.value = "Dark electronic producer and sonic architect";
-        bioInput.value = "Forensic creates immersive electronic soundscapes with a sharp visual identity and a moody, cinematic edge.";
-        tag1Input.value = "Electronic";
-        tag2Input.value = "Producer";
-        tag3Input.value = "Dark Atmosphere";
-        spotifyInput.value = "";
-        youtubeInput.value = "";
-        instagramInput.value = "";
+        try {
+            const profile = await getMyArtistProfile();
+            populateArtistDashboard(profile);
+        } catch (error) {
+            console.error("Failed to load artist profile:", error);
+            statusEl.textContent = "Could not load artist profile.";
+        }
 
         if (profileTrigger && profileDropdown) {
             profileTrigger.addEventListener("click", () => {
@@ -357,7 +353,7 @@
 
             document.addEventListener("click", (event) => {
                 const menu = document.getElementById("artist-profile-menu");
-                if (!menu.contains(event.target)) {
+                if (menu && !menu.contains(event.target)) {
                     profileDropdown.classList.remove("is-open");
                     profileTrigger.setAttribute("aria-expanded", "false");
                 }
@@ -384,23 +380,28 @@
         form.addEventListener("submit", async (event) => {
             event.preventDefault();
 
+            statusEl.textContent = "Saving...";
+
             const payload = {
                 artist_name: artistNameInput.value.trim(),
                 tagline: taglineInput.value.trim(),
                 bio: bioInput.value.trim(),
-                tags: [
-                    tag1Input.value.trim(),
-                    tag2Input.value.trim(),
-                    tag3Input.value.trim()
-                ].filter(Boolean),
+                tag_1: tag1Input.value.trim(),
+                tag_2: tag2Input.value.trim(),
+                tag_3: tag3Input.value.trim(),
                 spotify_url: spotifyInput.value.trim(),
                 youtube_url: youtubeInput.value.trim(),
                 instagram_url: instagramInput.value.trim()
             };
 
-            console.log("Artist profile payload:", payload);
-            setText("artist-display-name", payload.artist_name || "Artist");
-            statusEl.textContent = "Form shell working. Next step is wiring backend save and uploads.";
+            try {
+                const savedProfile = await saveMyArtistProfile(payload);
+                populateArtistDashboard(savedProfile);
+                statusEl.textContent = "Changes saved.";
+            } catch (error) {
+                console.error("Failed to save artist profile:", error);
+                statusEl.textContent = error.message || "Save failed.";
+            }
         });
     });
 </script>
