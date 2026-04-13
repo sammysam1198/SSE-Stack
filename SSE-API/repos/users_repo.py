@@ -57,6 +57,8 @@ def create_user(
     role: str,
     username: str | None = None,
     email_verified: bool = False,
+    artist_name: str | None = None,
+    artist_page: str | None = None,
 ):
     query = """
         INSERT INTO users (
@@ -64,9 +66,11 @@ def create_user(
             username,
             password_hash,
             role,
-            email_verified
+            email_verified,
+            artist_name,
+            artist_page
         )
-        VALUES (%s, %s, %s, %s, %s)
+        VALUES (%s, %s, %s, %s, %s, %s, %s)
         RETURNING
             id,
             email,
@@ -75,12 +79,22 @@ def create_user(
             is_active,
             is_locked,
             email_verified,
+            artist_name,
+            artist_page,
             created_at,
             updated_at
     """
     return execute_returning_one(
         query,
-        (email, username, password_hash, role, email_verified),
+        (
+            email,
+            username,
+            password_hash,
+            role,
+            email_verified,
+            artist_name,
+            artist_page,
+        ),
     )
 
 
@@ -196,3 +210,13 @@ def update_user_password_hash(user_id: int, password_hash: str):
         WHERE id = %s
         """
     execute_write(query, (password_hash, user_id))
+
+def mark_email_verified(user_id: int):
+        query = """
+            UPDATE users
+            SET email_verified = TRUE,
+                updated_at = NOW()
+            WHERE id = %s
+            RETURNING id, email, email_verified, updated_at
+        """
+        return execute_returning_one(query, (user_id,))

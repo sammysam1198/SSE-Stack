@@ -245,3 +245,39 @@ def reset_password():
     invalidate_user_tokens(token_record["user_id"], "password_reset")
 
     return jsonify({"message": "Password has been reset successfully."}), 200
+
+
+@auth_bp.post("/setup-account")
+def setup_account():
+    data = request.get_json(silent=True) or {}
+
+    raw_token = (data.get("token") or "").strip()
+    new_password = data.get("new_password") or ""
+
+    if not raw_token or not new_password:
+        return jsonify({"error": "Token and new password are required."}), 400
+
+    if len(new_password) < 8:
+        return jsonify({"error": "Password must be at least 8 characters."}), 400
+
+    if not re.search(r"[A-Z]", new_password):
+        return jsonify({"error": "Password must include at least one uppercase letter."}), 400
+
+    if not re.search(r"\d", new_password):
+        return jsonify({"error": "Password must include at least one number."}), 400
+
+    token_hash = hash_token(raw_token)
+    token_record = get_valid_user_action_token(token_hash, "setup_account")
+
+    if not token_record:
+        return jsonify({"error": "Invalid or expired token."}), 400
+
+    new_password_hash = hash_password(new_password)
+
+    update_user_password_hash(token_record["user_id"], new_password_hash)
+    mark_email_verified(token_record["user_id"])
+
+    mark_user_action_token_used(token_record["id"])
+    invalidate_user_tokens(token_record["user_id"], "setup_account")
+
+    return jsonify({"message": "Account setup complete."}), 200
