@@ -1,0 +1,347 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Set Up Your Account | SpacedOut Studios</title>
+    <meta
+            name="description"
+            content="Set your password and activate your SpacedOut Studios artist account."
+    />
+
+    <link rel="stylesheet" href="/static/css/base.css" />
+    <link rel="stylesheet" href="/static/css/header.css" />
+    <link rel="stylesheet" href="/static/css/auth.css" />
+
+    <style>
+        .setup-shell {
+            min-height: calc(100vh - var(--nav-height));
+            display: grid;
+            place-items: center;
+            padding: 40px 0 88px;
+        }
+
+        .setup-card {
+            width: min(100%, 620px);
+            padding: 42px 34px;
+        }
+
+        .setup-title {
+            margin: 0;
+            font-size: clamp(2.4rem, 7vw, 4.4rem);
+            line-height: 0.95;
+            letter-spacing: -0.05em;
+        }
+
+        .setup-copy {
+            margin: 18px 0 0;
+            color: var(--muted);
+            line-height: 1.8;
+        }
+
+        .setup-form {
+            display: grid;
+            gap: 16px;
+            margin-top: 28px;
+        }
+
+        .field {
+            display: grid;
+            gap: 8px;
+        }
+
+        .field label {
+            font-size: 0.92rem;
+            color: rgba(255,255,255,0.84);
+        }
+
+        .input-wrap {
+            position: relative;
+        }
+
+        .field input {
+            width: 100%;
+            min-height: 52px;
+            padding: 0 52px 0 16px;
+            border-radius: 16px;
+            border: 1px solid rgba(255,255,255,0.14);
+            background: rgba(255,255,255,0.06);
+            color: var(--text);
+            font: inherit;
+            transition:
+                    border-color var(--ease),
+                    box-shadow var(--ease),
+                    background var(--ease);
+        }
+
+        .field input:focus {
+            outline: none;
+            border-color: rgba(23, 220, 255, 0.45);
+            box-shadow:
+                    0 0 0 1px rgba(23, 220, 255, 0.28),
+                    0 0 20px rgba(23, 220, 255, 0.08);
+            background: rgba(255,255,255,0.08);
+        }
+
+        .toggle-password {
+            position: absolute;
+            top: 50%;
+            right: 12px;
+            transform: translateY(-50%);
+            min-width: 34px;
+            min-height: 34px;
+            border: 0;
+            border-radius: 999px;
+            background: rgba(255,255,255,0.08);
+            color: rgba(255,255,255,0.8);
+            cursor: pointer;
+            font: inherit;
+        }
+
+        .toggle-password:hover {
+            background: rgba(255,255,255,0.14);
+        }
+
+        .password-rules {
+            display: grid;
+            gap: 6px;
+            margin-top: 6px;
+            color: var(--soft);
+            font-size: 0.88rem;
+            line-height: 1.55;
+        }
+
+        .setup-actions {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+            margin-top: 8px;
+        }
+
+        .button {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 48px;
+            padding: 0 18px;
+            border-radius: 999px;
+            border: 1px solid rgba(255,255,255,0.14);
+            background: rgba(255,255,255,0.08);
+            color: var(--text);
+            font-weight: 600;
+            transition:
+                    transform var(--ease),
+                    border-color var(--ease),
+                    background var(--ease),
+                    box-shadow var(--ease);
+            cursor: pointer;
+            text-decoration: none;
+        }
+
+        .button:hover {
+            transform: translateY(-2px);
+            background: rgba(255,255,255,0.12);
+            border-color: rgba(255,255,255,0.22);
+        }
+
+        .button.primary {
+            background:
+                    linear-gradient(135deg, rgba(255, 47, 171, 0.22), rgba(23, 220, 255, 0.16)),
+                    rgba(255,255,255,0.10);
+            border-color: rgba(255,255,255,0.20);
+            box-shadow:
+                    inset 0 1px 0 rgba(255,255,255,0.14),
+                    0 0 30px rgba(255,47,171,0.10),
+                    0 0 24px rgba(23,220,255,0.08);
+        }
+
+        .setup-error,
+        .setup-success {
+            min-height: 1.2rem;
+            margin-top: 6px;
+            font-size: 0.93rem;
+        }
+
+        .setup-error {
+            color: #ff9dbd;
+        }
+
+        .setup-success {
+            color: #9ff6d0;
+        }
+
+        .setup-loading {
+            opacity: 0.7;
+            pointer-events: none;
+        }
+
+        @media (max-width: 700px) {
+            .setup-card {
+                padding: 32px 22px;
+            }
+        }
+    </style>
+</head>
+<body>
+<div class="site-wrap">
+    <header class="site-header">
+        <div class="container">
+            <a class="brand" href="/">
+                <span class="brand-orb" aria-hidden="true"></span>
+                <div class="brand-copy">
+                    <p class="display brand-title">SpacedOut Studios</p>
+                    <p class="brand-subtitle">Music Label</p>
+                </div>
+            </a>
+
+            <nav class="nav">
+                <a href="/">Home</a>
+                <a href="/coming_soon">About</a>
+                <a href="/artists">Artists</a>
+                <a href="/coming_soon">Playlists</a>
+                <a href="/coming_soon">Submissions</a>
+                <a href="/coming_soon">Contact</a>
+            </nav>
+
+            <div id="auth-slot"></div>
+        </div>
+    </header>
+
+    <main class="page-shell">
+        <section class="setup-shell">
+            <div class="glass setup-card">
+                <p class="eyebrow">Artist Invitation</p>
+                <h1 class="display setup-title">Set Up Your Account.</h1>
+
+                <p class="setup-copy">
+                    Choose your password to activate your SpacedOut Studios artist account.
+                </p>
+
+                <form id="setup-account-form" class="setup-form">
+                    <div class="field">
+                        <label for="new-password">New Password</label>
+                        <div class="input-wrap">
+                            <input id="new-password" name="new_password" type="password" required />
+                            <button class="toggle-password" type="button" data-target="new-password">Show</button>
+                        </div>
+                    </div>
+
+                    <div class="field">
+                        <label for="confirm-password">Confirm Password</label>
+                        <div class="input-wrap">
+                            <input id="confirm-password" name="confirm_password" type="password" required />
+                            <button class="toggle-password" type="button" data-target="confirm-password">Show</button>
+                        </div>
+                    </div>
+
+                    <div class="password-rules">
+                        <div>• At least 8 characters</div>
+                        <div>• At least 1 uppercase letter</div>
+                        <div>• At least 1 number</div>
+                    </div>
+
+                    <div class="setup-error" id="setup-error"></div>
+                    <div class="setup-success" id="setup-success"></div>
+
+                    <div class="setup-actions">
+                        <button class="button primary" id="setup-submit" type="submit">
+                            Activate Account
+                        </button>
+                        <a class="button" href="/">Return Home</a>
+                    </div>
+                </form>
+            </div>
+        </section>
+    </main>
+</div>
+
+<script src="/static/js/api.js"></script>
+<script src="/static/js/auth.js"></script>
+<script src="/static/js/header_auth.js"></script>
+
+<script>
+    const form = document.getElementById("setup-account-form");
+    const errorEl = document.getElementById("setup-error");
+    const successEl = document.getElementById("setup-success");
+    const submitBtn = document.getElementById("setup-submit");
+
+    const params = new URLSearchParams(window.location.search);
+    const token = params.get("token") || "";
+
+    document.querySelectorAll(".toggle-password").forEach((button) => {
+        button.addEventListener("click", () => {
+            const targetId = button.getAttribute("data-target");
+            const input = document.getElementById(targetId);
+            if (!input) return;
+
+            const isPassword = input.type === "password";
+            input.type = isPassword ? "text" : "password";
+            button.textContent = isPassword ? "Hide" : "Show";
+        });
+    });
+
+    form.addEventListener("submit", async (event) => {
+        event.preventDefault();
+        errorEl.textContent = "";
+        successEl.textContent = "";
+
+        if (!token) {
+            errorEl.textContent = "This invitation link is missing its token.";
+            return;
+        }
+
+        const newPassword = document.getElementById("new-password").value;
+        const confirmPassword = document.getElementById("confirm-password").value;
+
+        if (newPassword !== confirmPassword) {
+            errorEl.textContent = "Passwords do not match.";
+            return;
+        }
+
+        if (newPassword.length < 8) {
+            errorEl.textContent = "Password must be at least 8 characters.";
+            return;
+        }
+
+        if (!/[A-Z]/.test(newPassword)) {
+            errorEl.textContent = "Password must include at least one uppercase letter.";
+            return;
+        }
+
+        if (!/\d/.test(newPassword)) {
+            errorEl.textContent = "Password must include at least one number.";
+            return;
+        }
+
+        form.classList.add("setup-loading");
+        submitBtn.disabled = true;
+
+        try {
+            const response = await apiFetch("/api/auth/setup-account", {
+                method: "POST",
+                body: {
+                    token,
+                    new_password: newPassword
+                }
+            });
+
+            successEl.textContent = response.message || "Account setup complete. You can sign in now.";
+            form.reset();
+
+            setTimeout(() => {
+                window.location.href = "/";
+            }, 1800);
+        } catch (error) {
+            errorEl.textContent = error.message || "Could not complete account setup.";
+        } finally {
+            form.classList.remove("setup-loading");
+            submitBtn.disabled = false;
+        }
+    });
+</script>
+</body>
+</html>
