@@ -3,7 +3,7 @@ import resend
 
 resend.api_key = os.getenv("RESEND_API_KEY")
 
-FROM_EMAIL = os.getenv("MAIL_FROM", "Spaced Out Studios <onboarding@resend.dev>")
+FROM_EMAIL = os.getenv("MAIL_FROM", "Spaced Out Studios <noreply@spacedoutstudiosent.com>")
 
 
 def send_email(to_email: str, subject: str, html: str):
