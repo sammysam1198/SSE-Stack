@@ -1,0 +1,98 @@
+.invite-user-card {
+    padding: 28px;
+}
+
+.invite-user-form {
+    margin-top: 20px;
+}
+
+.invite-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 18px;
+}
+
+.field {
+    display: grid;
+    gap: 8px;
+}
+
+.field label {
+    font-size: 0.92rem;
+    color: rgba(255,255,255,0.84);
+}
+
+.field input,
+.field select {
+    width: 100%;
+    min-height: 52px;
+    padding: 0 16px;
+    border-radius: 16px;
+    border: 1px solid rgba(255,255,255,0.14);
+    background: rgba(255,255,255,0.06);
+    color: var(--text);
+    font: inherit;
+    transition:
+            border-color var(--ease),
+            box-shadow var(--ease),
+            background var(--ease),
+            opacity var(--ease);
+}
+
+.field input:focus,
+.field select:focus {
+    outline: none;
+    border-color: rgba(23, 220, 255, 0.45);
+    box-shadow:
+            0 0 0 1px rgba(23, 220, 255, 0.28),
+            0 0 20px rgba(23, 220, 255, 0.08);
+    background: rgba(255,255,255,0.08);
+}
+
+.field input:disabled,
+.field select:disabled {
+    opacity: 0.45;
+    cursor: not-allowed;
+}
+
+.field-help {
+    margin: 0;
+    color: var(--soft);
+    font-size: 0.84rem;
+    line-height: 1.55;
+}
+
+.invite-status-area {
+    margin-top: 18px;
+}
+
+.invite-error,
+.invite-success {
+    min-height: 1.2rem;
+    font-size: 0.93rem;
+}
+
+.invite-error {
+    color: #ff9dbd;
+}
+
+.invite-success {
+    color: #9ff6d0;
+}
+
+.invite-actions {
+    display: flex;
+    gap: 12px;
+    margin-top: 14px;
+}
+
+.invite-user-form.is-loading {
+    opacity: 0.7;
+    pointer-events: none;
+}
+
+@media (max-width: 800px) {
+    .invite-grid {
+        grid-template-columns: 1fr;
+    }
+}

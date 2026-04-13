@@ -1,0 +1,149 @@
+
+    const inviteUserForm = document.getElementById("invite-user-form");
+    const inviteEmailInput = document.getElementById("invite-email");
+    const inviteRoleInput = document.getElementById("invite-role");
+    const inviteArtistNameInput = document.getElementById("invite-artist-name");
+    const inviteArtistPageInput = document.getElementById("invite-artist-page");
+    const inviteUserError = document.getElementById("invite-user-error");
+    const inviteUserSuccess = document.getElementById("invite-user-success");
+    const inviteUserSubmit = document.getElementById("invite-user-submit");
+
+    function normalizeArtistPage(value) {
+    if (!value) return "";
+
+    let cleaned = value.trim();
+
+    try {
+    if (cleaned.startsWith("http://") || cleaned.startsWith("https://")) {
+    const url = new URL(cleaned);
+    cleaned = url.pathname || "";
+}
+} catch (error) {
+}
+
+    cleaned = cleaned.replace(/^\/+|\/+$/g, "");
+    cleaned = cleaned.replace(/^artists\//i, "");
+    cleaned = cleaned.replace(/\.html$/i, "");
+    cleaned = cleaned.trim();
+
+    return cleaned;
+}
+
+    function slugifyArtistName(value) {
+    return value
+    .toLowerCase()
+    .trim()
+    .replace(/[^a-z0-9\s-]/g, "")
+    .replace(/\s+/g, "-")
+    .replace(/-+/g, "-");
+}
+
+    function updateRoleDependentFields() {
+    const role = inviteRoleInput.value;
+    const isArtist = role === "artist";
+
+    inviteArtistNameInput.disabled = !isArtist;
+    inviteArtistPageInput.disabled = !isArtist;
+
+    inviteArtistNameInput.required = isArtist;
+    inviteArtistPageInput.required = isArtist;
+
+    if (!isArtist) {
+    inviteArtistNameInput.value = "";
+    inviteArtistPageInput.value = "";
+    inviteArtistPageInput.dataset.editedManually = "";
+}
+}
+
+    if (inviteRoleInput) {
+    inviteRoleInput.addEventListener("change", updateRoleDependentFields);
+    updateRoleDependentFields();
+}
+
+    if (inviteArtistNameInput && inviteArtistPageInput) {
+    inviteArtistNameInput.addEventListener("input", () => {
+        const role = inviteRoleInput.value;
+        if (role !== "artist") return;
+
+        if (!inviteArtistPageInput.dataset.editedManually) {
+            inviteArtistPageInput.value = slugifyArtistName(inviteArtistNameInput.value);
+        }
+    });
+
+    inviteArtistPageInput.addEventListener("input", () => {
+    inviteArtistPageInput.dataset.editedManually = "true";
+});
+
+    inviteArtistPageInput.addEventListener("blur", () => {
+    inviteArtistPageInput.value = normalizeArtistPage(inviteArtistPageInput.value);
+});
+}
+
+    if (inviteUserForm) {
+    inviteUserForm.addEventListener("submit", async (event) => {
+        event.preventDefault();
+
+        inviteUserError.textContent = "";
+        inviteUserSuccess.textContent = "";
+
+        const email = (inviteEmailInput.value || "").trim().toLowerCase();
+        const role = inviteRoleInput.value;
+        const artistName = (inviteArtistNameInput.value || "").trim();
+        const artistPage = normalizeArtistPage(inviteArtistPageInput.value || "");
+
+        if (!email) {
+            inviteUserError.textContent = "Email is required.";
+            return;
+        }
+
+        if (!role) {
+            inviteUserError.textContent = "Role is required.";
+            return;
+        }
+
+        if (role === "artist") {
+            if (!artistName) {
+                inviteUserError.textContent = "Artist name is required for artist accounts.";
+                return;
+            }
+
+            if (!artistPage) {
+                inviteUserError.textContent = "Associated page is required for artist accounts.";
+                return;
+            }
+        }
+
+        inviteUserSubmit.disabled = true;
+        inviteUserForm.classList.add("is-loading");
+
+        const payload = {
+            email,
+            role
+        };
+
+        if (role === "artist") {
+            payload.artist_name = artistName;
+            payload.artist_page = artistPage;
+        }
+
+        try {
+            const response = await apiFetch("/api/admin/users/create-artist", {
+                method: "POST",
+                body: payload
+            });
+
+            inviteUserSuccess.textContent =
+                response.message || "Invite sent successfully.";
+
+            inviteUserForm.reset();
+            inviteArtistPageInput.dataset.editedManually = "";
+            updateRoleDependentFields();
+        } catch (error) {
+            inviteUserError.textContent =
+                error.message || "Could not send invite.";
+        } finally {
+            inviteUserSubmit.disabled = false;
+            inviteUserForm.classList.remove("is-loading");
+        }
+    });
+}
