@@ -1,4 +1,5 @@
 import os
+import re
 from flask import Blueprint, request, jsonify, session
 from repos.users_repo import update_last_login, get_user_by_email, update_user_password_hash
 from utils.auth_utils import verify_password
@@ -224,6 +225,12 @@ def reset_password():
     if len(new_password) < 8:
         return jsonify({"error": "Password must be at least 8 characters."}), 400
 
+    if not re.search(r"[A-Z]", new_password):
+        return jsonify({"error": "Password must include at least one uppercase letter."}), 400
+
+    if not re.search(r"\d", new_password):
+        return jsonify({"error": "Password must include at least one number."}), 400
+
     token_hash = hash_token(raw_token)
     token_record = get_valid_user_action_token(token_hash, "password_reset")
 
@@ -233,6 +240,7 @@ def reset_password():
     new_password_hash = hash_password(new_password)
 
     update_user_password_hash(token_record["user_id"], new_password_hash)
+
     mark_user_action_token_used(token_record["id"])
     invalidate_user_tokens(token_record["user_id"], "password_reset")
 
