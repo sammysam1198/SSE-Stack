@@ -1,17 +1,9 @@
 window.addEventListener("load", async () => {
     const authSlot = document.getElementById("auth-slot");
-    const signinModal = document.getElementById("signin-modal");
-    const signinForm = document.getElementById("signin-form");
-    const signinError = document.getElementById("signin-error");
-    const passwordInput = document.getElementById("signin-password");
-    const passwordToggle = document.getElementById("signin-password-toggle");
-    const passwordToggleIcon = document.getElementById("signin-password-toggle-icon");
-
-
     let currentUser = await getCurrentUser();
     renderAuthUI();
 
-    document.addEventListener("click", (event) => {
+    document.addEventListener("click", async (event) => {
         const openBtn = event.target.closest("[data-open-signin]");
         if (openBtn) {
             openSigninModal();
@@ -21,40 +13,76 @@ window.addEventListener("load", async () => {
         const closeBtn = event.target.closest("[data-close-signin]");
         if (closeBtn) {
             closeSigninModal();
+            return;
+        }
+
+        const modal = document.getElementById("signin-modal");
+        if (modal && event.target === modal) {
+            closeSigninModal();
+            return;
+        }
+
+        const passwordToggle = event.target.closest("#signin-password-toggle");
+        if (passwordToggle) {
+            const passwordInput = document.getElementById("signin-password");
+            const passwordToggleIcon = document.getElementById("signin-password-toggle-icon");
+
+            if (!passwordInput || !passwordToggleIcon) return;
+
+            const isHidden = passwordInput.type === "password";
+            passwordInput.type = isHidden ? "text" : "password";
+            passwordToggleIcon.src = isHidden
+                ? "/static/assets/show_password.png"
+                : "/static/assets/hide_password.png";
+
+            passwordToggle.setAttribute(
+                "aria-label",
+                isHidden ? "Hide password" : "Show password"
+            );
+        }
+
+        const signoutButton = event.target.closest("#auth-signout-button");
+        if (signoutButton) {
+            try {
+                await signout();
+            } catch (error) {
+                console.error("Sign out failed:", error);
+            }
+
+            currentUser = null;
+            renderAuthUI();
+            window.location.href = "/";
         }
     });
 
-    if (signinModal) {
-        signinModal.addEventListener("click", (event) => {
-            if (event.target === signinModal) {
-                closeSigninModal();
-            }
-        });
-    }
+    document.addEventListener("submit", async (event) => {
+        const form = event.target;
+        if (!form || form.id !== "signin-form") return;
 
-    if (signinForm) {
-        signinForm.addEventListener("submit", async (event) => {
-            event.preventDefault();
-            signinError.textContent = "";
+        event.preventDefault();
 
-            const formData = new FormData(signinForm);
-            const email = formData.get("email")?.trim();
-            const password = formData.get("password");
+        const signinError = document.getElementById("signin-error");
+        if (signinError) signinError.textContent = "";
 
-            try {
-                const user = await signin(email, password);
-                currentUser = user;
-                closeSigninModal();
-                signinForm.reset();
-                renderAuthUI();
+        const formData = new FormData(form);
+        const email = formData.get("email")?.trim();
+        const password = formData.get("password");
 
-                const dashboardPath = getDashboardPathForRole(user.role);
-                window.location.href = dashboardPath;
-            } catch (error) {
+        try {
+            const user = await signin(email, password);
+            currentUser = user;
+            closeSigninModal();
+            form.reset();
+            renderAuthUI();
+
+            const dashboardPath = getDashboardPathForRole(user.role);
+            window.location.href = dashboardPath;
+        } catch (error) {
+            if (signinError) {
                 signinError.textContent = error.message || "Sign in failed.";
             }
-        });
-    }
+        }
+    });
 
     function renderAuthUI() {
         if (!authSlot) return;
@@ -70,50 +98,13 @@ window.addEventListener("load", async () => {
                     </button>
                 </div>
             `;
-
-            const signoutButton = document.getElementById("auth-signout-button");
-            if (signoutButton) {
-                signoutButton.addEventListener("click", async () => {
-                    try {
-                        await signout();
-                    } catch (error) {
-                        console.error("Sign out failed:", error);
-                    }
-
-                    currentUser = null;
-                    renderAuthUI();
-                    window.location.href = "/";
-                });
-            }
         } else {
             authSlot.innerHTML = `
                 <button class="auth-signin-button" type="button" data-open-signin>
                     Sign In
                 </button>
             `;
-
-            const newSigninButton = authSlot.querySelector("[data-open-signin]");
-            if (newSigninButton) {
-                newSigninButton.addEventListener("click", openSigninModal);
-            }
         }
-    }
-
-
-    if (passwordInput && passwordToggle && passwordToggleIcon) {
-        passwordToggle.addEventListener("click", () => {
-            const isHidden = passwordInput.type === "password";
-
-            passwordInput.type = isHidden ? "text" : "password";
-            passwordToggleIcon.src = isHidden
-                ? "/static/assets/show_password.png"
-                : "/static/assets/hide_password.png";
-
-            passwordToggle.setAttribute(
-                "aria-label",
-                isHidden ? "Hide password" : "Show password"
-            );
-        });
     }
 
     function openSigninModal() {
