@@ -156,7 +156,7 @@ def create_artist_user():
     )
 
     frontend_base = os.getenv("FRONTEND_BASE_URL", "http://localhost:3000")
-    setup_url = f"{frontend_base}/setup-account.html?token={raw_token}"
+    setup_url = f"{frontend_base}/setup-account?token={raw_token}"
 
     send_artist_invite_email(email, artist_name, setup_url)
 

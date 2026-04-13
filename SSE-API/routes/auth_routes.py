@@ -1,8 +1,11 @@
 import os
 import re
 from flask import Blueprint, request, jsonify, session
-from repos.users_repo import update_last_login, get_user_by_email, update_user_password_hash
+from repos.users_repo import update_last_login, get_user_by_email, update_user_password_hash, mark_email_verified
 from utils.auth_utils import verify_password
+from utils.auth_utils import hash_password
+from utils.token_utils import generate_raw_token, hash_token, expiry_from_now
+from utils.mail_utils import send_password_reset_email
 from utils.security_utils import get_request_ip
 from repos.user_action_tokens_repo import (
     create_user_action_token,
@@ -10,9 +13,6 @@ from repos.user_action_tokens_repo import (
     invalidate_user_tokens,
     mark_user_action_token_used,
 )
-from utils.token_utils import generate_raw_token, hash_token, expiry_from_now
-from utils.mail_utils import send_password_reset_email
-from utils.auth_utils import hash_password
 
 auth_bp = Blueprint("auth", __name__)
 
