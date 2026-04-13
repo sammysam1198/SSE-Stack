@@ -65,10 +65,10 @@ def session_user_payload(user_row: dict) -> dict:
 
 
 def get_reset_link(token: str) -> str:
-    frontend_origin = os.getenv("FRONTEND_ORIGIN", "http://127.0.0.1:5500")
+    frontend_origin = os.getenv("FRONTEND_ORIGIN", "https://www.spacedoutstudiosent.com")
     return f"{frontend_origin}/reset-password?token={token}"
 
 
 def get_email_change_link(token: str) -> str:
-    frontend_origin = os.getenv("FRONTEND_ORIGIN", "http://127.0.0.1:5500")
+    frontend_origin = os.getenv("FRONTEND_ORIGIN", "https://www.spacedoutstudiosent.com")
     return f"{frontend_origin}/confirm-email-change?token={token}"

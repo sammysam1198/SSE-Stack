@@ -107,23 +107,37 @@ def send_user_password_reset(user_id: int):
     # TODO: generate reset flow + email
     return jsonify({"message": "Password reset email sent.", "user_id": user_id}), 200
 
+admin_bp = Blueprint("admin", __name__)
+
+ALLOWED_INVITE_ROLES = {"artist", "admin", "developer"}
 
 @admin_bp.post("/users/create-artist")
 def create_artist_user():
-    role = session.get("role")
-    if role not in ("admin", "developer"):
+    session_role = session.get("role")
+    if session_role not in ("admin", "developer"):
         return jsonify({"error": "Forbidden."}), 403
 
     data = request.get_json(silent=True) or {}
 
     email = (data.get("email") or "").strip().lower()
+    role = (data.get("role") or "artist").strip().lower()
     artist_name = (data.get("artist_name") or "").strip()
     artist_page = (data.get("artist_page") or "").strip()
 
-    if not email or not artist_name or not artist_page:
-        return jsonify({
-            "error": "Email, artist_name, and artist_page are required."
-        }), 400
+    if not email:
+        return jsonify({"error": "Email is required."}), 400
+
+    if role not in ALLOWED_INVITE_ROLES:
+        return jsonify({"error": "Invalid role."}), 400
+
+    if role == "artist":
+        if not artist_name or not artist_page:
+            return jsonify({
+                "error": "Artist name and artist page are required for artist accounts."
+            }), 400
+    else:
+        artist_name = None
+        artist_page = None
 
     existing_user = get_user_by_email(email)
     if existing_user:
@@ -134,7 +148,7 @@ def create_artist_user():
     new_user = create_user(
         email=email,
         password_hash=temp_password_hash,
-        role="artist",
+        role=role,
         username=None,
         email_verified=False,
         artist_name=artist_name,
@@ -145,7 +159,7 @@ def create_artist_user():
 
     raw_token = generate_raw_token()
     token_hash = hash_token(raw_token)
-    expires_at = expiry_from_now(60 * 24 * 3)  # 3 days
+    expires_at = expiry_from_now(60 * 24 * 3)
 
     create_user_action_token(
         user_id=new_user["id"],
@@ -155,18 +169,25 @@ def create_artist_user():
         expires_at=expires_at,
     )
 
-    frontend_base = os.getenv("FRONTEND_ORIGIN", "https://www.spacedoutstudiosent.com")
+    frontend_base = os.getenv("FRONTEND_ORIGIN")
+    if not frontend_base:
+        return jsonify({"error": "FRONTEND_ORIGIN is not set."}), 500
+
     setup_url = f"{frontend_base}/setup-account?token={raw_token}"
 
-    send_artist_invite_email(email, artist_name, setup_url)
+    send_artist_invite_email(
+        to_email=email,
+        artist_name=artist_name or role.title(),
+        setup_url=setup_url
+    )
 
     return jsonify({
-        "message": "Artist user created and invite email sent.",
+        "message": "Invite sent successfully.",
         "user": {
             "id": new_user["id"],
             "email": new_user["email"],
             "role": new_user["role"],
-            "artist_name": new_user["artist_name"],
-            "artist_page": new_user["artist_page"],
+            "artist_name": new_user.get("artist_name"),
+            "artist_page": new_user.get("artist_page"),
         }
     }), 201
