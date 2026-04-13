@@ -203,7 +203,7 @@ def request_password_reset():
             expires_at=expires_at,
         )
 
-        frontend_base = os.getenv("FRONTEND_BASE_URL", "http://localhost:3000")
+        frontend_base = os.getenv("FRONTEND_ORIGIN", "https://www.spacedoutstudiosent.com")
         reset_url = f"{frontend_base}/reset-password.html?token={raw_token}"
 
         send_password_reset_email(email, reset_url)
