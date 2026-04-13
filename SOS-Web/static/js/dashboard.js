@@ -46,47 +46,103 @@ async function saveMyArtistProfile(payload) {
     return data.artist_profile;
 }
 
+function collectArtistProfilePayload() {
+    const artistNameInput = document.getElementById("artist-name-input");
+    const taglineInput = document.getElementById("artist-tagline-input");
+    const bioInput = document.getElementById("artist-bio-input");
+
+    const tag1Input = document.getElementById("artist-tag-1-input");
+    const tag2Input = document.getElementById("artist-tag-2-input");
+    const tag3Input = document.getElementById("artist-tag-3-input");
+
+    const spotifyInput = document.getElementById("artist-spotify-input");
+    const youtubeInput = document.getElementById("artist-youtube-input");
+    const instagramInput = document.getElementById("artist-instagram-input");
+    const soundcloudInput = document.getElementById("artist-soundcloud-input");
+    const appleMusicInput = document.getElementById("artist-apple-music-input");
+
+    const locationInput = document.getElementById("artist-location-input");
+    const profileImageInput = document.getElementById("artist-profile-image-input");
+
+    return {
+        artist_name: artistNameInput?.value.trim() || "",
+        tagline: taglineInput?.value.trim() || "",
+        bio: bioInput?.value.trim() || "",
+        primary_genre: tag1Input?.value.trim() || "",
+        primary_instrument: tag2Input?.value.trim() || "",
+        primary_vibe: tag3Input?.value.trim() || "",
+        spotify_url: spotifyInput?.value.trim() || "",
+        youtube_url: youtubeInput?.value.trim() || "",
+        instagram_url: instagramInput?.value.trim() || "",
+        soundcloud_url: soundcloudInput?.value.trim() || "",
+        apple_music_url: appleMusicInput?.value.trim() || "",
+        location: locationInput?.value.trim() || "",
+        profile_image_url: profileImageInput?.value.trim() || ""
+    };
+}
+
 function populateArtistDashboard(profile) {
+    if (!profile) return;
+
     setText("artist-display-name", profile.artist_name || "Artist", "Artist");
-    setHeroImage(profile.hero_image_url || "");
+    setHeroImage(profile.profile_image_url || "");
 
     const avatar = document.getElementById("artist-profile-avatar");
-    if (avatar && profile.portrait_image_url) {
-        avatar.src = profile.portrait_image_url;
+    if (avatar && profile.profile_image_url) {
+        avatar.src = profile.profile_image_url;
     }
 
     const artistNameInput = document.getElementById("artist-name-input");
     const taglineInput = document.getElementById("artist-tagline-input");
     const bioInput = document.getElementById("artist-bio-input");
+
     const tag1Input = document.getElementById("artist-tag-1-input");
     const tag2Input = document.getElementById("artist-tag-2-input");
     const tag3Input = document.getElementById("artist-tag-3-input");
+
     const spotifyInput = document.getElementById("artist-spotify-input");
     const youtubeInput = document.getElementById("artist-youtube-input");
     const instagramInput = document.getElementById("artist-instagram-input");
+    const soundcloudInput = document.getElementById("artist-soundcloud-input");
+    const appleMusicInput = document.getElementById("artist-apple-music-input");
+    const locationInput = document.getElementById("artist-location-input");
+    const profileImageInput = document.getElementById("artist-profile-image-input");
 
+    if (artistNameInput) artistNameInput.value = profile.artist_name || "";
     if (taglineInput) taglineInput.value = profile.tagline || "";
+    if (bioInput) bioInput.value = profile.bio || "";
+
     if (tag1Input) tag1Input.value = profile.primary_genre || "";
     if (tag2Input) tag2Input.value = profile.primary_instrument || "";
     if (tag3Input) tag3Input.value = profile.primary_vibe || "";
-    if (publisherInput) publisherInput.value = profile.publisher || "";
-    if (locationInput) locationInput.value = profile.location || "";
+
+    if (spotifyInput) spotifyInput.value = profile.spotify_url || "";
+    if (youtubeInput) youtubeInput.value = profile.youtube_url || "";
+    if (instagramInput) instagramInput.value = profile.instagram_url || "";
     if (soundcloudInput) soundcloudInput.value = profile.soundcloud_url || "";
+    if (appleMusicInput) appleMusicInput.value = profile.apple_music_url || "";
+
+    if (locationInput) locationInput.value = profile.location || "";
+    if (profileImageInput) profileImageInput.value = profile.profile_image_url || "";
 
     updateArtistPageStatus(profile);
 }
 
 function updateArtistPageStatus(profile) {
     const rows = document.querySelectorAll(".page-status-row");
-    if (!rows.length) return;
+    if (!rows.length || !profile) return;
 
     const values = [
         profile.bio ? "Added" : "Missing",
-        profile.hero_image_url ? "Added" : "Missing",
-        profile.portrait_image_url ? "Added" : "Missing",
-        [profile.tag_1, profile.tag_2, profile.tag_3].filter(Boolean).length + " Added",
+        profile.profile_image_url ? "Added" : "Missing",
+        profile.location ? "Added" : "Missing",
+        [
+            profile.primary_genre,
+            profile.primary_instrument,
+            profile.primary_vibe
+        ].filter(Boolean).length + " Added",
         profile.spotify_url ? "Linked" : "Not Linked",
-        profile.youtube_url ? "Linked" : "Not Linked",
+        profile.youtube_url ? "Linked" : "Not Linked"
     ];
 
     rows.forEach((row, index) => {
@@ -96,3 +152,48 @@ function updateArtistPageStatus(profile) {
         }
     });
 }
+
+document.addEventListener("DOMContentLoaded", async () => {
+    const artistForm = document.getElementById("artist-profile-form");
+    const saveButton = document.getElementById("artist-profile-save");
+    const saveStatus = document.getElementById("artist-profile-save-status");
+
+    if (!artistForm) return;
+
+    try {
+        const user = await getCurrentUser();
+        if (!requireRole(user, ["artist"])) return;
+
+        const profile = await getMyArtistProfile();
+        populateArtistDashboard(profile || {});
+    } catch (error) {
+        console.error("Failed to load artist dashboard profile:", error);
+        if (saveStatus) {
+            saveStatus.textContent = "Could not load your artist profile.";
+        }
+    }
+
+    artistForm.addEventListener("submit", async (event) => {
+        event.preventDefault();
+
+        if (saveStatus) saveStatus.textContent = "";
+        if (saveButton) saveButton.disabled = true;
+
+        try {
+            const payload = collectArtistProfilePayload();
+            const updatedProfile = await saveMyArtistProfile(payload);
+            populateArtistDashboard(updatedProfile || payload);
+
+            if (saveStatus) {
+                saveStatus.textContent = "Profile saved successfully.";
+            }
+        } catch (error) {
+            console.error("Failed to save artist profile:", error);
+            if (saveStatus) {
+                saveStatus.textContent = error.message || "Could not save profile.";
+            }
+        } finally {
+            if (saveButton) saveButton.disabled = false;
+        }
+    });
+});

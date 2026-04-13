@@ -157,12 +157,12 @@
                         <span>Added</span>
                     </div>
                     <div class="page-status-row">
-                        <span>Hero Image</span>
-                        <span>Missing Upload Flow</span>
+                        <span>Profile Image</span>
+                        <span>Missing</span>
                     </div>
                     <div class="page-status-row">
-                        <span>Portrait Image</span>
-                        <span>Missing Upload Flow</span>
+                        <span>Location</span>
+                        <span>Missing</span>
                     </div>
                     <div class="page-status-row">
                         <span>Tags</span>
@@ -227,6 +227,21 @@
                         <label class="artist-editor-field">
                             <span>Publisher</span>
                             <input type="text" id="artist-publisher-input" name="publisher" placeholder="BMI, ASCAP, SESAC..." />
+                        </label>
+
+                        <label class="artist-editor-field">
+                            <span>Location</span>
+                            <input type="text" id="artist-location-input" name="location" placeholder="Harvard, MA" />
+                        </label>
+
+                        <label class="artist-editor-field artist-editor-field--full">
+                            <span>Profile Image URL</span>
+                            <input type="text" id="artist-profile-image-input" name="profile_image_url" placeholder="/static/logos/4nzek.png" />
+                        </label>
+
+                        <label class="artist-editor-field artist-editor-field--full">
+                            <span>Apple Music URL</span>
+                            <input type="text" id="artist-apple-music-input" name="apple_music_url" placeholder="https://music.apple.com/..." />
                         </label>
 
                         <div class="artist-editor-field">
@@ -349,6 +364,8 @@
         const publisherInput = document.getElementById("artist-publisher-input");
         const locationInput = document.getElementById("artist-location-input");
         const soundcloudInput = document.getElementById("artist-soundcloud-input");
+        const profileImageInput = document.getElementById("artist-profile-image-input");
+        const appleMusicInput = document.getElementById("artist-apple-music-input");
 
 
         try {
@@ -385,40 +402,50 @@
             });
         }
 
-        previewButton.addEventListener("click", () => {
-            const liveName = artistNameInput.value.trim() || "Artist";
-            setText("artist-display-name", liveName, "Artist");
-            statusEl.textContent = "Preview updated.";
-        });
+        if (previewButton) {
+            previewButton.addEventListener("click", () => {
+                const liveName = artistNameInput?.value.trim() || "Artist";
+                setText("artist-display-name", liveName, "Artist");
+                statusEl.textContent = "Preview updated.";
+            });
+        }
 
-        form.addEventListener("submit", async (event) => {
-            event.preventDefault();
+        if (form) {
+            form.addEventListener("submit", async (event) => {
+                event.preventDefault();
 
-            statusEl.textContent = "Saving...";
+                statusEl.textContent = "Saving...";
 
-            const payload = {
-                artist_name: artistNameInput.value.trim(),
-                tagline: taglineInput.value.trim(),
-                bio: bioInput.value.trim(),
-                primary_genre: tag1Input.value.trim(),
-                primary_instrument: tag2Input.value.trim(),
-                primary_vibe: tag3Input.value.trim(),
-                publisher: publisherInput.value.trim(),
-                location: locationInput.value.trim(),
-                spotify_url: spotifyInput.value.trim(),
-                youtube_url: youtubeInput.value.trim(),
-                soundcloud_url: soundcloudInput.value.trim()
-};
+                const profileImageInput = document.getElementById("artist-profile-image-input");
+                const appleMusicInput = document.getElementById("artist-apple-music-input");
 
-            try {
-                const savedProfile = await saveMyArtistProfile(payload);
-                populateArtistDashboard(savedProfile);
-                statusEl.textContent = "Changes saved.";
-            } catch (error) {
-                console.error("Failed to save artist profile:", error);
-                statusEl.textContent = error.message || "Save failed.";
-            }
-        });
+                const payload = {
+                    artist_name: artistNameInput?.value.trim() || "",
+                    tagline: taglineInput?.value.trim() || "",
+                    bio: bioInput?.value.trim() || "",
+                    profile_image_url: profileImageInput?.value.trim() || "",
+                    spotify_url: spotifyInput?.value.trim() || "",
+                    youtube_url: youtubeInput?.value.trim() || "",
+                    instagram_url: instagramInput?.value.trim() || "",
+                    soundcloud_url: soundcloudInput?.value.trim() || "",
+                    apple_music_url: appleMusicInput?.value.trim() || "",
+                    publisher: publisherInput?.value.trim() || "",
+                    location: locationInput?.value.trim() || "",
+                    primary_genre: tag1Input?.value.trim() || "",
+                    primary_instrument: tag2Input?.value.trim() || "",
+                    primary_vibe: tag3Input?.value.trim() || ""
+                };
+
+                try {
+                    const savedProfile = await saveMyArtistProfile(payload);
+                    populateArtistDashboard(savedProfile || payload);
+                    statusEl.textContent = "Changes saved.";
+                } catch (error) {
+                    console.error("Failed to save artist profile:", error);
+                    statusEl.textContent = error.message || "Save failed.";
+                }
+            });
+        }
     });
 </script>
 </body>
