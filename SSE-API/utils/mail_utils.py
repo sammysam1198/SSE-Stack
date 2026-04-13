@@ -3,12 +3,23 @@ import resend
 
 resend.api_key = os.getenv("RESEND_API_KEY")
 
+FROM_EMAIL = os.getenv("MAIL_FROM", "Spaced Out Studios <onboarding@resend.dev>")
+
 
 def send_email(to_email: str, subject: str, html: str):
     return resend.Emails.send({
-        "from": "Spaced Out Studios <onboarding@resend.dev>",  # temp sender
+        "from": FROM_EMAIL,
         "to": [to_email],
         "subject": subject,
         "html": html,
     })
 
+
+def send_password_reset_email(to_email: str, reset_url: str):
+    html = f"""
+    <h2>Reset your password</h2>
+    <p>You requested a password reset for your Spaced Out Studios account.</p>
+    <p><a href="{reset_url}">Reset Password</a></p>
+    <p>If you did not request this, you can ignore this email.</p>
+    """
+    return send_email(to_email, "Reset your password", html)

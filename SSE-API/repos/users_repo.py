@@ -29,29 +29,6 @@ def get_user_by_id(user_id: int):
     return fetch_one(query, (user_id,))
 
 
-def get_user_by_email(email: str):
-    query = """
-        SELECT
-            id,
-            email,
-            username,
-            password_hash,
-            role,
-            is_active,
-            is_locked,
-            lock_reason,
-            failed_login_count,
-            last_login_at,
-            last_login_ip,
-            email_verified,
-            created_at,
-            updated_at
-        FROM users
-        WHERE LOWER(email) = LOWER(%s)
-    """
-    return fetch_one(query, (email,))
-
-
 def list_users():
     query = """
         SELECT
@@ -200,3 +177,22 @@ def unlock_user(user_id: int):
         WHERE id = %s
     """
     execute_write(query, (user_id,))
+
+
+def get_user_by_email(email: str):
+        query = """
+        SELECT *
+        FROM users
+        WHERE LOWER(email) = LOWER(%s)
+        LIMIT 1
+        """
+        return fetch_one(query, (email,))
+
+def update_user_password_hash(user_id: int, password_hash: str):
+    query = """
+        UPDATE users
+        SET password_hash = %s,
+            updated_at = NOW()
+        WHERE id = %s
+        """
+    execute_write(query, (password_hash, user_id))

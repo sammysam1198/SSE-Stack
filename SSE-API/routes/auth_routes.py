@@ -1,7 +1,17 @@
+import os
 from flask import Blueprint, request, jsonify, session
-from repos.users_repo import get_user_by_email, update_last_login
+from repos.users_repo import update_last_login, get_user_by_email, update_user_password_hash
 from utils.auth_utils import verify_password
 from utils.security_utils import get_request_ip
+from repos.user_action_tokens_repo import (
+    create_user_action_token,
+    get_valid_user_action_token,
+    invalidate_user_tokens,
+    mark_user_action_token_used,
+)
+from utils.token_utils import generate_raw_token, hash_token, expiry_from_now
+from utils.mail_utils import send_password_reset_email
+from utils.auth_utils import hash_password
 
 auth_bp = Blueprint("auth", __name__)
 
@@ -85,44 +95,6 @@ def me():
     }), 200
 
 
-@auth_bp.post("/request-password-reset")
-def request_password_reset():
-    data = request.get_json(silent=True) or {}
-    email = (data.get("email") or "").strip().lower()
-
-    if not email:
-        return jsonify({"error": "Email is required."}), 400
-
-    # TODO:
-    # 1. find user by email
-    # 2. generate reset token
-    # 3. store hashed token in password_reset_tokens
-    # 4. send email via mail utility
-
-    return jsonify({
-        "message": "If that account exists, a password reset email has been sent."
-    }), 200
-
-
-@auth_bp.post("/reset-password")
-def reset_password():
-    data = request.get_json(silent=True) or {}
-
-    token = (data.get("token") or "").strip()
-    new_password = data.get("new_password") or ""
-
-    if not token or not new_password:
-        return jsonify({"error": "Token and new password are required."}), 400
-
-    # TODO:
-    # 1. verify token
-    # 2. hash new password
-    # 3. update users.password_hash
-    # 4. mark token used
-
-    return jsonify({"message": "Password reset successfully."}), 200
-
-
 @auth_bp.post("/request-email-change")
 def request_email_change():
     user_id = session.get("user_id")
@@ -202,3 +174,66 @@ def verify_login_challenge():
     # 2. complete login session
 
     return jsonify({"message": "Challenge verified."}), 200
+
+@auth_bp.post("/request-password-reset")
+def request_password_reset():
+    data = request.get_json(silent=True) or {}
+    email = (data.get("email") or "").strip().lower()
+
+    if not email:
+        return jsonify({
+            "message": "If that email exists, a reset link has been sent."
+        }), 200
+
+    user = get_user_by_email(email)
+
+    if user:
+        invalidate_user_tokens(user["id"], "password_reset")
+
+        raw_token = generate_raw_token()
+        token_hash = hash_token(raw_token)
+        expires_at = expiry_from_now(30)
+
+        create_user_action_token(
+            user_id=user["id"],
+            email=email,
+            token_hash=token_hash,
+            token_type="password_reset",
+            expires_at=expires_at,
+        )
+
+        frontend_base = os.getenv("FRONTEND_BASE_URL", "http://localhost:3000")
+        reset_url = f"{frontend_base}/reset-password.html?token={raw_token}"
+
+        send_password_reset_email(email, reset_url)
+
+    return jsonify({
+        "message": "If that email exists, a reset link has been sent."
+    }), 200
+
+@auth_bp.post("/reset-password")
+def reset_password():
+    data = request.get_json(silent=True) or {}
+
+    raw_token = (data.get("token") or "").strip()
+    new_password = data.get("new_password") or ""
+
+    if not raw_token or not new_password:
+        return jsonify({"error": "Token and new password are required."}), 400
+
+    if len(new_password) < 8:
+        return jsonify({"error": "Password must be at least 8 characters."}), 400
+
+    token_hash = hash_token(raw_token)
+    token_record = get_valid_user_action_token(token_hash, "password_reset")
+
+    if not token_record:
+        return jsonify({"error": "Invalid or expired token."}), 400
+
+    new_password_hash = hash_password(new_password)
+
+    update_user_password_hash(token_record["user_id"], new_password_hash)
+    mark_user_action_token_used(token_record["id"])
+    invalidate_user_tokens(token_record["user_id"], "password_reset")
+
+    return jsonify({"message": "Password has been reset successfully."}), 200
