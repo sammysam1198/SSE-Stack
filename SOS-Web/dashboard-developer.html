@@ -9,6 +9,27 @@
     <link rel="stylesheet" href="/static/css/auth.css" />
     <link rel="stylesheet" href="/static/css/dashboard.css" />
     <link rel="stylesheet" href="/static/css/invite_artist.css" />
+
+    <style>
+
+        .dashboard-main {
+            display: grid;
+            gap: 24px;
+            min-width: 0;
+        }
+
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: repeat(12, minmax(0, 1fr));
+            gap: 1.25rem;
+        }
+
+        .dashboard-card--wide {
+            grid-column: span 8;
+        }
+
+    </style>
+
 </head>
 <body>
 <header>
@@ -17,8 +38,8 @@
 
 <main class="dashboard-shell">
     <aside class="dashboard-sidebar">
-        <div class="dashboard-sidebar__brand">SpacedOut Studios</div>
-        <div class="dashboard-sidebar__role">Developer Portal</div>
+        <div class="dashboard-sidebar_brand">SpacedOut Studios</div>
+        <div class="dashboard-sidebar_role">Developer Portal</div>
 
         <nav class="dashboard-nav">
             <a href="#" class="is-active">System Overview</a>
@@ -29,7 +50,8 @@
         </nav>
     </aside>
 
-    <section class="glass invite-user-card">
+    <div class="dashboard-main">
+        <section class="glass invite-user-card">
         <div class="section-head">
             <p class="eyebrow">Platform Tools</p>
             <h2 class="section-title">Invite User</h2>
@@ -100,9 +122,9 @@
                 </button>
             </div>
         </form>
-    </section>
+        </section>
 
-    <section class="dashboard-main">
+        <section class="dashboard-main">
         <section class="dashboard-hero" id="dashboard-hero">
             <div class="dashboard-hero__bg"></div>
             <div class="dashboard-hero__overlay"></div>
@@ -143,7 +165,8 @@
                 <p>Developer-only diagnostic actions and internal utilities will live here.</p>
             </article>
         </section>
-    </section>
+        </section>
+    </div>
 </main>
 
 <div class="signin-modal" id="signin-modal" aria-hidden="true">

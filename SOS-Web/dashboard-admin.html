@@ -10,6 +10,25 @@
     <link rel="stylesheet" href="/static/css/auth.css" />
     <link rel="stylesheet" href="/static/css/dashboard.css" />
     <link rel="stylesheet" href="/static/css/invite_artist.css" />
+    <style>
+
+        .dashboard-main {
+            display: grid;
+            gap: 24px;
+            min-width: 0;
+        }
+
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: repeat(12, minmax(0, 1fr));
+            gap: 1.25rem;
+        }
+
+        .dashboard-card--wide {
+            grid-column: span 8;
+        }
+
+    </style>
 </head>
 <body>
 <header>
@@ -18,8 +37,8 @@
 
 <main class="dashboard-shell">
     <aside class="dashboard-sidebar">
-        <div class="dashboard-sidebar__brand">SpacedOut Studios</div>
-        <div class="dashboard-sidebar__role">Admin Portal</div>
+        <div class="dashboard-sidebar_brand">SpacedOut Studios</div>
+        <div class="dashboard-sidebar_role">Admin Portal</div>
 
         <nav class="dashboard-nav">
             <a href="#" class="is-active">Applications</a>
@@ -31,6 +50,7 @@
         </nav>
     </aside>
 
+    <div class="dashboard-main"></div>
     <section class="glass invite-user-card">
         <div class="section-head">
             <p class="eyebrow">Platform Tools</p>
@@ -151,6 +171,7 @@
             </article>
         </section>
     </section>
+    </div>
 </main>
 
 <div class="signin-modal" id="signin-modal" aria-hidden="true">

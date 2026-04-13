@@ -209,11 +209,11 @@
     color: rgba(255, 255, 255, 0.68);
 }
 
-.dashboard-hero__title {
-    margin: 0;
-    font-size: clamp(2.3rem, 6vw, 5rem);
-    line-height: 0.98;
-    letter-spacing: -0.045em;
+.dashboard-hero-title {
+    font-size: clamp(2.5rem, 8vw, 5.5rem);
+    line-height: 0.95;
+    letter-spacing: -0.04em;
+    overflow-wrap: break-word;
 }
 
 .dashboard-hero__plate {
@@ -334,6 +334,7 @@
     grid-column: 1 / -1;
 }
 
+
 .dashboard-card h3 {
     margin-top: 0;
     margin-bottom: 0.55rem;
@@ -342,6 +343,13 @@
 .dashboard-card__intro {
     margin: 0 0 1rem;
     color: rgba(255,255,255,0.72);
+}
+
+.dashboard-hero-card {
+    width: min(100%, 720px);
+    max-width: 100%;
+    overflow: hidden;
+    box-sizing: border-box;
 }
 
 .release-spotlight {
@@ -556,6 +564,7 @@
         grid-column: auto;
     }
 }
+
 
 @media (max-width: 1100px) {
     .dashboard-shell {
