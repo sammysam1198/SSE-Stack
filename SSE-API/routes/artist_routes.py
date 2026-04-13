@@ -1,12 +1,14 @@
 from flask import Blueprint, request, jsonify, session
+from repos.users_repo import get_user_by_id
 from repos.artists_repo import (
     list_active_artists,
     get_artist_by_id,
     get_artist_by_user_id,
     create_artist_profile_for_user,
     update_artist_profile_by_user_id,
+    get_artist_by_slug,
 )
-from repos.users_repo import get_user_by_id
+
 
 artists_bp = Blueprint("artists", __name__)
 

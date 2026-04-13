@@ -204,7 +204,7 @@ def request_password_reset():
         )
 
         frontend_base = os.getenv("FRONTEND_ORIGIN", "https://www.spacedoutstudiosent.com")
-        reset_url = f"{frontend_base}/reset-password.html?token={raw_token}"
+        reset_url = f"{frontend_base}/reset-password?token={raw_token}"
 
         send_password_reset_email(email, reset_url)
 
@@ -281,3 +281,19 @@ def setup_account():
     invalidate_user_tokens(token_record["user_id"], "setup_account")
 
     return jsonify({"message": "Account setup complete."}), 200
+
+
+@auth_bp.get("/validate-setup-token")
+def validate_setup_token():
+    raw_token = (request.args.get("token") or "").strip()
+
+    if not raw_token:
+        return jsonify({"valid": False, "error": "Missing token."}), 400
+
+    token_hash = hash_token(raw_token)
+    token_record = get_valid_user_action_token(token_hash, "setup_account")
+
+    if not token_record:
+        return jsonify({"valid": False, "error": "Invalid or expired token."}), 400
+
+    return jsonify({"valid": True}), 200

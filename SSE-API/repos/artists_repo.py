@@ -122,3 +122,29 @@ def update_artist_profile_by_user_id(
             user_id,
         ),
     )
+
+
+def get_artist_by_slug(artist_page: str):
+    query = """
+        SELECT
+            id,
+            user_id,
+            artist_name,
+            artist_page,
+            location,
+            bio,
+            profile_image_url,
+            spotify_url,
+            youtube_url,
+            instagram_url,
+            soundcloud_url,
+            apple_music_url,
+            primary_genre,
+            primary_instrument,
+            primary_vibe,
+            updated_at
+        FROM artist_profiles
+        WHERE artist_page = %s
+        LIMIT 1
+    """
+    return execute_returning_one(query, (artist_page,))
