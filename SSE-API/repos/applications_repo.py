@@ -1,4 +1,5 @@
-
+from pathlib import Path
+from flask import send_file
 from config.db import (
     execute_returning_one,
     execute_write,
@@ -229,3 +230,5 @@ def update_application_pdf_path(application_id: int, application_pdf_path: str):
             WHERE id = %s
         """
     execute_write(query, (application_pdf_path, application_id))
+
+

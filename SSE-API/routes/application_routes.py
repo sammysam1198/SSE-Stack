@@ -3,6 +3,8 @@ from repos.applications_repo import update_application_pdf_path
 from utils.application_pdf_utils import generate_application_pdf
 from datetime import datetime
 from urllib.parse import urlparse
+from pathlib import Path
+from flask import send_file
 
 from flask import Blueprint, request, jsonify, session
 
@@ -282,3 +284,31 @@ def create_application():
         "pdf_created": pdf_path is not None,
         "pdf_error": pdf_error,
     }), 201
+
+@applications_bp.get("/<int:application_id>/pdf")
+def download_application_pdf(application_id: int):
+    if not _require_admin_or_dev():
+        return jsonify({"error": "Forbidden."}), 403
+
+    application = get_application_by_id(application_id)
+    if not application:
+        return jsonify({"error": "Application not found."}), 404
+
+    pdf_path = application.get("application_pdf_path")
+    if not pdf_path:
+        return jsonify({"error": "Application PDF not found."}), 404
+
+    base_dir = Path(__file__).resolve().parent.parent
+    absolute_path = base_dir / pdf_path
+
+    if not absolute_path.exists() or not absolute_path.is_file():
+        return jsonify({"error": "Application PDF file is missing."}), 404
+
+    download_name = f"{application.get('artist_name', 'artist')}_application.pdf"
+
+    return send_file(
+        absolute_path,
+        as_attachment=True,
+        download_name=download_name,
+        mimetype="application/pdf",
+    )
