@@ -1,1 +1,860 @@
-new artist application
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Artist Application | SpacedOut Studios</title>
+    <meta
+            name="description"
+            content="Apply to SpacedOut Studios through the official artist application."
+    />
+
+    <link rel="stylesheet" href="/static/css/base.css" />
+    <link rel="stylesheet" href="/static/css/header.css" />
+    <link rel="stylesheet" href="/static/css/auth.css" />
+
+    <style>
+        .application-shell {
+            display: grid;
+            gap: 28px;
+            padding-top: 18px;
+        }
+
+        .application-hero {
+            display: grid;
+            grid-template-columns: 1.1fr 0.9fr;
+            gap: 24px;
+            align-items: stretch;
+        }
+
+        .application-hero-card,
+        .application-side-card,
+        .application-form-card {
+            padding: 30px;
+        }
+
+        .application-title {
+            margin: 0;
+            font-size: clamp(2.8rem, 7vw, 5.4rem);
+            line-height: 0.92;
+            letter-spacing: -0.06em;
+        }
+
+        .application-copy {
+            margin: 16px 0 0;
+            max-width: 760px;
+            color: rgba(255,255,255,0.82);
+            line-height: 1.85;
+            font-size: 1.02rem;
+        }
+
+        .application-points {
+            margin: 22px 0 0;
+            padding: 0;
+            list-style: none;
+            display: grid;
+            gap: 12px;
+        }
+
+        .application-points li {
+            display: flex;
+            gap: 12px;
+            align-items: flex-start;
+            color: var(--muted);
+            line-height: 1.7;
+        }
+
+        .application-points li::before {
+            content: "";
+            width: 10px;
+            height: 10px;
+            border-radius: 999px;
+            margin-top: 0.45rem;
+            flex: 0 0 auto;
+            background: linear-gradient(135deg, var(--pink), var(--cyan));
+            box-shadow: 0 0 18px rgba(255, 47, 171, 0.32);
+        }
+
+        .application-side-card h3,
+        .application-section-title {
+            margin: 0;
+            font-size: 1rem;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+        }
+
+        .application-side-card p {
+            margin: 12px 0 0;
+            color: var(--muted);
+            line-height: 1.8;
+        }
+
+        .application-side-stack {
+            display: grid;
+            gap: 20px;
+        }
+
+        .signal-list {
+            margin-top: 18px;
+            display: grid;
+            gap: 12px;
+        }
+
+        .signal-row {
+            display: flex;
+            justify-content: space-between;
+            gap: 14px;
+            padding-bottom: 12px;
+            border-bottom: 1px solid rgba(255,255,255,0.08);
+        }
+
+        .signal-row:last-child {
+            border-bottom: 0;
+            padding-bottom: 0;
+        }
+
+        .signal-label {
+            color: rgba(255,255,255,0.50);
+            text-transform: uppercase;
+            letter-spacing: 0.12em;
+            font-size: 0.76rem;
+        }
+
+        .signal-value {
+            color: rgba(255,255,255,0.94);
+            font-weight: 700;
+            text-align: right;
+        }
+
+        .application-form-card {
+            overflow: visible;
+        }
+
+        .application-form {
+            display: grid;
+            gap: 26px;
+            margin-top: 26px;
+        }
+
+        .application-section {
+            display: grid;
+            gap: 16px;
+            padding-top: 22px;
+            border-top: 1px solid rgba(255,255,255,0.08);
+        }
+
+        .application-section:first-of-type {
+            border-top: 0;
+            padding-top: 0;
+        }
+
+        .application-section-copy {
+            margin: 8px 0 0;
+            max-width: 780px;
+            color: var(--muted);
+            line-height: 1.75;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 16px;
+        }
+
+        .field {
+            display: grid;
+            gap: 8px;
+        }
+
+        .field.full {
+            grid-column: 1 / -1;
+        }
+
+        .field label {
+            font-size: 0.92rem;
+            color: rgba(255,255,255,0.88);
+        }
+
+        .field-help {
+            margin: 0;
+            color: rgba(255,255,255,0.48);
+            font-size: 0.84rem;
+            line-height: 1.55;
+        }
+
+        .field input,
+        .field select,
+        .field textarea {
+            width: 100%;
+            min-height: 52px;
+            padding: 0 16px;
+            border-radius: 16px;
+            border: 1px solid rgba(255,255,255,0.14);
+            background: rgba(255,255,255,0.06);
+            color: var(--text);
+            font: inherit;
+            transition:
+                    border-color var(--ease),
+                    background var(--ease),
+                    box-shadow var(--ease);
+        }
+
+        .field textarea {
+            min-height: 144px;
+            padding: 14px 16px;
+            resize: vertical;
+        }
+
+        .field input:focus,
+        .field select:focus,
+        .field textarea:focus {
+            outline: none;
+            border-color: rgba(23, 220, 255, 0.42);
+            box-shadow:
+                    0 0 0 1px rgba(23, 220, 255, 0.24),
+                    0 0 24px rgba(23, 220, 255, 0.08);
+            background: rgba(255,255,255,0.08);
+        }
+
+        .application-actions {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 14px;
+            align-items: center;
+            margin-top: 8px;
+        }
+
+        .application-status {
+            min-height: 1.2rem;
+            font-size: 0.94rem;
+        }
+
+        .application-status.error {
+            color: #ff9dbd;
+        }
+
+        .application-status.success {
+            color: #9ff6d0;
+        }
+
+        .application-loading {
+            opacity: 0.72;
+            pointer-events: none;
+        }
+
+        .notice-card {
+            padding: 22px;
+            border-radius: 24px;
+            border: 1px solid rgba(255,255,255,0.10);
+            background: rgba(255,255,255,0.04);
+        }
+
+        .notice-card p {
+            margin: 0 0 14px;
+            color: var(--muted);
+            line-height: 1.75;
+        }
+
+        .notice-card p:last-child {
+            margin-bottom: 0;
+        }
+
+        @media (max-width: 1050px) {
+            .application-hero {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 780px) {
+            .application-hero-card,
+            .application-side-card,
+            .application-form-card {
+                padding: 24px 20px;
+            }
+
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+<div class="site-wrap">
+    <header class="site-header">
+        <div class="container">
+            <a class="brand" href="/">
+                <span class="brand-orb" aria-hidden="true"></span>
+                <div class="brand-copy">
+                    <p class="display brand-title">SpacedOut Studios Ent</p>
+                    <p class="brand-subtitle">Music Label</p>
+                </div>
+            </a>
+
+            <nav class="nav">
+                <a href="/">Home</a>
+                <a href="/about">About</a>
+                <a href="/artists">Artists</a>
+                <a href="/coming_soon">Playlists</a>
+                <a href="/submissions" class="active">Artist Application</a>
+                <a href="/contact">Contact</a>
+            </nav>
+
+            <div id="auth-slot"></div>
+        </div>
+    </header>
+
+    <main class="page-shell">
+        <section class="application-shell">
+            <section class="application-hero">
+                <article class="glass application-hero-card">
+                    <p class="eyebrow">SpacedOut Studios</p>
+                    <h1 class="display application-title">Artist Application.</h1>
+                    <p class="application-copy">
+                        We are fair, but we are selective. This application helps us understand your music,
+                        your trajectory, your self-awareness, and whether your project is the right fit for SpacedOut Studios.
+                    </p>
+
+                    <ul class="application-points">
+                        <li>Use full secure links beginning with <strong>https://</strong>.</li>
+                        <li>Give honest answers. We care more about clarity and direction than trying to sound perfect.</li>
+                        <li>This is an application, not a contact form. Treat it like one.</li>
+                    </ul>
+                </article>
+
+                <div class="application-side-stack">
+                    <aside class="glass application-side-card">
+                        <h3>What We Look For</h3>
+                        <p>
+                            Identity. Direction. Consistency. Taste. Growth potential. We want artists who understand
+                            what they do well, what they do not, and where they are trying to go next.
+                        </p>
+
+                        <div class="signal-list">
+                            <div class="signal-row">
+                                <span class="signal-label">Intake Type</span>
+                                <span class="signal-value">Artist Application</span>
+                            </div>
+                            <div class="signal-row">
+                                <span class="signal-label">Review</span>
+                                <span class="signal-value">Manual Label Review</span>
+                            </div>
+                            <div class="signal-row">
+                                <span class="signal-label">Fit</span>
+                                <span class="signal-value">Selective</span>
+                            </div>
+                        </div>
+                    </aside>
+
+                    <aside class="glass application-side-card">
+                        <h3>Before You Apply</h3>
+                        <p>
+                            Make sure your artist name is entered exactly how you want it shown, your links are correct,
+                            and your answers reflect your actual project rather than what you think we want to hear.
+                        </p>
+                    </aside>
+                </div>
+            </section>
+
+            <section class="glass application-form-card">
+                <div class="section-head">
+                    <p class="eyebrow">Artist Intake</p>
+                    <h2 class="section-title">Apply to SpacedOut Studios</h2>
+                    <p class="section-copy">
+                        Fill out the artist application below. We use this to evaluate fit, readiness, trajectory,
+                        and where we may or may not be able to help.
+                    </p>
+                </div>
+
+                <form id="artist-application-form" class="application-form" novalidate>
+                    <section class="application-section">
+                        <div>
+                            <h3 class="application-section-title">Identity</h3>
+                            <p class="application-section-copy">
+                                Basic information about you and your artist project.
+                            </p>
+                        </div>
+
+                        <div class="form-grid">
+                            <div class="field">
+                                <label for="first-name">First Name</label>
+                                <input id="first-name" name="first_name" type="text" autocomplete="given-name" required />
+                            </div>
+
+                            <div class="field">
+                                <label for="last-name">Last Name</label>
+                                <input id="last-name" name="last_name" type="text" autocomplete="family-name" required />
+                            </div>
+
+                            <div class="field">
+                                <label for="birthday">Birthday</label>
+                                <input id="birthday" name="birthday" type="text" placeholder="MM/DD/YYYY" required />
+                                <p class="field-help">Format MM/DD/YYYY</p>
+                            </div>
+
+                            <div class="field">
+                                <label for="artist-name">Artist Name</label>
+                                <input id="artist-name" name="artist_name" type="text" autocomplete="nickname" required />
+                            </div>
+
+                            <div class="field">
+                                <label for="country">Country</label>
+                                <input id="country" name="country" list="country-list" placeholder="Start typing to search" required />
+                                <datalist id="country-list">
+                                    <option value="United States"></option>
+                                    <option value="Canada"></option>
+                                    <option value="United Kingdom"></option>
+                                    <option value="Australia"></option>
+                                    <option value="Germany"></option>
+                                    <option value="France"></option>
+                                    <option value="Netherlands"></option>
+                                    <option value="Sweden"></option>
+                                    <option value="Norway"></option>
+                                    <option value="Brazil"></option>
+                                    <option value="Mexico"></option>
+                                    <option value="Japan"></option>
+                                    <option value="South Korea"></option>
+                                    <option value="Russia"></option>
+                                    <option value="Italy"></option>
+                                    <option value="Spain"></option>
+                                    <option value="India"></option>
+                                    <option value="South Africa"></option>
+                                    <option value="Ireland"></option>
+                                    <option value="New Zealand"></option>
+                                </datalist>
+                            </div>
+
+                            <div class="field">
+                                <label for="city">City</label>
+                                <input id="city" name="city" type="text" required />
+                            </div>
+
+                            <div class="field">
+                                <label for="state-province">State / Province</label>
+                                <input id="state-province" name="state_province" type="text" required />
+                            </div>
+
+                            <div class="field">
+                                <label for="email">Email</label>
+                                <input id="email" name="email" type="email" autocomplete="email" required />
+                            </div>
+
+                            <div class="field">
+                                <label for="phone">Phone</label>
+                                <input id="phone" name="phone" type="tel" autocomplete="tel" />
+                                <p class="field-help">Optional</p>
+                            </div>
+                        </div>
+                    </section>
+
+                    <section class="application-section">
+                        <div>
+                            <h3 class="application-section-title">Professional Info</h3>
+                            <p class="application-section-copy">
+                                Give us a clear snapshot of where your project stands right now.
+                            </p>
+                        </div>
+
+                        <div class="form-grid">
+                            <div class="field">
+                                <label for="current-label">Current Label</label>
+                                <input id="current-label" name="current_label" type="text" />
+                                <p class="field-help">Leave blank if independent</p>
+                            </div>
+
+                            <div class="field">
+                                <label for="publisher">Publisher</label>
+                                <input id="publisher" name="publisher" type="text" placeholder="BMI, ASCAP, None, etc." />
+                            </div>
+
+                            <div class="field">
+                                <label for="current-distributor">Current Distributor</label>
+                                <input id="current-distributor" name="current_distributor" type="text" placeholder="DistroKid, CD Baby, Too Lost, None, etc." />
+                            </div>
+
+                            <div class="field">
+                                <label for="total-releases">Total Releases</label>
+                                <input id="total-releases" name="total_releases" type="number" min="0" step="1" />
+                                <p class="field-help">Albums, EPs, Singles. One album = 1 release</p>
+                            </div>
+
+                            <div class="field">
+                                <label for="releases-last-12-months">Releases in the Last 12 Months</label>
+                                <input id="releases-last-12-months" name="releases_last_12_months" type="number" min="0" step="1" />
+                            </div>
+
+                            <div class="field">
+                                <label for="spotify-monthly-listeners">Spotify Monthly Listeners</label>
+                                <input id="spotify-monthly-listeners" name="spotify_monthly_listeners" type="text" placeholder="Enter number or N/A" />
+                            </div>
+                        </div>
+                    </section>
+
+                    <section class="application-section">
+                        <div>
+                            <h3 class="application-section-title">Links</h3>
+                            <p class="application-section-copy">
+                                These should point to the main places your project currently lives online.
+                            </p>
+                        </div>
+
+                        <div class="form-grid">
+                            <div class="field">
+                                <label for="streaming-link">Spotify / SoundCloud Link</label>
+                                <input id="streaming-link" name="streaming_link" type="url" placeholder="https://..." required />
+                                <p class="field-help">Must contain “spotify” or “soundcloud”</p>
+                            </div>
+
+                            <div class="field">
+                                <label for="instagram-link">Instagram Link</label>
+                                <input id="instagram-link" name="instagram_link" type="url" placeholder="https://..." required />
+                                <p class="field-help">Must contain “instagram”</p>
+                            </div>
+
+                            <div class="field">
+                                <label for="youtube-link">YouTube Link</label>
+                                <input id="youtube-link" name="youtube_link" type="url" placeholder="https://..." required />
+                                <p class="field-help">Must contain “youtube”</p>
+                            </div>
+
+                            <div class="field">
+                                <label for="bandcamp-link">Bandcamp Link</label>
+                                <input id="bandcamp-link" name="bandcamp_link" type="url" placeholder="https://..." />
+                                <p class="field-help">Must contain “bandcamp”</p>
+                            </div>
+
+                            <div class="field full">
+                                <label for="website-link">Website</label>
+                                <input id="website-link" name="website_link" type="url" placeholder="https://..." />
+                            </div>
+                        </div>
+                    </section>
+
+                    <section class="application-section">
+                        <div>
+                            <h3 class="application-section-title">Application Questions</h3>
+                            <p class="application-section-copy">
+                                These questions help us evaluate fit, readiness, and where your project currently stands.
+                            </p>
+                        </div>
+
+                        <div class="form-grid">
+                            <div class="field full">
+                                <label for="fit">Why do you want to work with SpacedOut Studios?</label>
+                                <textarea id="fit" name="fit" required></textarea>
+                            </div>
+
+                            <div class="field full">
+                                <label for="standout">What makes your music stand out in your genre?</label>
+                                <textarea id="standout" name="standout" required></textarea>
+                            </div>
+
+                            <div class="field full">
+                                <label for="strongest-skill">What is your strongest skill as an artist, and where do you currently lack the most leverage?</label>
+                                <textarea id="strongest-skill" name="strongest_skill_and_leverage" required></textarea>
+                                <p class="field-help">Music, branding, marketing, audience growth, visuals, networking, etc.</p>
+                            </div>
+
+                            <div class="field full">
+                                <label for="release-schedule">What is your current release schedule?</label>
+                                <textarea id="release-schedule" name="release_schedule" required></textarea>
+                                <p class="field-help">Example: once a month, every 3 months, inconsistently, etc.</p>
+                            </div>
+
+                            <div class="field">
+                                <label for="unreleased-music">Do you have unreleased music ready to go?</label>
+                                <select id="unreleased-music" name="unreleased_music_ready" required>
+                                    <option value="">Select</option>
+                                    <option value="Yes">Yes</option>
+                                    <option value="No">No</option>
+                                    <option value="In progress">In progress</option>
+                                </select>
+                            </div>
+
+                            <div class="field full">
+                                <label for="branding">Are you currently building your brand outside of music?</label>
+                                <textarea id="branding" name="branding" required></textarea>
+                                <p class="field-help">Social media, visuals, content, community, etc.</p>
+                            </div>
+
+                            <div class="field full">
+                                <label for="goals">What are your goals for the next 12 months as an artist?</label>
+                                <textarea id="goals" name="goals_12_months" required></textarea>
+                            </div>
+
+                            <div class="field">
+                                <label for="collaboration-openness">Are you open to collaboration with other artists on the label?</label>
+                                <select id="collaboration-openness" name="collaboration_openness" required>
+                                    <option value="">Select</option>
+                                    <option value="Yes">Yes</option>
+                                    <option value="No">No</option>
+                                    <option value="Depends">Depends</option>
+                                </select>
+                            </div>
+
+                            <div class="field">
+                                <label for="heard-about">How did you hear about SpacedOut Studios?</label>
+                                <input id="heard-about" name="heard_about" type="text" />
+                            </div>
+                        </div>
+                    </section>
+
+                    <section class="application-section">
+                        <div>
+                            <h3 class="application-section-title">Financial / Operational</h3>
+                        </div>
+
+                        <div class="form-grid">
+                            <div class="field">
+                                <label for="bank-account-access">Do you have access to a bank account (for publishing royalties)?</label>
+                                <select id="bank-account-access" name="bank_account_access" required>
+                                    <option value="">Select</option>
+                                    <option value="Yes">Yes</option>
+                                    <option value="No">No</option>
+                                    <option value="Other">Other</option>
+                                </select>
+                                <p class="field-help">Publishing royalties are typically paid through a linked bank account. Distribution payouts may be handled separately.</p>
+                            </div>
+
+                            <div class="field full">
+                                <label for="bank-account-explanation">If Other, explain</label>
+                                <textarea id="bank-account-explanation" name="bank_account_explanation"></textarea>
+                            </div>
+                        </div>
+                    </section>
+
+                    <section class="application-section">
+                        <div>
+                            <h3 class="application-section-title">Final Agreement</h3>
+                        </div>
+
+                        <div class="notice-card">
+                            <p>
+                                SpacedOut Studios Entertainment ("The Label") is an independent record label. By submitting this application, you ("The Artist") acknowledge that if accepted, The Label may retain partial rights to use your master recordings for promotional, distribution, and business purposes for a period of up to four (4) years from the date of initial release.
+                            </p>
+                            <p>
+                                You understand that you are not bound to a fixed-term exclusive contract by submitting this application, however. acceptance into the label constitutes agreement to operate within The Label’s structure, standards, and release processes.
+                            </p>
+                            <p>
+                                You agree that all information provided is accurate to the best of your knowledge. You acknowledge that publishing royalties are typically paid through a linked bank account, and that distribution payouts may be handled through third-party platforms.
+                            </p>
+                            <p>
+                                By continuing, you agree to the Terms of Service and Privacy Policy, and consent to the use of cookies for platform functionality. You understand that The Label may terminate its association with you at its discretion in accordance with applicable laws.
+                            </p>
+                        </div>
+
+                        <div class="form-grid">
+                            <div class="field">
+                                <label for="agreement">Agreement</label>
+                                <select id="agreement" name="agreement" required>
+                                    <option value="">Select</option>
+                                    <option value="yes">Yes</option>
+                                    <option value="no">No</option>
+                                </select>
+                            </div>
+                        </div>
+                    </section>
+
+                    <div class="application-actions">
+                        <button type="submit" class="button primary" id="submit-application-button">
+                            Send Artist Application
+                        </button>
+                        <span id="application-status" class="application-status"></span>
+                    </div>
+                </form>
+            </section>
+        </section>
+    </main>
+</div>
+
+<div class="signin-modal" id="signin-modal" aria-hidden="true">
+    <div class="signin-panel">
+        <h2>Sign In</h2>
+        <p>Access your SpacedOut Studios account.</p>
+
+        <form class="signin-form" id="signin-form">
+            <label>
+                Email
+                <input type="email" name="email" required />
+            </label>
+
+            <label>
+                Password
+                <div class="signin-password-wrap">
+                    <input id="signin-password" type="password" name="password" required />
+                    <button
+                            type="button"
+                            class="signin-password-toggle"
+                            id="signin-password-toggle"
+                            aria-label="Show password"
+                    >
+                        <img
+                                id="signin-password-toggle-icon"
+                                src="/static/assets/hide_password.png"
+                                alt=""
+                                aria-hidden="true"
+                        />
+                    </button>
+                </div>
+            </label>
+
+            <div class="signin-error" id="signin-error"></div>
+
+            <div class="signin-actions">
+                <button class="signin-cancel" type="button" data-close-signin>Cancel</button>
+                <button class="signin-submit" type="submit">Sign In</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script src="/static/js/api.js"></script>
+<script src="/static/js/auth.js"></script>
+<script src="/static/js/header_auth.js"></script>
+
+<script>
+    const applicationForm = document.getElementById("artist-application-form");
+    const applicationStatus = document.getElementById("application-status");
+    const submitButton = document.getElementById("submit-application-button");
+
+    function setStatus(message, kind = "") {
+        applicationStatus.textContent = message;
+        applicationStatus.className = `application-status${kind ? ` ${kind}` : ""}`;
+    }
+
+    function isHttps(value) {
+        return typeof value === "string" && value.startsWith("https://");
+    }
+
+    applicationForm.addEventListener("submit", async (event) => {
+        event.preventDefault();
+        setStatus("");
+
+        const formData = new FormData(applicationForm);
+
+        const firstName = (formData.get("first_name") || "").trim();
+        const lastName = (formData.get("last_name") || "").trim();
+        const birthday = (formData.get("birthday") || "").trim();
+        const artistName = (formData.get("artist_name") || "").trim();
+        const country = (formData.get("country") || "").trim();
+        const city = (formData.get("city") || "").trim();
+        const stateProvince = (formData.get("state_province") || "").trim();
+        const email = (formData.get("email") || "").trim();
+
+        const streamingLink = (formData.get("streaming_link") || "").trim();
+        const instagramLink = (formData.get("instagram_link") || "").trim();
+        const youtubeLink = (formData.get("youtube_link") || "").trim();
+        const bandcampLink = (formData.get("bandcamp_link") || "").trim();
+        const websiteLink = (formData.get("website_link") || "").trim();
+
+        const agreement = (formData.get("agreement") || "").trim();
+
+        const birthdayRegex = /^(0[1-9]|1[0-2])\/(0[1-9]|[12]\d|3[01])\/\d{4}$/;
+
+        if (!firstName || !lastName || !birthday || !artistName || !country || !city || !stateProvince || !email) {
+            setStatus("Please complete all required identity fields.", "error");
+            return;
+        }
+
+        if (!birthdayRegex.test(birthday)) {
+            setStatus("Birthday must use MM/DD/YYYY format.", "error");
+            return;
+        }
+
+        if (!streamingLink || (!streamingLink.toLowerCase().includes("spotify") && !streamingLink.toLowerCase().includes("soundcloud"))) {
+            setStatus("Streaming link must contain spotify or soundcloud.", "error");
+            return;
+        }
+
+        if (!instagramLink || !instagramLink.toLowerCase().includes("instagram")) {
+            setStatus("Instagram link must contain instagram.", "error");
+            return;
+        }
+
+        if (!youtubeLink || !youtubeLink.toLowerCase().includes("youtube")) {
+            setStatus("YouTube link must contain youtube.", "error");
+            return;
+        }
+
+        if (bandcampLink && !bandcampLink.toLowerCase().includes("bandcamp")) {
+            setStatus("Bandcamp link must contain bandcamp.", "error");
+            return;
+        }
+
+        const allLinks = [streamingLink, instagramLink, youtubeLink, bandcampLink, websiteLink].filter(Boolean);
+        const badProtocol = allLinks.find(link => !isHttps(link));
+
+        if (badProtocol) {
+            setStatus("All links must begin with https://", "error");
+            return;
+        }
+
+        if (agreement !== "yes") {
+            setStatus("You must accept the terms to submit an application.", "error");
+            return;
+        }
+
+        const payload = {
+            first_name: firstName,
+            last_name: lastName,
+            birthday,
+            artist_name: artistName,
+            country,
+            city,
+            state_province: stateProvince,
+            email,
+
+            phone: (formData.get("phone") || "").trim() || null,
+            current_label: (formData.get("current_label") || "").trim() || null,
+            publisher: (formData.get("publisher") || "").trim() || null,
+            current_distributor: (formData.get("current_distributor") || "").trim() || null,
+            total_releases: (formData.get("total_releases") || "").trim() || null,
+            releases_last_12_months: (formData.get("releases_last_12_months") || "").trim() || null,
+            spotify_monthly_listeners: (formData.get("spotify_monthly_listeners") || "").trim() || null,
+
+            streaming_link: streamingLink,
+            instagram_link: instagramLink,
+            youtube_link: youtubeLink,
+            bandcamp_link: bandcampLink || null,
+            website_link: websiteLink || null,
+
+            fit: (formData.get("fit") || "").trim(),
+            standout: (formData.get("standout") || "").trim(),
+            strongest_skill_and_leverage: (formData.get("strongest_skill_and_leverage") || "").trim(),
+            release_schedule: (formData.get("release_schedule") || "").trim(),
+            unreleased_music_ready: (formData.get("unreleased_music_ready") || "").trim(),
+            branding: (formData.get("branding") || "").trim(),
+            goals_12_months: (formData.get("goals_12_months") || "").trim(),
+            collaboration_openness: (formData.get("collaboration_openness") || "").trim(),
+            heard_about: (formData.get("heard_about") || "").trim() || null,
+
+            bank_account_access: (formData.get("bank_account_access") || "").trim(),
+            bank_account_explanation: (formData.get("bank_account_explanation") || "").trim() || null,
+
+            agreement: agreement
+        };
+
+        submitButton.disabled = true;
+        applicationForm.classList.add("application-loading");
+
+        try {
+            const response = await apiFetch("/api/applications", {
+                method: "POST",
+                body: payload
+            });
+
+            setStatus(response.message || "Artist application submitted.", "success");
+            applicationForm.reset();
+        } catch (error) {
+            setStatus(error.message || "Failed to send artist application.", "error");
+        } finally {
+            submitButton.disabled = false;
+            applicationForm.classList.remove("application-loading");
+        }
+    });
+</script>
+</body>
+</html>
