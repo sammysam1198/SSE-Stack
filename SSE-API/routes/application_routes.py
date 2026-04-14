@@ -1,4 +1,6 @@
 from utils.mail_utils import send_artist_application_email
+from repos.applications_repo import update_application_pdf_path
+from utils.application_pdf_utils import generate_application_pdf
 from datetime import datetime
 from urllib.parse import urlparse
 
@@ -169,29 +171,6 @@ def _validate_application_payload(data: dict):
         "agreement": "yes",
     }
 
-
-@applications_bp.post("")
-def create_application():
-    data = request.get_json(silent=True) or {}
-
-    try:
-        payload = _validate_application_payload(data)
-    except ValueError as exc:
-        return jsonify({"error": str(exc)}), 400
-
-    created_user_id = _current_user_id()
-
-    application = repo_create_application(
-        **payload,
-        created_user_id=created_user_id,
-    )
-
-    return jsonify({
-        "message": "Artist application submitted successfully.",
-        "application": application,
-    }), 201
-
-
 @applications_bp.get("")
 def list_applications():
     if not _require_admin_or_dev():
@@ -267,6 +246,21 @@ def create_application():
         created_user_id=created_user_id,
     )
 
+    pdf_path = None
+    pdf_error = None
+
+    try:
+        full_application = {
+            **payload,
+            **application,
+        }
+        pdf_path = generate_application_pdf(full_application)
+        update_application_pdf_path(application["id"], pdf_path)
+        application["application_pdf_path"] = pdf_path
+    except Exception as exc:
+        pdf_error = str(exc)
+        print(f"[application pdf] failed: {exc}")
+
     email_sent = True
     email_error = None
 
@@ -285,4 +279,6 @@ def create_application():
         "application": application,
         "email_sent": email_sent,
         "email_error": email_error,
+        "pdf_created": pdf_path is not None,
+        "pdf_error": pdf_error,
     }), 201

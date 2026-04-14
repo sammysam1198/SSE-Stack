@@ -219,3 +219,13 @@ def deny_application(application_id: int, reviewed_by_user_id: int, review_notes
         WHERE id = %s
     """
     execute_write(query, (reviewed_by_user_id, review_notes, application_id))
+
+def update_application_pdf_path(application_id: int, application_pdf_path: str):
+    query = """
+            UPDATE artist_applications
+            SET
+                application_pdf_path = %s,
+                updated_at = NOW()
+            WHERE id = %s
+        """
+    execute_write(query, (application_pdf_path, application_id))
