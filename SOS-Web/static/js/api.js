@@ -14,10 +14,6 @@ async function apiFetch(path, options = {}) {
         config.body = JSON.stringify(options.body);
     }
 
-
-    console.log("INVITE PAYLOAD", payload);
-    
-
     const response = await fetch(`${API_BASE}${path}`, config);
 
     let data = {};

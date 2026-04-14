@@ -23,9 +23,9 @@ async function signout() {
 }
 
 function getDashboardPathForRole(role) {
-    if (role === "developer") return "/dashboard-developer.html";
-    if (role === "admin") return "/dashboard-admin.html";
-    if (role === "artist") return "/dashboard-artist.html";
+    if (role === "developer") return "/dashboard-developer";
+    if (role === "admin") return "/dashboard-admin";
+    if (role === "artist") return "/dashboard-artist";
     return "/";
 }
 
