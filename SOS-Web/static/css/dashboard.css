@@ -589,3 +589,33 @@
         grid-template-columns: 1fr;
     }
 }
+
+.dashboard-shell,
+.dashboard-sidebar,
+.dashboard-main,
+.artist-dashboard-container {
+    min-width: 0;
+}
+
+.dashboard-sidebar {
+    min-width: 0;
+}
+
+.dashboard-sidebar .dashboard-nav {
+    display: grid;
+    gap: 12px;
+    overflow-x: visible;
+    padding: 0;
+    margin-bottom: 0;
+    background: transparent;
+    border: 0;
+}
+
+.dashboard-sidebar .dashboard-nav a,
+.dashboard-sidebar .dashboard-nav button {
+    display: block;
+    width: 100%;
+    min-width: 0;
+    box-sizing: border-box;
+    white-space: normal;
+}
