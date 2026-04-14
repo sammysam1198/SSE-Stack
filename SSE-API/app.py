@@ -7,7 +7,7 @@ from flask_cors import CORS
 from routes.auth_routes import auth_bp
 from routes.application_routes import applications_bp
 from routes.artist_routes import artists_bp
-from routes.release_routes import releases_bp
+from routes.release_routes import release_bp
 from routes.request_routes import requests_bp
 from routes.news_routes import news_bp
 from routes.admin_routes import admin_bp
@@ -40,7 +40,7 @@ def create_app() -> Flask:
     app.register_blueprint(auth_bp, url_prefix="/api/auth")
     app.register_blueprint(applications_bp, url_prefix="/api/applications")
     app.register_blueprint(artists_bp, url_prefix="/api/artists")
-    app.register_blueprint(releases_bp, url_prefix="/api/releases")
+    app.register_blueprint(release_bp, url_prefix="/api/release")
     app.register_blueprint(requests_bp, url_prefix="/api/requests")
     app.register_blueprint(news_bp, url_prefix="/api/news")
     app.register_blueprint(admin_bp, url_prefix="/api/admin")
