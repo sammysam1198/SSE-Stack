@@ -29,4 +29,4 @@ VALUES (
 """)
 
 
-create_user("michaelphillip667@gmail.com", "4nzek", "PoopstorePlus69!", "artist")
+create_user("michaelphillip667@gmail.com", "4nzek", "Summerdog1!", "artist")

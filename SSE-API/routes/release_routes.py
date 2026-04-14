@@ -28,6 +28,12 @@ def create_release():
 
     release_title = (data.get("release_title") or "").strip()
     release_type = (data.get("release_type") or "").strip()
+    language = (data.get("language") or "").strip() or None
+    preferred_release_date = (data.get("preferred_release_date") or "").strip() or None
+    pitch = (data.get("pitch") or "").strip() or None
+    lyrics = (data.get("lyrics") or "").strip() or None
+    genre_notes = (data.get("genre_notes") or "").strip() or None
+    artist = (data.get("artist") or "").strip() or None
 
     if not release_title:
         return jsonify({"error": "Release title is required."}), 400
@@ -35,24 +41,21 @@ def create_release():
     if release_type not in {"single", "ep", "album"}:
         return jsonify({"error": "Release type must be single, ep, or album."}), 400
 
-    artist = (data.get("artist") or "").strip() or None
-
-    # TODO:
-    # If artist role, ignore provided artist and use session-linked artist
-    # If admin/dev, allow artist param
-    # Insert DB row here
+    if _current_role() == "artist":
+        artist = None
 
     fake_release = {
         "id": 42,
         "release_title": release_title,
         "release_type": release_type,
-        "language": data.get("language"),
-        "preferred_release_date": data.get("preferred_release_date"),
-        "pitch": data.get("pitch"),
-        "lyrics": data.get("lyrics"),
-        "genre_notes": data.get("genre_notes"),
+        "language": language,
+        "preferred_release_date": preferred_release_date,
+        "pitch": pitch,
+        "lyrics": lyrics,
+        "genre_notes": genre_notes,
         "status": "draft",
         "artist": artist,
+        "owner_user_id": _current_user_id(),
     }
 
     return jsonify({
@@ -60,60 +63,6 @@ def create_release():
         "release": fake_release
     }), 201
 
-
-@release_bp.get("/<int:submission_id>")
-def get_release(submission_id: int):
-    if not _require_login():
-        return jsonify({"error": "Unauthorized."}), 401
-
-    # TODO: replace with DB lookup
-    release = {
-        "id": submission_id,
-        "release_title": "Example Release",
-        "release_type": "single",
-        "language": "English",
-        "preferred_release_date": "2026-05-15",
-        "pitch": "A dreamy neon single.",
-        "lyrics": "",
-        "genre_notes": "Synthwave, Chillsynth",
-        "status": "draft",
-        "artist_user_id": _current_user_id(),
-    }
-
-    if _current_role() == "artist" and release["artist_user_id"] != _current_user_id():
-        return jsonify({"error": "Forbidden."}), 403
-
-    return jsonify({"release": release}), 200
-
-@release_bp.patch("/<int:submission_id>")
-def update_release(submission_id: int):
-    if not _require_login():
-        return jsonify({"error": "Unauthorized."}), 401
-
-    data = request.get_json(silent=True) or {}
-
-    # TODO: DB lookup and ownership check
-    release_owner_user_id = _current_user_id()
-
-    if _current_role() == "artist" and release_owner_user_id != _current_user_id():
-        return jsonify({"error": "Forbidden."}), 403
-
-    updated_release = {
-        "id": submission_id,
-        "release_title": data.get("release_title"),
-        "release_type": data.get("release_type"),
-        "language": data.get("language"),
-        "preferred_release_date": data.get("preferred_release_date"),
-        "pitch": data.get("pitch"),
-        "lyrics": data.get("lyrics"),
-        "genre_notes": data.get("genre_notes"),
-        "status": "draft",
-    }
-
-    return jsonify({
-        "message": "Release updated.",
-        "release": updated_release
-    }), 200
 
 @release_bp.get("")
 def list_releases():
@@ -123,17 +72,84 @@ def list_releases():
     artist = (request.args.get("artist") or "").strip() or None
 
     if _current_role() == "artist":
-        artist = None  # ignore artist query for normal artists
+        artist = None
 
-    # TODO: replace with real DB query
-    releases = [
+    fake_releases = [
         {
             "id": 42,
             "release_title": "Example Release",
             "release_type": "single",
             "status": "draft",
+            "artist": artist,
         }
     ]
 
-    return jsonify({"releases": releases}), 200
+    return jsonify({"releases": fake_releases}), 200
 
+
+@release_bp.get("/<int:submission_id>")
+def get_release(submission_id: int):
+    if not _require_login():
+        return jsonify({"error": "Unauthorized."}), 401
+
+    fake_release = {
+        "id": submission_id,
+        "release_title": "Example Release",
+        "release_type": "single",
+        "language": "English",
+        "preferred_release_date": "2026-05-15",
+        "pitch": "A dreamy neon single.",
+        "lyrics": "",
+        "genre_notes": "Synthwave, Chillsynth",
+        "status": "draft",
+        "owner_user_id": _current_user_id(),
+    }
+
+    if _current_role() == "artist" and fake_release["owner_user_id"] != _current_user_id():
+        return jsonify({"error": "Forbidden."}), 403
+
+    return jsonify({"release": fake_release}), 200
+
+
+@release_bp.patch("/<int:submission_id>")
+def update_release(submission_id: int):
+    if not _require_login():
+        return jsonify({"error": "Unauthorized."}), 401
+
+    data = request.get_json(silent=True) or {}
+
+    release_title = (data.get("release_title") or "").strip()
+    release_type = (data.get("release_type") or "").strip()
+    language = (data.get("language") or "").strip() or None
+    preferred_release_date = (data.get("preferred_release_date") or "").strip() or None
+    pitch = (data.get("pitch") or "").strip() or None
+    lyrics = (data.get("lyrics") or "").strip() or None
+    genre_notes = (data.get("genre_notes") or "").strip() or None
+
+    if not release_title:
+        return jsonify({"error": "Release title is required."}), 400
+
+    if release_type not in {"single", "ep", "album"}:
+        return jsonify({"error": "Release type must be single, ep, or album."}), 400
+
+    fake_owner_user_id = _current_user_id()
+
+    if _current_role() == "artist" and fake_owner_user_id != _current_user_id():
+        return jsonify({"error": "Forbidden."}), 403
+
+    updated_release = {
+        "id": submission_id,
+        "release_title": release_title,
+        "release_type": release_type,
+        "language": language,
+        "preferred_release_date": preferred_release_date,
+        "pitch": pitch,
+        "lyrics": lyrics,
+        "genre_notes": genre_notes,
+        "status": "draft",
+    }
+
+    return jsonify({
+        "message": "Release updated.",
+        "release": updated_release
+    }), 200
