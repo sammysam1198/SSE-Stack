@@ -36,19 +36,10 @@ document.addEventListener("DOMContentLoaded", async () => {
                 <h3>${escapeHtml(release.release_title || "Untitled Release")}</h3>
                 <p>Status: ${escapeHtml(release.status || "draft")}</p>
                 <p>Type: ${escapeHtml(release.release_type || "—")}</p>
-                <a href="/releases-edit.html?submission=${release.id}">Edit</a>
+                <a href="/releases/edit?submission=${release.id}">Edit</a>
             </article>
         `).join("");
     } catch (error) {
         errorBox.textContent = error.message || "Failed to load releases.";
     }
 });
-
-function escapeHtml(value) {
-    return String(value ?? "")
-        .replaceAll("&", "&amp;")
-        .replaceAll("<", "&lt;")
-        .replaceAll(">", "&gt;")
-        .replaceAll('"', "&quot;")
-        .replaceAll("'", "&#39;");
-}

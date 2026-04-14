@@ -7,10 +7,15 @@ function getReleasePageParams() {
     };
 }
 
-async function fetchMyUser() {
-    return await getCurrentUser();
-}
-
 function isPrivilegedRole(role) {
     return role === "admin" || role === "developer";
+}
+
+function escapeHtml(value) {
+    return String(value ?? "")
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;")
+        .replaceAll('"', "&quot;")
+        .replaceAll("'", "&#39;");
 }

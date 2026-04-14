@@ -1,0 +1,75 @@
+.page-shell {
+    width: min(920px, calc(100% - 2rem));
+    margin: 2rem auto 4rem;
+    padding: 2rem;
+    border-radius: 24px;
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    backdrop-filter: blur(14px);
+    color: white;
+}
+
+.page-shell h1 {
+    margin-top: 0;
+}
+
+#release-error,
+#release-success {
+    min-height: 1.25rem;
+    margin-bottom: 1rem;
+}
+
+#release-error {
+    color: #ff9aa8;
+}
+
+#release-success {
+    color: #9dffcf;
+}
+
+#release-form {
+    display: grid;
+    gap: 1rem;
+}
+
+#release-form label {
+    display: grid;
+    gap: 0.4rem;
+}
+
+#release-form input,
+#release-form select,
+#release-form textarea {
+    width: 100%;
+    padding: 0.85rem 0.95rem;
+    border-radius: 14px;
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    background: rgba(255, 255, 255, 0.08);
+    color: white;
+    font: inherit;
+}
+
+#release-form textarea {
+    min-height: 140px;
+    resize: vertical;
+}
+
+#release-form button {
+    width: fit-content;
+    padding: 0.9rem 1.2rem;
+    border: none;
+    border-radius: 999px;
+    font: inherit;
+    font-weight: 700;
+    cursor: pointer;
+    background: linear-gradient(135deg, #ff4fcf, #6be7ff);
+    color: black;
+}
+
+.release-card {
+    padding: 1rem;
+    border-radius: 18px;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    margin-bottom: 1rem;
+}

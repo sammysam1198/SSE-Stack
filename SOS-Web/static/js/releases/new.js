@@ -1,17 +1,10 @@
 document.addEventListener("DOMContentLoaded", async () => {
     const form = document.getElementById("release-form");
+    const artistContext = document.getElementById("artist-context");
     const errorBox = document.getElementById("release-error");
     const successBox = document.getElementById("release-success");
-    const pageTitle = document.getElementById("release-page-title");
 
     if (!form) return;
-
-    const { submission } = getReleasePageParams();
-
-    if (!submission) {
-        errorBox.textContent = "Missing submission id.";
-        return;
-    }
 
     try {
         const user = await getCurrentUser();
@@ -20,20 +13,21 @@ document.addEventListener("DOMContentLoaded", async () => {
             return;
         }
 
-        const data = await apiFetch(`/api/releases/${submission}`);
-        const release = data.release;
+        const { artist } = getReleasePageParams();
 
-        if (pageTitle) {
-            pageTitle.textContent = `Edit Release: ${release.release_title || "Untitled"}`;
+        let selectedArtist = null;
+
+        if (isPrivilegedRole(user.role) && artist) {
+            selectedArtist = artist;
+        } else if (user.role === "artist") {
+            selectedArtist = user.artist_page || user.artist_name || user.username || null;
         }
 
-        form.elements["release_title"].value = release.release_title || "";
-        form.elements["release_type"].value = release.release_type || "";
-        form.elements["language"].value = release.language || "";
-        form.elements["preferred_release_date"].value = release.preferred_release_date || "";
-        form.elements["pitch"].value = release.pitch || "";
-        form.elements["lyrics"].value = release.lyrics || "";
-        form.elements["genre_notes"].value = release.genre_notes || "";
+        if (artistContext) {
+            artistContext.textContent = selectedArtist
+                ? `Creating release for ${selectedArtist}`
+                : "Creating new release";
+        }
 
         form.addEventListener("submit", async (event) => {
             event.preventDefault();
@@ -43,6 +37,7 @@ document.addEventListener("DOMContentLoaded", async () => {
             const formData = new FormData(form);
 
             const payload = {
+                artist: selectedArtist,
                 release_title: formData.get("release_title")?.trim(),
                 release_type: formData.get("release_type")?.trim(),
                 language: formData.get("language")?.trim(),
@@ -53,17 +48,23 @@ document.addEventListener("DOMContentLoaded", async () => {
             };
 
             try {
-                await apiFetch(`/api/releases/${submission}`, {
-                    method: "PATCH",
+                const data = await apiFetch("/api/releases", {
+                    method: "POST",
                     body: payload,
                 });
 
-                successBox.textContent = "Release draft updated successfully.";
+                successBox.textContent = "Release draft created successfully.";
+
+                if (data.release && data.release.id) {
+                    window.location.href = `/releases/edit?submission=${data.release.id}`;
+                }
             } catch (error) {
-                errorBox.textContent = error.message || "Failed to update release.";
+                errorBox.textContent = error.message || "Failed to create release draft.";
             }
         });
     } catch (error) {
-        errorBox.textContent = error.message || "Failed to load release.";
+        if (errorBox) {
+            errorBox.textContent = "Failed to load release page.";
+        }
     }
 });

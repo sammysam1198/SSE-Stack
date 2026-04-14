@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>View Releases | SpacedOut Studios</title>
+
+    <link rel="stylesheet" href="/static/css/base.css" />
+    <link rel="stylesheet" href="/static/css/header.css" />
+    <link rel="stylesheet" href="/static/css/auth.css" />
+    <link rel="stylesheet" href="/static/css/releases/common.css" />
+    <link rel="stylesheet" href="/static/css/releases/view.css" />
+</head>
+<body>
+<header class="site-header">
+    <div class="header-inner">
+        <a class="brand" href="/">
+            <span class="brand-orb"></span>
+            <span class="brand-text">SpacedOut Studios</span>
+        </a>
+
+        <nav class="site-nav">
+            <a href="/">Home</a>
+            <a href="/coming_soon">About</a>
+            <a href="/artists">Artists</a>
+            <a href="/submissions">Apply</a>
+            <a href="/coming_soon">Contact</a>
+        </nav>
+
+        <div id="auth-slot"></div>
+    </div>
+</header>
+
+<main class="page-shell">
+    <div class="page-shell__header">
+        <p class="eyebrow">Release Intake</p>
+        <h1 id="release-page-title">Your Releases</h1>
+        <p class="page-description">View and manage your draft and submitted releases.</p>
+    </div>
+
+    <div id="release-error" role="alert"></div>
+    <section id="release-list" aria-live="polite"></section>
+</main>
+
+<div class="signin-modal" id="signin-modal" aria-hidden="true">
+    <div class="signin-panel">
+        <h2>Sign In</h2>
+        <p>Access your Spaced Out Studios account.</p>
+
+        <form class="signin-form" id="signin-form">
+            <label>
+                Email
+                <input type="email" name="email" required />
+            </label>
+
+            <label>
+                Password
+                <input type="password" name="password" required />
+            </label>
+
+            <div class="signin-error" id="signin-error"></div>
+
+            <div class="signin-actions">
+                <button class="signin-cancel" type="button" data-close-signin>Cancel</button>
+                <button class="signin-submit" type="submit">Sign In</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script src="/static/js/api.js"></script>
+<script src="/static/js/auth.js"></script>
+<script src="/static/js/header_auth.js"></script>
+<script src="/static/js/releases/common.js"></script>
+<script src="/static/js/releases/view.js"></script>
+</body>
+</html>
