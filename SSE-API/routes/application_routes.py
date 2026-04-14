@@ -1,3 +1,4 @@
+from utils.mail_utils import send_artist_application_email
 from datetime import datetime
 from urllib.parse import urlparse
 
@@ -248,3 +249,40 @@ def deny_application(application_id: int):
         "application_id": application_id,
         "review_notes": review_notes
     }), 200
+
+
+@applications_bp.post("")
+def create_application():
+    data = request.get_json(silent=True) or {}
+
+    try:
+        payload = _validate_application_payload(data)
+    except ValueError as exc:
+        return jsonify({"error": str(exc)}), 400
+
+    created_user_id = _current_user_id()
+
+    application = repo_create_application(
+        **payload,
+        created_user_id=created_user_id,
+    )
+
+    email_sent = True
+    email_error = None
+
+    try:
+        send_artist_application_email({
+            **payload,
+            **application,
+        })
+    except Exception as exc:
+        email_sent = False
+        email_error = str(exc)
+        print(f"[artist application email] failed: {exc}")
+
+    return jsonify({
+        "message": "Artist application submitted successfully.",
+        "application": application,
+        "email_sent": email_sent,
+        "email_error": email_error,
+    }), 201

@@ -1,3 +1,4 @@
+
 from config.db import (
     execute_returning_one,
     execute_write,
@@ -132,6 +133,7 @@ def create_application(
             created_user_id,
         ),
     )
+
 
 
 def list_applications():
