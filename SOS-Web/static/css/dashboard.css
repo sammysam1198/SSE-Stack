@@ -279,7 +279,25 @@
     align-items: start;
 }
 
+.dashboard-sidebar-nav,
+.dashboard-sidebar-menu,
+.dashboard-sidebar-links {
+    display: grid;
+    gap: 12px;
+    min-width: 0;
+}
 
+.dashboard-sidebar-nav a,
+.dashboard-sidebar-menu a,
+.dashboard-sidebar-links a,
+.dashboard-sidebar-nav button,
+.dashboard-sidebar-menu button,
+.dashboard-sidebar-links button {
+    width: 100%;
+    min-width: 0;
+    box-sizing: border-box;
+    white-space: normal;
+}
 
 .artist-quick-actions {
     display: flex;
