@@ -1,21 +1,18 @@
-from utils.mail_utils import send_artist_application_email
-from repos.applications_repo import update_application_pdf_path
-from utils.application_pdf_utils import generate_application_pdf
+from io import BytesIO
 from datetime import datetime
 from urllib.parse import urlparse
-from pathlib import Path
-from flask import send_file
-
-from flask import Blueprint, request, jsonify, session
-
+from flask import Blueprint, request, jsonify, session, send_file
+from utils.r2_utils import upload_bytes_to_r2, download_bytes_from_r2
+from utils.mail_utils import send_artist_application_email
+from utils.application_pdf_utils import build_application_pdf_bytes
 from repos.applications_repo import (
     approve_application as repo_approve_application,
     create_application as repo_create_application,
     deny_application as repo_deny_application,
     get_application_by_id,
     list_applications as repo_list_applications,
+    update_application_pdf_path,
 )
-
 applications_bp = Blueprint("applications", __name__)
 
 
@@ -248,6 +245,11 @@ def create_application():
         created_user_id=created_user_id,
     )
 
+    application = repo_create_application(
+        **payload,
+        created_user_id=created_user_id,
+    )
+
     pdf_path = None
     pdf_error = None
 
@@ -256,12 +258,24 @@ def create_application():
             **payload,
             **application,
         }
-        pdf_path = generate_application_pdf(full_application)
+
+        pdf_bytes, pdf_filename = build_application_pdf_bytes(full_application)
+
+        object_key = f"applications/{pdf_filename}"
+
+        pdf_path = upload_bytes_to_r2(
+            data=pdf_bytes,
+            object_key=object_key,
+            content_type="application/pdf",
+            content_disposition=f'attachment; filename="{pdf_filename}"',
+        )
+
         update_application_pdf_path(application["id"], pdf_path)
         application["application_pdf_path"] = pdf_path
+
     except Exception as exc:
         pdf_error = str(exc)
-        print(f"[application pdf] failed: {exc}")
+        print(f"[application pdf upload] failed: {exc}")
 
     email_sent = True
     email_error = None
@@ -298,16 +312,15 @@ def download_application_pdf(application_id: int):
     if not pdf_path:
         return jsonify({"error": "Application PDF not found."}), 404
 
-    base_dir = Path(__file__).resolve().parent.parent
-    absolute_path = base_dir / pdf_path
-
-    if not absolute_path.exists() or not absolute_path.is_file():
-        return jsonify({"error": "Application PDF file is missing."}), 404
+    try:
+        pdf_bytes = download_bytes_from_r2(pdf_path)
+    except Exception as exc:
+        return jsonify({"error": f"Failed to download application PDF: {exc}"}), 500
 
     download_name = f"{application.get('artist_name', 'artist')}_application.pdf"
 
     return send_file(
-        absolute_path,
+        BytesIO(pdf_bytes),
         as_attachment=True,
         download_name=download_name,
         mimetype="application/pdf",

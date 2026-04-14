@@ -1,13 +1,10 @@
+import io
 import re
-from pathlib import Path
 
 from reportlab.lib.pagesizes import LETTER
 from reportlab.lib.units import inch
 from reportlab.pdfbase.pdfmetrics import stringWidth
 from reportlab.pdfgen import canvas
-
-BASE_DIR = Path(__file__).resolve().parent.parent
-PDF_OUTPUT_DIR = BASE_DIR / "application_docs"
 
 
 def sanitize_name(value: str) -> str:
@@ -34,10 +31,7 @@ def wrap_text(text: str, font_name: str, font_size: int, max_width: float):
                 lines.append(current)
             current = word
 
-    if current:
-        lines.append(current)
-
-    return lines or ["—"]
+    return lines + ([current] if current else []) or ["—"]
 
 
 def draw_label_value(c, label, value, x_label, x_value, y, page_width, font_size=10):
@@ -69,17 +63,15 @@ def ensure_page(c, y, min_y=0.9 * inch):
     return y
 
 
-def generate_application_pdf(application: dict) -> str:
-    PDF_OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
-
+def build_application_pdf_bytes(application: dict) -> tuple[bytes, str]:
     first_name = sanitize_name(application.get("first_name"))
     last_name = sanitize_name(application.get("last_name"))
     app_id = application.get("id", "unknown")
 
     filename = f"application_{app_id}_{first_name}_{last_name}.pdf"
-    file_path = PDF_OUTPUT_DIR / filename
 
-    c = canvas.Canvas(str(file_path), pagesize=LETTER)
+    buffer = io.BytesIO()
+    c = canvas.Canvas(buffer, pagesize=LETTER)
     page_width, page_height = LETTER
 
     left = 0.75 * inch
@@ -176,5 +168,7 @@ def generate_application_pdf(application: dict) -> str:
         y = draw_label_value(c, label, application.get(key), label_x, value_x, y, page_width)
 
     c.save()
+    pdf_bytes = buffer.getvalue()
+    buffer.close()
 
-    return f"application_docs/{filename}"
+    return pdf_bytes, filename
