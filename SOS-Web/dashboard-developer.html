@@ -51,79 +51,6 @@
     </aside>
 
     <div class="dashboard-main">
-        <section class="glass invite-user-card">
-        <div class="section-head">
-            <p class="eyebrow">Platform Tools</p>
-            <h2 class="section-title">Invite User</h2>
-            <p class="section-copy">
-                Create a new account and send an onboarding email.
-            </p>
-        </div>
-
-        <form id="invite-user-form" class="invite-user-form" novalidate>
-            <div class="invite-grid">
-                <div class="field">
-                    <label for="invite-email">Email</label>
-                    <input
-                            id="invite-email"
-                            name="email"
-                            type="email"
-                            placeholder="artist@email.com"
-                            autocomplete="off"
-                            required
-                    />
-                </div>
-
-                <div class="field">
-                    <label for="invite-role">Role</label>
-                    <select id="invite-role" name="role" required>
-                        <option value="artist" selected>Artist</option>
-                        <option value="admin">Admin</option>
-                        <option value="developer">Developer</option>
-                    </select>
-                </div>
-
-                <div class="field">
-                    <label for="invite-artist-name">Artist Name</label>
-                    <input
-                            id="invite-artist-name"
-                            name="artist_name"
-                            type="text"
-                            placeholder="4nzek"
-                            autocomplete="off"
-                            required
-                    />
-                </div>
-
-                <div class="field">
-                    <label for="invite-artist-page">Associated Page</label>
-                    <input
-                            id="invite-artist-page"
-                            name="artist_page"
-                            type="text"
-                            placeholder="Paste URL or slug"
-                            autocomplete="off"
-                            required
-                    />
-                    <p class="field-help">
-                        Accepts a full link, slug, or old .html path. Stored as a clean page slug.
-                    </p>
-                </div>
-            </div>
-
-            <div class="invite-status-area">
-                <div class="invite-error" id="invite-user-error"></div>
-                <div class="invite-success" id="invite-user-success"></div>
-            </div>
-
-            <div class="invite-actions">
-                <button class="button primary" id="invite-user-submit" type="submit">
-                    Send Invite
-                </button>
-            </div>
-        </form>
-        </section>
-
         <section class="dashboard-main">
         <section class="dashboard-hero" id="dashboard-hero">
             <div class="dashboard-hero__bg"></div>
@@ -166,6 +93,79 @@
             </article>
         </section>
         </section>
+        <section class="glass invite-user-card">
+            <div class="section-head">
+                <p class="eyebrow">Platform Tools</p>
+                <h2 class="section-title">Invite User</h2>
+                <p class="section-copy">
+                    Create a new account and send an onboarding email.
+                </p>
+            </div>
+
+            <form id="invite-user-form" class="invite-user-form" novalidate>
+                <div class="invite-grid">
+                    <div class="field">
+                        <label for="invite-email">Email</label>
+                        <input
+                                id="invite-email"
+                                name="email"
+                                type="email"
+                                placeholder="artist@email.com"
+                                autocomplete="off"
+                                required
+                        />
+                    </div>
+
+                    <div class="field">
+                        <label for="invite-role">Role</label>
+                        <select id="invite-role" name="role" required>
+                            <option value="artist" selected>Artist</option>
+                            <option value="admin">Admin</option>
+                            <option value="developer">Developer</option>
+                        </select>
+                    </div>
+
+                    <div class="field">
+                        <label for="invite-artist-name">Artist Name</label>
+                        <input
+                                id="invite-artist-name"
+                                name="artist_name"
+                                type="text"
+                                placeholder="4nzek"
+                                autocomplete="off"
+                                required
+                        />
+                    </div>
+
+                    <div class="field">
+                        <label for="invite-artist-page">Associated Page</label>
+                        <input
+                                id="invite-artist-page"
+                                name="artist_page"
+                                type="text"
+                                placeholder="Paste URL or slug"
+                                autocomplete="off"
+                                required
+                        />
+                        <p class="field-help">
+                            Accepts a full link, slug, or old .html path. Stored as a clean page slug.
+                        </p>
+                    </div>
+                </div>
+
+                <div class="invite-status-area">
+                    <div class="invite-error" id="invite-user-error"></div>
+                    <div class="invite-success" id="invite-user-success"></div>
+                </div>
+
+                <div class="invite-actions">
+                    <button class="button primary" id="invite-user-submit" type="submit">
+                        Send Invite
+                    </button>
+                </div>
+            </form>
+        </section>
+
     </div>
 </main>
 
