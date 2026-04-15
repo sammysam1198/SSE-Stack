@@ -158,6 +158,30 @@
                     </div>
                 </div>
 
+                <div class="field" style="grid-column: 1 / -1;">
+                    <label for="invite-email-subject">Custom Email Subject</label>
+                    <input
+                            id="invite-email-subject"
+                            name="email_subject"
+                            type="text"
+                            placeholder="Optional custom subject"
+                            autocomplete="off"
+                    />
+                </div>
+
+                <div class="field" style="grid-column: 1 / -1;">
+                    <label for="invite-email-body">Custom Email Body</label>
+                    <textarea
+                            id="invite-email-body"
+                            name="email_body"
+                            rows="12"
+                            placeholder="Optional custom email body. The setup link will still be included."
+                    ></textarea>
+                    <p class="field-help">
+                        Leave blank to use the standard invite email.
+                    </p>
+                </div>
+
                 <div class="invite-status-area">
                     <div class="invite-error" id="invite-user-error"></div>
                     <div class="invite-success" id="invite-user-success"></div>
