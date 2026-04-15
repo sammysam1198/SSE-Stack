@@ -151,6 +151,30 @@
                             Accepts a full link, slug, or old .html path. Stored as a clean page slug.
                         </p>
                     </div>
+
+                    <div class="field" style="grid-column: 1 / -1;">
+                        <label for="invite-email-subject">Custom Email Subject</label>
+                        <input
+                                id="invite-email-subject"
+                                name="email_subject"
+                                type="text"
+                                placeholder="Optional custom subject"
+                                autocomplete="off"
+                        />
+                    </div>
+
+                    <div class="field" style="grid-column: 1 / -1;">
+                        <label for="invite-email-body">Custom Email Body</label>
+                        <textarea
+                                id="invite-email-body"
+                                name="email_body"
+                                rows="12"
+                                placeholder="Optional custom email body. The setup link will still be included."
+                        ></textarea>
+                        <p class="field-help">
+                            Leave blank to use the standard invite email.
+                        </p>
+                    </div>
                 </div>
 
                 <div class="invite-status-area">
