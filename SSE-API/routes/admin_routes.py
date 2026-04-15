@@ -123,6 +123,8 @@ def create_artist_user():
     role = (data.get("role") or "artist").strip().lower()
     artist_name = (data.get("artist_name") or "").strip()
     artist_page = (data.get("artist_page") or "").strip()
+    email_subject = (data.get("email_subject") or "").strip()
+    email_body = (data.get("email_body") or "").strip()
 
     if not email:
         return jsonify({"error": "Email is required."}), 400
@@ -178,7 +180,9 @@ def create_artist_user():
     send_artist_invite_email(
         to_email=email,
         artist_name=artist_name or role.title(),
-        setup_url=setup_url
+        setup_url=setup_url,
+        custom_subject=email_subject or None,
+        custom_body=email_body or None,
     )
 
     return jsonify({

@@ -16,6 +16,46 @@ def send_email(to_email: str, subject: str, html: str):
     })
 
 
+def _format_custom_invite_body_html(custom_body: str, setup_url: str) -> str:
+    escaped_body = escape(custom_body).replace("\n", "<br>")
+
+    return f"""
+    <div style="font-family:Arial,Helvetica,sans-serif; color:#111; line-height:1.65;">
+        <div style="white-space:normal; font-size:15px;">
+            {escaped_body}
+        </div>
+
+        <p style="margin-top:24px;">
+            <strong>Create your account here:</strong><br>
+            <a href="{setup_url}">{setup_url}</a>
+        </p>
+    </div>
+    """
+
+
+def send_artist_invite_email(
+    to_email: str,
+    artist_name: str,
+    setup_url: str,
+    custom_subject: str | None = None,
+    custom_body: str | None = None,
+):
+    subject = (custom_subject or "").strip() or "You’ve been invited to SpacedOut Studios"
+
+    if custom_body and custom_body.strip():
+        html = _format_custom_invite_body_html(custom_body.strip(), setup_url)
+    else:
+        html = f"""
+        <h2>You’ve been invited to SpacedOut Studios</h2>
+        <p>Hello {escape(artist_name)},</p>
+        <p>Your artist account has been created. Click the link below to set your password and activate your account.</p>
+        <p><a href="{setup_url}">Set Up Your Account</a></p>
+        <p>If you were not expecting this email, you can ignore it.</p>
+        """
+
+    return send_email(to_email, subject, html)
+
+
 def send_password_reset_email(to_email: str, reset_url: str):
     html = f"""
     <h2>Reset your password</h2>
@@ -24,17 +64,6 @@ def send_password_reset_email(to_email: str, reset_url: str):
     <p>If you did not request this, you can ignore this email.</p>
     """
     return send_email(to_email, "Reset your password", html)
-
-
-def send_artist_invite_email(to_email: str, artist_name: str, setup_url: str):
-    html = f"""
-    <h2>You’ve been invited to SpacedOut Studios</h2>
-    <p>Hello {artist_name},</p>
-    <p>Your artist account has been created. Click the link below to set your password and activate your account.</p>
-    <p><a href="{setup_url}">Set Up Your Account</a></p>
-    <p>If you were not expecting this email, you can ignore it.</p>
-    """
-    return send_email(to_email, "You’ve been invited to SpacedOut Studios", html)
 
 
 def build_application_email_html(application: dict) -> str:
