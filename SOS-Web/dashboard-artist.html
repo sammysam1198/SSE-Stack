@@ -31,7 +31,7 @@
                             aria-expanded="false"
                     >
                         <img
-                                src="/static/logos/4nzek.png"
+                                src="/static/logos/sse.png"
                                 alt="Profile picture"
                                 class="artist-profile-menu__avatar"
                                 id="artist-profile-avatar"
@@ -76,14 +76,14 @@
         <section
                 class="dashboard-hero"
                 id="dashboard-hero"
-                style="--hero-image: url('/static/logos/4nzek.png');"
+                style="--hero-image: url('/static/logos/sse.png');"
         >
             <div class="dashboard-hero__bg"></div>
             <div class="dashboard-hero__overlay"></div>
 
             <div class="dashboard-hero__content">
                 <p class="dashboard-hero__eyebrow">Artist Portal</p>
-                <h1 class="dashboard-hero__title" id="artist-display-name">Forensic</h1>
+                <h1 class="dashboard-hero__title" id="artist-display-name">Loading...</h1>
                 <div class="dashboard-hero__plate"></div>
                 <p class="dashboard-hero__subtext">
                     Manage your artist page, releases, visuals, and platform presence from one place.
@@ -148,33 +148,33 @@
             <article class="dashboard-card">
                 <h3>Artist Page Status</h3>
                 <p class="dashboard-card__intro">
-                    Quick progress on the public artist page.
+                    Stuff to change and stuff you've changed.
                 </p>
 
                 <div class="page-status-list">
                     <div class="page-status-row">
                         <span>Bio</span>
-                        <span>Added</span>
+                        <span>Default</span>
                     </div>
                     <div class="page-status-row">
                         <span>Profile Image</span>
-                        <span>Missing</span>
+                        <span>Default</span>
                     </div>
                     <div class="page-status-row">
                         <span>Location</span>
-                        <span>Missing</span>
+                        <span>Default</span>
                     </div>
                     <div class="page-status-row">
                         <span>Tags</span>
-                        <span>3 Added</span>
+                        <span>Default</span>
                     </div>
                     <div class="page-status-row">
                         <span>Spotify</span>
-                        <span>Not Linked</span>
+                        <span>Default</span>
                     </div>
                     <div class="page-status-row">
                         <span>YouTube</span>
-                        <span>Not Linked</span>
+                        <span>Default</span>
                     </div>
                 </div>
             </article>
@@ -231,21 +231,11 @@
 
                         <label class="artist-editor-field">
                             <span>Location</span>
-                            <input type="text" id="artist-location-input" name="location" placeholder="Harvard, MA" />
-                        </label>
-
-                        <label class="artist-editor-field artist-editor-field--full">
-                            <span>Profile Image URL</span>
-                            <input type="text" id="artist-profile-image-input" name="profile_image_url" placeholder="/static/logos/sse.png" />
-                        </label>
-
-                        <label class="artist-editor-field artist-editor-field--full">
-                            <span>Apple Music URL</span>
-                            <input type="text" id="artist-apple-music-input" name="apple_music_url" placeholder="https://music.apple.com/..." />
+                            <input type="text" id="artist-location-input" name="location" placeholder="New York, NY USA" />
                         </label>
 
                         <div class="artist-editor-field">
-                            <span>Hero Image</span>
+                            <span>Banner Image</span>
                             <div class="artist-upload-row">
                                 <input type="file" id="artist-hero-image-input" name="hero_image" accept="image/*" />
                             </div>
@@ -259,18 +249,18 @@
                         </div>
 
                         <label class="artist-editor-field">
-                            <span>Tag 1</span>
+                            <span>Genre Tag</span>
                             <input type="text" id="artist-tag-1-input" name="tag_1" placeholder="Electronic" />
                         </label>
 
                         <label class="artist-editor-field">
-                            <span>Tag 2</span>
+                            <span>Role Tag</span>
                             <input type="text" id="artist-tag-2-input" name="tag_2" placeholder="Producer" />
                         </label>
 
                         <label class="artist-editor-field">
-                            <span>Tag 3</span>
-                            <input type="text" id="artist-tag-3-input" name="tag_3" placeholder="Dark Atmosphere" />
+                            <span>Vibe Tag</span>
+                            <input type="text" id="artist-tag-3-input" name="tag_3" placeholder="Chill" />
                         </label>
 
                         <label class="artist-editor-field">
@@ -291,6 +281,11 @@
                         <label class="artist-editor-field artist-editor-field--full">
                             <span>Instagram URL</span>
                             <input type="text" id="artist-instagram-input" name="instagram_url" placeholder="https://instagram.com/..." />
+                        </label>
+
+                        <label class="artist-editor-field artist-editor-field--full">
+                            <span>Apple Music URL</span>
+                            <input type="text" id="artist-apple-music-input" name="apple_music_url" placeholder="https://music.apple.com/..." />
                         </label>
                     </div>
 

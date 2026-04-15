@@ -9,6 +9,8 @@ document.addEventListener("DOMContentLoaded", () => {
     const inviteUserError = document.getElementById("invite-user-error");
     const inviteUserSuccess = document.getElementById("invite-user-success");
     const inviteUserSubmit = document.getElementById("invite-user-submit");
+    const inviteEmailSubjectInput = document.getElementById("invite-email-subject");
+    const inviteEmailBodyInput = document.getElementById("invite-email-body");
 
     function normalizeArtistPage(value) {
         if (!value) return "";
@@ -87,6 +89,8 @@ document.addEventListener("DOMContentLoaded", () => {
         const role = inviteRoleInput.value;
         const artistName = (inviteArtistNameInput.value || "").trim();
         const artistPage = normalizeArtistPage(inviteArtistPageInput.value || "");
+        const emailSubject = (inviteEmailSubjectInput?.value || "").trim();
+        const emailBody = (inviteEmailBodyInput?.value || "").trim();
 
         if (!email) {
             inviteUserError.textContent = "Email is required.";
@@ -121,6 +125,13 @@ document.addEventListener("DOMContentLoaded", () => {
         if (role === "artist") {
             payload.artist_name = artistName;
             payload.artist_page = artistPage;
+            if (emailSubject) {
+                payload.email_subject = emailSubject;
+            }
+
+            if (emailBody) {
+                payload.email_body = emailBody;
+            }
         }
 
         try {
