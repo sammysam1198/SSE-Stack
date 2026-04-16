@@ -1,6 +1,5 @@
 from typing import Any
-
-from config.db import execute_write
+from config.db import fetch_all, fetch_one, execute_returning_one
 
 
 ARTIST_PROFILE_COLUMNS = """
@@ -43,7 +42,18 @@ ARTIST_PROFILE_COLUMNS = """
     state,
     country,
     ipi,
-    pro
+    pro,
+    spotify_embed,
+    featured_video_embed,
+    featured_video_name,
+    video2_embed,
+    video2_name,
+    video3_embed,
+    video3_name,
+    genre2,
+    genre3,
+    role2,
+    role3
 """
 
 
@@ -54,8 +64,7 @@ def get_artist_profile_by_user_id(user_id: int):
         WHERE user_id = %s
         LIMIT 1
     """
-    rows = execute_write(query, (user_id,))
-    return rows[0] if rows else None
+    return fetch_one(query, (user_id,))
 
 
 def get_artist_profile_by_id(artist_profile_id: int):
@@ -65,8 +74,7 @@ def get_artist_profile_by_id(artist_profile_id: int):
         WHERE id = %s
         LIMIT 1
     """
-    rows = execute_write(query, (artist_profile_id,))
-    return rows[0] if rows else None
+    return fetch_one(query, (artist_profile_id,))
 
 
 def get_artist_profile_by_slug(artist_page: str):
@@ -76,8 +84,7 @@ def get_artist_profile_by_slug(artist_page: str):
         WHERE LOWER(artist_page) = LOWER(%s)
         LIMIT 1
     """
-    rows = execute_write(query, (artist_page,))
-    return rows[0] if rows else None
+    return fetch_one(query, (artist_page,))
 
 
 def create_artist_profile_for_user(
@@ -99,7 +106,7 @@ def create_artist_profile_for_user(
         VALUES (%s, %s, %s, %s, %s)
         RETURNING {ARTIST_PROFILE_COLUMNS}
     """
-    rows = execute_write(
+    return execute_returning_one(
         query,
         (
             user_id,
@@ -109,7 +116,6 @@ def create_artist_profile_for_user(
             last_name,
         ),
     )
-    return rows[0] if rows else None
 
 
 def update_artist_profile_by_user_id(user_id: int, updates: dict[str, Any]):
@@ -152,6 +158,17 @@ def update_artist_profile_by_user_id(user_id: int, updates: dict[str, Any]):
         "country",
         "ipi",
         "pro",
+        "spotify_embed",
+        "featured_video_embed",
+        "featured_video_name",
+        "video2_embed",
+        "video2_name",
+        "video3_embed",
+        "video3_name",
+        "genre2",
+        "genre3",
+        "role2",
+        "role3",
     }
 
     filtered = {k: v for k, v in updates.items() if k in allowed_fields}
@@ -159,7 +176,7 @@ def update_artist_profile_by_user_id(user_id: int, updates: dict[str, Any]):
         return get_artist_profile_by_user_id(user_id)
 
     set_clauses = []
-    values = []
+    values: list[Any] = []
 
     for field, value in filtered.items():
         set_clauses.append(f"{field} = %s")
@@ -174,8 +191,7 @@ def update_artist_profile_by_user_id(user_id: int, updates: dict[str, Any]):
         WHERE user_id = %s
         RETURNING {ARTIST_PROFILE_COLUMNS}
     """
-    rows = execute_write(query, tuple(values))
-    return rows[0] if rows else None
+    return execute_returning_one(query, tuple(values))
 
 
 def assign_artist_profile_to_user(artist_profile_id: int, user_id: int):
@@ -187,8 +203,7 @@ def assign_artist_profile_to_user(artist_profile_id: int, user_id: int):
         WHERE id = %s
         RETURNING {ARTIST_PROFILE_COLUMNS}
     """
-    rows = execute_write(query, (user_id, artist_profile_id))
-    return rows[0] if rows else None
+    return execute_returning_one(query, (user_id, artist_profile_id))
 
 
 def list_artist_profiles():
@@ -197,4 +212,4 @@ def list_artist_profiles():
         FROM artist_profiles
         ORDER BY artist_name ASC
     """
-    return execute_write(query)
+    return fetch_all(query)
