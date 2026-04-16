@@ -10,7 +10,6 @@ from repos.artists_repo import (
 )
 
 
-
 artist_bp = Blueprint("artist", __name__, url_prefix="/api/artists")
 
 
