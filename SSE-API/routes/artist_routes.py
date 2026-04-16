@@ -105,7 +105,7 @@ def get_my_artist_profile():
     if not _can_manage_artist_profile(user):
         return jsonify({"error": "Forbidden."}), 403
 
-    profile = get_artist_profile_by_user_id(user["id"])
+    profile = get_artist_profile_by_user_id(user["user_id"])
     if not profile:
         return jsonify({"error": "Artist profile not found."}), 404
 
@@ -121,7 +121,7 @@ def patch_my_artist_profile():
     if not _can_manage_artist_profile(user):
         return jsonify({"error": "Forbidden."}), 403
 
-    existing_profile = get_artist_profile_by_user_id(user["id"])
+    existing_profile = get_artist_profile_by_user_id(user["user_id"])
     if not existing_profile:
         return jsonify({"error": "Artist profile not found."}), 404
 
@@ -173,16 +173,14 @@ def patch_my_artist_profile():
             updates["artist_name"] or existing_profile.get("artist_name")
         )
 
-    updated = update_artist_profile_by_user_id(user["id"], updates)
+    updated = update_artist_profile_by_user_id(user["user_id"], updates)
     if not updated:
         return jsonify({"error": "Failed to update artist profile."}), 500
 
-    return jsonify(
-        {
-            "message": "Artist profile updated successfully.",
-            "artist_profile": _serialize_artist_profile(updated),
-        }
-    ), 200
+    return jsonify({
+        "message": "Artist profile updated successfully.",
+        "artist_profile": _serialize_artist_profile(updated),
+    }), 200
 
 
 @artist_bp.get("/slug/<artist_page>")
