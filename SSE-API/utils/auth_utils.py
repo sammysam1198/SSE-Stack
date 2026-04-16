@@ -1,8 +1,8 @@
 import os
-import secrets
-from datetime import datetime, timedelta, timezone
-
 import bcrypt
+import secrets
+from flask import session
+from datetime import datetime, timedelta, timezone
 
 
 def hash_password(password: str) -> str:
@@ -62,6 +62,9 @@ def session_user_payload(user_row: dict) -> dict:
         "role": user_row["role"],
         "email": user_row["email"],
     }
+
+def get_current_user():
+    return session.get("user")
 
 
 def get_reset_link(token: str) -> str:
