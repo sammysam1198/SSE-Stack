@@ -1,13 +1,15 @@
 import re
 from typing import Any
+
 from flask import Blueprint, jsonify, request
-from utils.auth_utils import get_current_user
+
 from repos.artists_repo import (
     get_artist_profile_by_slug,
     get_artist_profile_by_user_id,
     list_artist_profiles,
     update_artist_profile_by_user_id,
 )
+from utils.auth_utils import get_current_user
 
 
 artist_bp = Blueprint("artist", __name__, url_prefix="/api/artists")
@@ -79,13 +81,18 @@ def _serialize_artist_profile(profile: dict | None):
         "country": profile.get("country") or "",
         "ipi": profile.get("ipi") or "",
         "pro": profile.get("pro") or "",
+        "spotify_embed": profile.get("spotify_embed") or "",
+        "featured_video_embed": profile.get("featured_video_embed") or "",
+        "featured_video_name": profile.get("featured_video_name") or "",
+        "video2_embed": profile.get("video2_embed") or "",
+        "video2_name": profile.get("video2_name") or "",
+        "video3_embed": profile.get("video3_embed") or "",
+        "video3_name": profile.get("video3_name") or "",
+        "genre2": profile.get("genre2") or "",
+        "genre3": profile.get("genre3") or "",
+        "role2": profile.get("role2") or "",
+        "role3": profile.get("role3") or "",
     }
-
-
-def _can_manage_artist_profile(user: dict | None) -> bool:
-    if not user:
-        return False
-    return user["role"] in {"artist", "admin", "developer"}
 
 
 def _require_logged_in_user():
@@ -95,13 +102,19 @@ def _require_logged_in_user():
     return user, None
 
 
+def _can_view_or_edit_own_profile(user: dict | None) -> bool:
+    if not user:
+        return False
+    return user.get("role") in {"artist", "admin", "developer"}
+
+
 @artist_bp.get("/me")
 def get_my_artist_profile():
     user, error_response = _require_logged_in_user()
     if error_response:
         return error_response
 
-    if not _can_manage_artist_profile(user):
+    if not _can_view_or_edit_own_profile(user):
         return jsonify({"error": "Forbidden."}), 403
 
     profile = get_artist_profile_by_user_id(user["user_id"])
@@ -117,7 +130,7 @@ def patch_my_artist_profile():
     if error_response:
         return error_response
 
-    if not _can_manage_artist_profile(user):
+    if not _can_view_or_edit_own_profile(user):
         return jsonify({"error": "Forbidden."}), 403
 
     existing_profile = get_artist_profile_by_user_id(user["user_id"])
@@ -163,14 +176,24 @@ def patch_my_artist_profile():
             "country": _normalize_string(data.get("country")),
             "ipi": _normalize_string(data.get("ipi")),
             "pro": _normalize_string(data.get("pro")),
+            "spotify_embed": _normalize_string(data.get("spotify_embed")),
+            "featured_video_embed": _normalize_string(data.get("featured_video_embed")),
+            "featured_video_name": _normalize_string(data.get("featured_video_name")),
+            "video2_embed": _normalize_string(data.get("video2_embed")),
+            "video2_name": _normalize_string(data.get("video2_name")),
+            "video3_embed": _normalize_string(data.get("video3_embed")),
+            "video3_name": _normalize_string(data.get("video3_name")),
+            "genre2": _normalize_string(data.get("genre2")),
+            "genre3": _normalize_string(data.get("genre3")),
+            "role2": _normalize_string(data.get("role2")),
+            "role3": _normalize_string(data.get("role3")),
         }
     except ValueError as exc:
         return jsonify({"error": str(exc)}), 400
 
+    artist_name_for_slug = updates["artist_name"] or existing_profile.get("artist_name") or ""
     if not updates["artist_page"]:
-        updates["artist_page"] = existing_profile.get("artist_page") or _normalize_slug(
-            updates["artist_name"] or existing_profile.get("artist_name")
-        )
+        updates["artist_page"] = existing_profile.get("artist_page") or _normalize_slug(artist_name_for_slug)
 
     updated = update_artist_profile_by_user_id(user["user_id"], updates)
     if not updated:
@@ -201,6 +224,6 @@ def get_all_artist_profiles():
         return jsonify({"error": "Forbidden."}), 403
 
     profiles = list_artist_profiles()
-    return jsonify(
-        {"artist_profiles": [_serialize_artist_profile(profile) for profile in profiles]}
-    ), 200
+    return jsonify({
+        "artist_profiles": [_serialize_artist_profile(profile) for profile in profiles]
+    }), 200
