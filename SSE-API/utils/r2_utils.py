@@ -6,6 +6,7 @@ import boto3
 from botocore.config import Config
 from botocore.exceptions import BotoCoreError, ClientError
 
+r2_bucket_name = os.getenv("R2_BUCKET_NAME")
 
 def _get_r2_client():
     r2_account_id = os.getenv("R2_ACCOUNT_ID")
@@ -115,3 +116,38 @@ def delete_object_from_r2(object_key: str) -> None:
         client.delete_object(Bucket=bucket_name, Key=object_key)
     except (BotoCoreError, ClientError) as exc:
         raise RuntimeError(f"Failed to delete object from R2: {exc}") from exc
+
+
+def list_object_keys_with_prefix(prefix: str) -> list[str]:
+    client, bucket_name = _get_r2_client()
+
+    keys: list[str] = []
+    continuation_token = None
+
+    try:
+        while True:
+            kwargs = {
+                "Bucket": bucket_name,
+                "Prefix": prefix,
+                "MaxKeys": 1000,
+            }
+
+            if continuation_token:
+                kwargs["ContinuationToken"] = continuation_token
+
+            response = client.list_objects_v2(**kwargs)
+
+            for item in response.get("Contents", []):
+                key = item.get("Key")
+                if key:
+                    keys.append(key)
+
+            if not response.get("IsTruncated"):
+                break
+
+            continuation_token = response.get("NextContinuationToken")
+
+    except (BotoCoreError, ClientError) as exc:
+        raise RuntimeError(f"Failed to list objects from R2: {exc}") from exc
+
+    return keys
