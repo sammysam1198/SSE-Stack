@@ -58,6 +58,23 @@ def _normalize_artist_token(value: Any) -> str:
     return value or "Artist"
 
 
+def _normalize_optional_int(value):
+    if value is None:
+        return None
+
+    if isinstance(value, int):
+        return value
+
+    value = str(value).strip()
+    if value == "":
+        return None
+
+    try:
+        return int(value)
+    except ValueError:
+        raise ValueError(f"Invalid integer value: {value}")
+
+
 def _get_file_extension(filename: str) -> str:
     if "." not in filename:
         raise ValueError("File must include a valid extension.")
@@ -187,12 +204,12 @@ def _serialize_artist_profile(profile: dict | None):
         "beatport_url": profile.get("beatport_url") or "",
         "amazon_music_url": profile.get("amazon_music_url") or "",
         "facebook_url": profile.get("facebook_url") or "",
-        "birthday": profile.get("birthday").isoformat() if profile.get("birthday") else "",
-        "city": profile.get("city") or "",
-        "state": profile.get("state") or "",
-        "country": profile.get("country") or "",
-        "ipi": profile.get("ipi") or "",
-        "pro": profile.get("pro") or "",
+         "birthday": _normalize_optional_date(profile.get("birthday")),
+         "city": _normalize_string(profile.get("city")),
+         "state": _normalize_string(profile.get("state")),
+         "country": _normalize_string(profile.get("country")),
+         "ipi": _normalize_optional_int(profile.get("ipi")),
+         "pro": _normalize_optional_int(profile.get("pro")),
         "spotify_embed": profile.get("spotify_embed") or "",
         "featured_video_embed": profile.get("featured_video_embed") or "",
         "featured_video_name": profile.get("featured_video_name") or "",
