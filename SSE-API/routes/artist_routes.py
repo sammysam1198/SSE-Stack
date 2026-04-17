@@ -1,7 +1,10 @@
+import os
 import re
+from pathlib import Path
 from typing import Any
 
 from flask import Blueprint, jsonify, request
+from werkzeug.utils import secure_filename
 
 from repos.artists_repo import (
     get_artist_profile_by_slug,
@@ -10,9 +13,114 @@ from repos.artists_repo import (
     update_artist_profile_by_user_id,
 )
 from utils.auth_utils import get_current_user
+from utils.r2_utils import upload_bytes_to_r2, list_object_keys_with_prefix
 
 
 artist_bp = Blueprint("artist", __name__, url_prefix="/api/artists")
+
+MAX_ARTIST_ASSET_SIZE_BYTES = 10 * 1024 * 1024
+
+ARTIST_ASSET_CONFIG = {
+    "banner": {
+        "folder": "banners",
+        "db_field": "dashboard_banner_key",
+        "label": "banner",
+    },
+    "logo": {
+        "folder": "logos",
+        "db_field": "artist_logo_key",
+        "label": "logo",
+    },
+    "portrait": {
+        "folder": "portraits",
+        "db_field": "profile_portrait_key",
+        "label": "portrait",
+    },
+}
+
+ALLOWED_IMAGE_EXTENSIONS = {
+    "jpg": "image/jpeg",
+    "jpeg": "image/jpeg",
+    "png": "image/png",
+    "webp": "image/webp",
+    "gif": "image/gif",
+}
+
+
+def _normalize_artist_token(value: Any) -> str:
+    value = str(value or "").strip()
+    value = re.sub(r"\s+", "", value)
+    value = re.sub(r"[^A-Za-z0-9]", "", value)
+    return value or "Artist"
+
+
+def _get_file_extension(filename: str) -> str:
+    if "." not in filename:
+        raise ValueError("File must include a valid extension.")
+
+    ext = filename.rsplit(".", 1)[-1].lower().strip()
+    if ext not in ALLOWED_IMAGE_EXTENSIONS:
+        raise ValueError("Unsupported image type. Use JPG, JPEG, PNG, WEBP, or GIF.")
+
+    return ext
+
+
+def _next_artist_asset_number(*, artist_name: str, asset_type: str, folder: str) -> int:
+    artist_token = _normalize_artist_token(artist_name)
+    prefix = f"artist_uploads/{folder}/{artist_token}_{asset_type}_"
+
+    keys = list_object_keys_with_prefix(prefix)
+    numbers = []
+
+    for key in keys:
+        filename = Path(key).name
+        match = re.match(
+            rf"^{re.escape(artist_token)}_{re.escape(asset_type)}_(\d+)\.[A-Za-z0-9]+$",
+            filename,
+        )
+        if match:
+            numbers.append(int(match.group(1)))
+
+    return (max(numbers) + 1) if numbers else 1
+
+
+def _build_artist_asset_key(*, artist_name: str, asset_type: str, folder: str, ext: str) -> str:
+    artist_token = _normalize_artist_token(artist_name)
+    next_number = _next_artist_asset_number(
+        artist_name=artist_name,
+        asset_type=asset_type,
+        folder=folder,
+    )
+    return f"artist_uploads/{folder}/{artist_token}_{asset_type}_{next_number:02d}.{ext}"
+
+
+def _validate_uploaded_image(file_storage):
+    if not file_storage:
+        raise ValueError("No file was provided.")
+
+    filename = secure_filename(file_storage.filename or "")
+    if not filename:
+        raise ValueError("File name is missing.")
+
+    ext = _get_file_extension(filename)
+    content_type = ALLOWED_IMAGE_EXTENSIONS[ext]
+
+    file_storage.stream.seek(0, os.SEEK_END)
+    file_size = file_storage.stream.tell()
+    file_storage.stream.seek(0)
+
+    if file_size <= 0:
+        raise ValueError("Uploaded file is empty.")
+
+    if file_size > MAX_ARTIST_ASSET_SIZE_BYTES:
+        raise ValueError("Image must be 10 MB or smaller.")
+
+    return {
+        "filename": filename,
+        "ext": ext,
+        "content_type": content_type,
+        "size": file_size,
+    }
 
 
 def _normalize_string(value: Any) -> str:
