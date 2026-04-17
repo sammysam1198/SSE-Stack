@@ -216,7 +216,7 @@ def _can_view_or_edit_own_profile(user: dict | None) -> bool:
     return user.get("role") in {"artist", "admin", "developer"}
 
 
-@artist_bp.get("/me")
+@artists_bp.get("/me")
 def get_my_artist_profile():
     user, error_response = _require_logged_in_user()
     if error_response:
@@ -232,7 +232,7 @@ def get_my_artist_profile():
     return jsonify({"artist_profile": _serialize_artist_profile(profile)}), 200
 
 
-@artist_bp.patch("/me")
+@artists_bp.patch("/me")
 def patch_my_artist_profile():
     user, error_response = _require_logged_in_user()
     if error_response:
@@ -313,7 +313,7 @@ def patch_my_artist_profile():
     }), 200
 
 
-@artist_bp.get("/slug/<artist_page>")
+@artists_bp.get("/slug/<artist_page>")
 def get_artist_profile_by_page_slug(artist_page: str):
     profile = get_artist_profile_by_slug(artist_page)
     if not profile:
@@ -322,7 +322,7 @@ def get_artist_profile_by_page_slug(artist_page: str):
     return jsonify({"artist_profile": _serialize_artist_profile(profile)}), 200
 
 
-@artist_bp.get("")
+@artists_bp.get("")
 def get_all_artist_profiles():
     user, error_response = _require_logged_in_user()
     if error_response:
