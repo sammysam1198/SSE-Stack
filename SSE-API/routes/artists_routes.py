@@ -304,7 +304,7 @@ def patch_my_artist_profile():
             "state": _normalize_string(data.get("state")),
             "country": _normalize_string(data.get("country")),
             "ipi": _normalize_optional_int(data.get("ipi")),
-            "pro": _normalize_optional_int(data.get("pro")),
+            "pro": _normalize_string(data.get("pro")),
             "spotify_embed": _normalize_string(data.get("spotify_embed")),
             "featured_video_embed": _normalize_string(data.get("featured_video_embed")),
             "featured_video_name": _normalize_string(data.get("featured_video_name")),
