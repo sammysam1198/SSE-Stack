@@ -16,7 +16,7 @@ from utils.auth_utils import get_current_user
 from utils.r2_utils import upload_bytes_to_r2, list_object_keys_with_prefix
 
 
-artist_bp = Blueprint("artist", __name__, url_prefix="/api/artists")
+artists_bp = Blueprint("artist", __name__, url_prefix="/api/artists")
 
 MAX_ARTIST_ASSET_SIZE_BYTES = 10 * 1024 * 1024
 

@@ -6,7 +6,7 @@ from flask_cors import CORS
 
 from routes.auth_routes import auth_bp
 from routes.application_routes import applications_bp
-from routes.artist_routes import artists_bp
+from routes.artists_routes import artists_bp
 from routes.release_routes import release_bp
 from routes.request_routes import requests_bp
 from routes.news_routes import news_bp
