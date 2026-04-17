@@ -64,6 +64,10 @@ def session_user_payload(user_row: dict) -> dict:
     }
 
 def get_current_user():
+    user = session.get("user")
+    if user:
+        return user
+
     user_id = session.get("user_id")
     role = session.get("role")
 
