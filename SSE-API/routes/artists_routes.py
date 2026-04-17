@@ -46,6 +46,9 @@ ALLOWED_IMAGE_EXTENSIONS = {
     "gif": "image/gif",
 }
 
+def _normalize_optional_date(value: Any):
+    value = _normalize_string(value)
+    return value or None
 
 def _normalize_artist_token(value: Any) -> str:
     value = str(value or "").strip()
@@ -278,7 +281,7 @@ def patch_my_artist_profile():
             "beatport_url": _normalize_optional_url(data.get("beatport_url")),
             "amazon_music_url": _normalize_optional_url(data.get("amazon_music_url")),
             "facebook_url": _normalize_optional_url(data.get("facebook_url")),
-            "birthday": _normalize_string(data.get("birthday")),
+            "birthday": _normalize_optional_date(data.get("birthday")),
             "city": _normalize_string(data.get("city")),
             "state": _normalize_string(data.get("state")),
             "country": _normalize_string(data.get("country")),
