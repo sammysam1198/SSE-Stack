@@ -327,9 +327,13 @@ def patch_my_artist_profile():
     try:
         print("RAW DATA:", data)
         print("UPDATES:", updates)
+
         updated = update_artist_profile_by_user_id(user["user_id"], updates)
         if not updated:
             return jsonify({"error": "Failed to update artist profile."}), 500
+
+        return jsonify({"artist_profile": updated}), 200
+
     except Exception as exc:
         print("PATCH FAILED:", repr(exc))
         traceback.print_exc()
