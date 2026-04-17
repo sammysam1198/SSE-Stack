@@ -150,31 +150,26 @@
                 <p class="dashboard-card__intro">
                     Stuff to change and stuff you've changed.
                 </p>
-
                 <div class="page-status-list">
                     <div class="page-status-row">
                         <span>Bio</span>
-                        <span>Default</span>
+                        <span>Missing</span>
                     </div>
                     <div class="page-status-row">
-                        <span>Profile Image</span>
-                        <span>Default</span>
+                        <span>Portrait</span>
+                        <span>Missing</span>
                     </div>
                     <div class="page-status-row">
                         <span>Location</span>
-                        <span>Default</span>
+                        <span>Missing</span>
                     </div>
                     <div class="page-status-row">
                         <span>Tags</span>
-                        <span>Default</span>
+                        <span>0 Added</span>
                     </div>
                     <div class="page-status-row">
-                        <span>Spotify</span>
-                        <span>Default</span>
-                    </div>
-                    <div class="page-status-row">
-                        <span>YouTube</span>
-                        <span>Default</span>
+                        <span>Links</span>
+                        <span>0 Linked</span>
                     </div>
                 </div>
             </article>
@@ -188,15 +183,15 @@
                 <div class="activity-list">
                     <div class="activity-item">
                         <strong>Artist page editor</strong>
-                        <span>Ready for first save flow</span>
+                        <span>Ready</span>
                     </div>
                     <div class="activity-item">
                         <strong>Release uploads</strong>
-                        <span>Not wired yet</span>
+                        <span>In Progress...</span>
                     </div>
                     <div class="activity-item">
                         <strong>Images</strong>
-                        <span>Upload UI needed</span>
+                        <span>In Progress...</span>
                     </div>
                 </div>
             </article>
@@ -204,19 +199,24 @@
             <article class="dashboard-card dashboard-card--full">
                 <h3>Edit Artist Page</h3>
                 <p class="dashboard-card__intro">
-                    Update the public information that appears on your artist page.
+                    Update the info that appears on your Artist page. Note that some of this info will not be displayed and if
+                    used to help facilitate faster releases, for example (like PRO and full name)
                 </p>
 
                 <form class="artist-editor-form" id="artist-editor-form">
+                    <input type="hidden" id="artist-banner-key-input" name="dashboard_banner_key" />
+                    <input type="hidden" id="artist-logo-key-input" name="artist_logo_key" />
+                    <input type="hidden" id="artist-portrait-key-input" name="profile_portrait_key" />
+
                     <div class="artist-editor-grid">
                         <label class="artist-editor-field">
                             <span>Artist Name</span>
-                            <input type="text" id="artist-name-input" name="artist_name" placeholder="4nzek" />
+                            <input type="text" id="artist-name-input" name="artist_name" placeholder="Chroma Glow" />
                         </label>
 
                         <label class="artist-editor-field">
                             <span>Short Tagline</span>
-                            <input type="text" id="artist-tagline-input" name="tagline" placeholder="Dark electronic producer and sonic architect" />
+                            <input type="text" id="artist-tagline-input" name="tagline" placeholder="Memory. Nostalgia. Remember..." />
                         </label>
 
                         <label class="artist-editor-field artist-editor-field--full">
@@ -225,67 +225,208 @@
                         </label>
 
                         <label class="artist-editor-field">
+                            <span>First Name</span>
+                            <input type="text" id="artist-first-name-input" name="first_name" placeholder="Sammi" />
+                        </label>
+
+                        <label class="artist-editor-field">
+                            <span>Last Name</span>
+                            <input type="text" id="artist-last-name-input" name="last_name" placeholder="Fishbein" />
+                        </label>
+
+                        <div class="artist-editor-field artist-editor-field--full">
+                            <hr />
+                        </div>
+
+                        <label class="artist-editor-field">
                             <span>Publisher</span>
-                            <input type="text" id="artist-publisher-input" name="publisher" placeholder="BMI, ASCAP, SESAC..." />
+                            <input type="text" id="artist-publisher-input" name="publisher" placeholder="ASCAP" />
                         </label>
 
                         <label class="artist-editor-field">
                             <span>Location</span>
-                            <input type="text" id="artist-location-input" name="location" placeholder="New York, NY USA" />
+                            <input type="text" id="artist-location-input" name="location" placeholder="Boston, MA USA" />
                         </label>
 
                         <div class="artist-editor-field">
                             <span>Banner Image</span>
                             <div class="artist-upload-row">
-                                <input type="file" id="artist-hero-image-input" name="hero_image" accept="image/*" />
+                                <input type="file" id="artist-banner-file-input" accept="image/*" />
+                                <img id="artist-banner-preview" src="/static/logos/sse.png" alt="Banner preview" class="artist-upload-preview" />
                             </div>
                         </div>
 
                         <div class="artist-editor-field">
-                            <span>Portrait Image</span>
+                            <span>Artist Logo</span>
                             <div class="artist-upload-row">
-                                <input type="file" id="artist-portrait-image-input" name="portrait_image" accept="image/*" />
+                                <input type="file" id="artist-logo-file-input" accept="image/*" />
+                                <img id="artist-logo-preview" src="/static/logos/sse.png" alt="Logo preview" class="artist-upload-preview" />
                             </div>
                         </div>
 
+                        <div class="artist-editor-field">
+                            <span>Profile Portrait</span>
+                            <div class="artist-upload-row">
+                                <input type="file" id="artist-portrait-file-input" accept="image/*" />
+                                <img id="artist-portrait-preview" src="/static/logos/sse.png" alt="Portrait preview" class="artist-upload-preview" />
+                            </div>
+                        </div>
+
+                        <div class="artist-editor-field artist-editor-field--full">
+                            <hr />
+                        </div>
+
                         <label class="artist-editor-field">
-                            <span>Genre Tag</span>
-                            <input type="text" id="artist-tag-1-input" name="tag_1" placeholder="Electronic" />
+                            <span>Primary Genre</span>
+                            <input type="text" id="artist-primary-genre-input" name="primary_genre" placeholder="Vaporwave" />
                         </label>
 
                         <label class="artist-editor-field">
-                            <span>Role Tag</span>
-                            <input type="text" id="artist-tag-2-input" name="tag_2" placeholder="Producer" />
+                            <span>Genre 2</span>
+                            <input type="text" id="artist-genre-2-input" name="genre2" placeholder="Synthwave" />
+                        </label>
+
+                        <label class="artist-editor-field">
+                            <span>Genre 3</span>
+                            <input type="text" id="artist-genre-3-input" name="genre3" placeholder="Chillsynth" />
+                        </label>
+
+                        <label class="artist-editor-field">
+                            <span>Primary Role</span>
+                            <input type="text" id="artist-primary-role-input" name="primary_instrument" placeholder="Producer" />
+                        </label>
+
+                        <label class="artist-editor-field">
+                            <span>Role 2</span>
+                            <input type="text" id="artist-role-2-input" name="role2" placeholder="Guitarist" />
+                        </label>
+
+                        <label class="artist-editor-field">
+                            <span>Role 3</span>
+                            <input type="text" id="artist-role-3-input" name="role3" placeholder="Sound Engineer" />
                         </label>
 
                         <label class="artist-editor-field">
                             <span>Vibe Tag</span>
-                            <input type="text" id="artist-tag-3-input" name="tag_3" placeholder="Chill" />
+                            <input type="text" id="artist-vibe-input" name="primary_vibe" placeholder="Chill" />
                         </label>
+
+                        <div class="artist-editor-field artist-editor-field--full">
+                            <hr />
+                        </div>
+
+                        <label class="artist-editor-field artist-editor-field--full">
+                            <span>Spotify Embed</span>
+                            <textarea id="artist-spotify-embed-input" name="spotify_embed" rows="3" placeholder="Paste Spotify embed here"></textarea>
+                        </label>
+
+                        <label class="artist-editor-field">
+                            <span>Featured Video Name</span>
+                            <input type="text" id="artist-featured-video-name-input" name="featured_video_name" placeholder="Featured Watch" />
+                        </label>
+
+                        <label class="artist-editor-field artist-editor-field--full">
+                            <span>Featured Video Embed</span>
+                            <textarea id="artist-featured-video-embed-input" name="featured_video_embed" rows="3" placeholder="Paste featured video embed here"></textarea>
+                        </label>
+
+                        <label class="artist-editor-field">
+                            <span>Video 2 Name</span>
+                            <input type="text" id="artist-video-2-name-input" name="video2_name" placeholder="Video 2 title" />
+                        </label>
+
+                        <label class="artist-editor-field artist-editor-field--full">
+                            <span>Video 2 Embed</span>
+                            <textarea id="artist-video-2-embed-input" name="video2_embed" rows="3" placeholder="Paste video 2 embed here"></textarea>
+                        </label>
+
+                        <label class="artist-editor-field">
+                            <span>Video 3 Name</span>
+                            <input type="text" id="artist-video-3-name-input" name="video3_name" placeholder="Video 3 title" />
+                        </label>
+
+                        <label class="artist-editor-field artist-editor-field--full">
+                            <span>Video 3 Embed</span>
+                            <textarea id="artist-video-3-embed-input" name="video3_embed" rows="3" placeholder="Paste video 3 embed here"></textarea>
+                        </label>
+
+                        <div class="artist-editor-field artist-editor-field--full">
+                            <hr />
+                        </div>
 
                         <label class="artist-editor-field">
                             <span>Spotify URL</span>
                             <input type="text" id="artist-spotify-input" name="spotify_url" placeholder="https://open.spotify.com/..." />
                         </label>
 
-                        <label class="artist-editor-field artist-editor-field--full">
+                        <label class="artist-editor-field">
+                            <span>Apple Music URL</span>
+                            <input type="text" id="artist-apple-music-input" name="apple_music_url" placeholder="https://music.apple.com/..." />
+                        </label>
+
+                        <label class="artist-editor-field">
+                            <span>YouTube Music URL</span>
+                            <input type="text" id="artist-youtube-music-input" name="youtube_music_url" placeholder="https://music.youtube.com/..." />
+                        </label>
+
+                        <label class="artist-editor-field">
+                            <span>YouTube Channel URL</span>
+                            <input type="text" id="artist-youtube-channel-input" name="youtube_channel_url" placeholder="https://youtube.com/..." />
+                        </label>
+
+                        <label class="artist-editor-field">
+                            <span>Tidal URL</span>
+                            <input type="text" id="artist-tidal-input" name="tidal_url" placeholder="https://tidal.com/..." />
+                        </label>
+
+                        <label class="artist-editor-field">
+                            <span>Threads URL</span>
+                            <input type="text" id="artist-threads-input" name="threads_url" placeholder="https://threads.net/..." />
+                        </label>
+
+                        <label class="artist-editor-field">
+                            <span>Instagram URL</span>
+                            <input type="text" id="artist-instagram-input" name="instagram_url" placeholder="https://instagram.com/..." />
+                        </label>
+
+                        <label class="artist-editor-field">
                             <span>SoundCloud URL</span>
                             <input type="text" id="artist-soundcloud-input" name="soundcloud_url" placeholder="https://soundcloud.com/..." />
                         </label>
 
                         <label class="artist-editor-field">
-                            <span>YouTube URL</span>
-                            <input type="text" id="artist-youtube-input" name="youtube_url" placeholder="https://youtube.com/..." />
+                            <span>Bandcamp URL</span>
+                            <input type="text" id="artist-bandcamp-input" name="bandcamp_url" placeholder="https://bandcamp.com/..." />
                         </label>
 
-                        <label class="artist-editor-field artist-editor-field--full">
-                            <span>Instagram URL</span>
-                            <input type="text" id="artist-instagram-input" name="instagram_url" placeholder="https://instagram.com/..." />
+                        <label class="artist-editor-field">
+                            <span>TikTok URL</span>
+                            <input type="text" id="artist-tiktok-input" name="tiktok_url" placeholder="https://tiktok.com/..." />
                         </label>
 
-                        <label class="artist-editor-field artist-editor-field--full">
-                            <span>Apple Music URL</span>
-                            <input type="text" id="artist-apple-music-input" name="apple_music_url" placeholder="https://music.apple.com/..." />
+                        <label class="artist-editor-field">
+                            <span>Twitter URL</span>
+                            <input type="text" id="artist-twitter-input" name="twitter_url" placeholder="https://x.com/..." />
+                        </label>
+
+                        <label class="artist-editor-field">
+                            <span>Deezer URL</span>
+                            <input type="text" id="artist-deezer-input" name="deezer_url" placeholder="https://deezer.com/..." />
+                        </label>
+
+                        <label class="artist-editor-field">
+                            <span>Beatport URL</span>
+                            <input type="text" id="artist-beatport-input" name="beatport_url" placeholder="https://beatport.com/..." />
+                        </label>
+
+                        <label class="artist-editor-field">
+                            <span>Amazon Music URL</span>
+                            <input type="text" id="artist-amazon-music-input" name="amazon_music_url" placeholder="https://music.amazon.com/..." />
+                        </label>
+
+                        <label class="artist-editor-field">
+                            <span>Facebook URL</span>
+                            <input type="text" id="artist-facebook-input" name="facebook_url" placeholder="https://facebook.com/..." />
                         </label>
                     </div>
 
@@ -293,7 +434,7 @@
                         <button type="button" class="artist-editor-button artist-editor-button--ghost" id="artist-preview-button">
                             Preview Changes
                         </button>
-                        <button type="submit" class="artist-editor-button artist-editor-button--primary">
+                        <button type="submit" class="artist-editor-button artist-editor-button--primary" id="artist-profile-save">
                             Save Changes
                         </button>
                     </div>
@@ -335,113 +476,5 @@
 <script src="/static/js/auth.js"></script>
 <script src="/static/js/header_auth.js"></script>
 <script src="/static/js/dashboard.js"></script>
-
-<script>
-    document.addEventListener("DOMContentLoaded", async () => {
-        const user = await getCurrentUser();
-        if (!requireRole(user, ["artist", "developer"])) return;
-
-        const signoutButton = document.getElementById("artist-signout-button");
-        const profileTrigger = document.getElementById("artist-profile-trigger");
-        const profileDropdown = document.getElementById("artist-profile-dropdown");
-        const artistNameInput = document.getElementById("artist-name-input");
-        const taglineInput = document.getElementById("artist-tagline-input");
-        const bioInput = document.getElementById("artist-bio-input");
-        const tag1Input = document.getElementById("artist-tag-1-input");
-        const tag2Input = document.getElementById("artist-tag-2-input");
-        const tag3Input = document.getElementById("artist-tag-3-input");
-        const spotifyInput = document.getElementById("artist-spotify-input");
-        const youtubeInput = document.getElementById("artist-youtube-input");
-        const instagramInput = document.getElementById("artist-instagram-input");
-        const previewButton = document.getElementById("artist-preview-button");
-        const form = document.getElementById("artist-editor-form");
-        const statusEl = document.getElementById("artist-editor-status");
-        const publisherInput = document.getElementById("artist-publisher-input");
-        const locationInput = document.getElementById("artist-location-input");
-        const soundcloudInput = document.getElementById("artist-soundcloud-input");
-        const profileImageInput = document.getElementById("artist-profile-image-input");
-        const appleMusicInput = document.getElementById("artist-apple-music-input");
-
-
-        try {
-            const profile = await getMyArtistProfile();
-            populateArtistDashboard(profile);
-        } catch (error) {
-            console.error("Failed to load artist profile:", error);
-            statusEl.textContent = "Could not load artist profile.";
-        }
-
-        if (profileTrigger && profileDropdown) {
-            profileTrigger.addEventListener("click", () => {
-                const isOpen = profileDropdown.classList.toggle("is-open");
-                profileTrigger.setAttribute("aria-expanded", String(isOpen));
-            });
-
-            document.addEventListener("click", (event) => {
-                const menu = document.getElementById("artist-profile-menu");
-                if (menu && !menu.contains(event.target)) {
-                    profileDropdown.classList.remove("is-open");
-                    profileTrigger.setAttribute("aria-expanded", "false");
-                }
-            });
-        }
-
-        if (signoutButton) {
-            signoutButton.addEventListener("click", async () => {
-                try {
-                    await signout();
-                } catch (error) {
-                    console.error("Sign out failed:", error);
-                }
-                window.location.href = "/";
-            });
-        }
-
-        if (previewButton) {
-            previewButton.addEventListener("click", () => {
-                const liveName = artistNameInput?.value.trim() || "Artist";
-                setText("artist-display-name", liveName, "Artist");
-                statusEl.textContent = "Preview updated.";
-            });
-        }
-
-        if (form) {
-            form.addEventListener("submit", async (event) => {
-                event.preventDefault();
-
-                statusEl.textContent = "Saving...";
-
-                const profileImageInput = document.getElementById("artist-profile-image-input");
-                const appleMusicInput = document.getElementById("artist-apple-music-input");
-
-                const payload = {
-                    artist_name: artistNameInput?.value.trim() || "",
-                    tagline: taglineInput?.value.trim() || "",
-                    bio: bioInput?.value.trim() || "",
-                    profile_image_url: profileImageInput?.value.trim() || "",
-                    spotify_url: spotifyInput?.value.trim() || "",
-                    youtube_url: youtubeInput?.value.trim() || "",
-                    instagram_url: instagramInput?.value.trim() || "",
-                    soundcloud_url: soundcloudInput?.value.trim() || "",
-                    apple_music_url: appleMusicInput?.value.trim() || "",
-                    publisher: publisherInput?.value.trim() || "",
-                    location: locationInput?.value.trim() || "",
-                    primary_genre: tag1Input?.value.trim() || "",
-                    primary_instrument: tag2Input?.value.trim() || "",
-                    primary_vibe: tag3Input?.value.trim() || ""
-                };
-
-                try {
-                    const savedProfile = await saveMyArtistProfile(payload);
-                    populateArtistDashboard(savedProfile || payload);
-                    statusEl.textContent = "Changes saved.";
-                } catch (error) {
-                    console.error("Failed to save artist profile:", error);
-                    statusEl.textContent = error.message || "Save failed.";
-                }
-            });
-        }
-    });
-</script>
 </body>
 </html>
