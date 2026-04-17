@@ -64,8 +64,16 @@ def session_user_payload(user_row: dict) -> dict:
     }
 
 def get_current_user():
-    return session.get("user")
+    user_id = session.get("user_id")
+    role = session.get("role")
 
+    if not user_id or not role:
+        return None
+
+    return {
+        "user_id": user_id,
+        "role": role,
+    }
 
 def get_reset_link(token: str) -> str:
     frontend_origin = os.getenv("FRONTEND_ORIGIN", "https://www.spacedoutstudiosent.com")
