@@ -316,7 +316,7 @@ def patch_my_artist_profile():
     except Exception as exc:
         print("PATCH FAILED:", repr(exc))
         traceback.print_exc()
-        return jsonify({"error": "Patch failed.", "details": str(exc)}), 5001
+        return jsonify({"error": "Patch failed.", "details": str(exc)}), 500
 
 @artists_bp.post("/me/upload-asset")
 def upload_my_artist_asset():
