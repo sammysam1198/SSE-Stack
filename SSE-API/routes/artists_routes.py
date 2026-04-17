@@ -2,6 +2,7 @@ import os
 import re
 from pathlib import Path
 from typing import Any
+import traceback
 
 from flask import Blueprint, jsonify, request
 from werkzeug.utils import secure_filename
@@ -306,15 +307,16 @@ def patch_my_artist_profile():
     if not updates["artist_page"]:
         updates["artist_page"] = existing_profile.get("artist_page") or _normalize_slug(artist_name_for_slug)
 
-    updated = update_artist_profile_by_user_id(user["user_id"], updates)
-    if not updated:
-        return jsonify({"error": "Failed to update artist profile."}), 500
-
-    return jsonify({
-        "message": "Artist profile updated successfully.",
-        "artist_profile": _serialize_artist_profile(updated),
-    }), 200
-
+    try:
+        print("RAW DATA:", data)
+        print("UPDATES:", updates)
+        updated = update_artist_profile_by_user_id(user["user_id"], updates)
+        if not updated:
+            return jsonify({"error": "Failed to update artist profile."}), 500
+    except Exception as exc:
+        print("PATCH FAILED:", repr(exc))
+        traceback.print_exc()
+        return jsonify({"error": "Patch failed.", "details": str(exc)}), 5001
 
 @artists_bp.post("/me/upload-asset")
 def upload_my_artist_asset():
