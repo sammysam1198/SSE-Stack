@@ -313,6 +313,70 @@ def patch_my_artist_profile():
     }), 200
 
 
+@artists_bp.post("/me/upload-asset")
+def upload_my_artist_asset():
+    user, error_response = _require_logged_in_user()
+    if error_response:
+        return error_response
+
+    if not _can_view_or_edit_own_profile(user):
+        return jsonify({"error": "Forbidden."}), 403
+
+    profile = get_artist_profile_by_user_id(user["user_id"])
+    if not profile:
+        return jsonify({"error": "Artist profile not found."}), 404
+
+    asset_type = _normalize_string(request.form.get("asset_type")).lower()
+    if asset_type not in ARTIST_ASSET_CONFIG:
+        return jsonify({"error": "Invalid asset type. Use banner, logo, or portrait."}), 400
+
+    file = request.files.get("file")
+    try:
+        file_info = _validate_uploaded_image(file)
+    except ValueError as exc:
+        return jsonify({"error": str(exc)}), 400
+
+    asset_config = ARTIST_ASSET_CONFIG[asset_type]
+    artist_name = profile.get("artist_name") or "Artist"
+
+    object_key = _build_artist_asset_key(
+        artist_name=artist_name,
+        asset_type=asset_config["label"],
+        folder=asset_config["folder"],
+        ext=file_info["ext"],
+    )
+
+    try:
+        file_bytes = file.read()
+
+        saved_key = upload_bytes_to_r2(
+            data=file_bytes,
+            object_key=object_key,
+            content_type=file_info["content_type"],
+            content_disposition=f'inline; filename="{Path(object_key).name}"',
+        )
+    except Exception as exc:
+        return jsonify({"error": f"Upload failed: {exc}"}), 500
+
+    try:
+        updated_profile = update_artist_profile_by_user_id(
+            user["user_id"],
+            {
+                asset_config["db_field"]: saved_key
+            },
+        )
+    except Exception as exc:
+        return jsonify({"error": f"Profile update failed after upload: {exc}"}), 500
+
+    return jsonify({
+        "message": f"{asset_type.capitalize()} uploaded successfully.",
+        "asset_type": asset_type,
+        "db_field": asset_config["db_field"],
+        "object_key": saved_key,
+        "artist_profile": _serialize_artist_profile(updated_profile),
+    }), 200
+
+
 @artists_bp.get("/slug/<artist_page>")
 def get_artist_profile_by_page_slug(artist_page: str):
     profile = get_artist_profile_by_slug(artist_page)
