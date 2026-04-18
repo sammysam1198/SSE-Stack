@@ -2,6 +2,7 @@ import os
 import re
 from pathlib import Path
 from typing import Any
+import traceback
 
 from flask import Blueprint, jsonify, request
 from werkzeug.utils import secure_filename
@@ -46,12 +47,32 @@ ALLOWED_IMAGE_EXTENSIONS = {
     "gif": "image/gif",
 }
 
+def _normalize_optional_date(value: Any):
+    value = _normalize_string(value)
+    return value or None
 
 def _normalize_artist_token(value: Any) -> str:
     value = str(value or "").strip()
     value = re.sub(r"\s+", "", value)
     value = re.sub(r"[^A-Za-z0-9]", "", value)
     return value or "Artist"
+
+
+def _normalize_optional_int(value):
+    if value is None:
+        return None
+
+    if isinstance(value, int):
+        return value
+
+    value = str(value).strip()
+    if value == "":
+        return None
+
+    try:
+        return int(value)
+    except ValueError:
+        raise ValueError(f"Invalid integer value: {value}")
 
 
 def _get_file_extension(filename: str) -> str:
@@ -183,12 +204,12 @@ def _serialize_artist_profile(profile: dict | None):
         "beatport_url": profile.get("beatport_url") or "",
         "amazon_music_url": profile.get("amazon_music_url") or "",
         "facebook_url": profile.get("facebook_url") or "",
-        "birthday": profile.get("birthday").isoformat() if profile.get("birthday") else "",
-        "city": profile.get("city") or "",
-        "state": profile.get("state") or "",
-        "country": profile.get("country") or "",
-        "ipi": profile.get("ipi") or "",
-        "pro": profile.get("pro") or "",
+         "birthday": profile.get("birthday") or "",
+         "city": profile.get("city") or "",
+         "state": profile.get("state") or "",
+         "country": profile.get("country"),
+         "ipi": profile.get("ipi") or "",
+         "pro": profile.get("pro") or "",
         "spotify_embed": profile.get("spotify_embed") or "",
         "featured_video_embed": profile.get("featured_video_embed") or "",
         "featured_video_name": profile.get("featured_video_name") or "",
@@ -278,11 +299,11 @@ def patch_my_artist_profile():
             "beatport_url": _normalize_optional_url(data.get("beatport_url")),
             "amazon_music_url": _normalize_optional_url(data.get("amazon_music_url")),
             "facebook_url": _normalize_optional_url(data.get("facebook_url")),
-            "birthday": _normalize_string(data.get("birthday")),
+            "birthday": _normalize_optional_date(data.get("birthday")),
             "city": _normalize_string(data.get("city")),
             "state": _normalize_string(data.get("state")),
             "country": _normalize_string(data.get("country")),
-            "ipi": _normalize_string(data.get("ipi")),
+            "ipi": _normalize_optional_int(data.get("ipi")),
             "pro": _normalize_string(data.get("pro")),
             "spotify_embed": _normalize_string(data.get("spotify_embed")),
             "featured_video_embed": _normalize_string(data.get("featured_video_embed")),
@@ -303,15 +324,20 @@ def patch_my_artist_profile():
     if not updates["artist_page"]:
         updates["artist_page"] = existing_profile.get("artist_page") or _normalize_slug(artist_name_for_slug)
 
-    updated = update_artist_profile_by_user_id(user["user_id"], updates)
-    if not updated:
-        return jsonify({"error": "Failed to update artist profile."}), 500
+    try:
+        print("RAW DATA:", data)
+        print("UPDATES:", updates)
 
-    return jsonify({
-        "message": "Artist profile updated successfully.",
-        "artist_profile": _serialize_artist_profile(updated),
-    }), 200
+        updated = update_artist_profile_by_user_id(user["user_id"], updates)
+        if not updated:
+            return jsonify({"error": "Failed to update artist profile."}), 500
 
+        return jsonify({"artist_profile": updated}), 200
+
+    except Exception as exc:
+        print("PATCH FAILED:", repr(exc))
+        traceback.print_exc()
+        return jsonify({"error": "Patch failed.", "details": str(exc)}), 500
 
 @artists_bp.post("/me/upload-asset")
 def upload_my_artist_asset():
