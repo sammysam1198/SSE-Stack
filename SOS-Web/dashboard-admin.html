@@ -32,8 +32,55 @@
     </style>
 </head>
 <body>
-<header>
-    <div id="auth-slot"></div>
+<header class="dashboard-site-header">
+    <div class="dashboard-site-header__inner">
+        <nav class="dashboard-site-nav">
+            <a href="/">Home</a>
+            <a href="/artists">Artists</a>
+            <a href="/submissions">Apply</a>
+            <a href="/contact">Contact</a>
+            <a href="/dashboard-artist" class="dashboard-site-nav__dashboard-link">Dashboard</a>
+        </nav>
+
+        <div class="dashboard-site-header__actions">
+            <div class="artist-profile-menu" id="artist-profile-menu">
+                <button
+                        class="artist-profile-menu__trigger"
+                        id="artist-profile-trigger"
+                        type="button"
+                        aria-haspopup="true"
+                        aria-expanded="false"
+                >
+                    <img
+                            src="/static/logos/sse.png"
+                            alt="Profile picture"
+                            class="artist-profile-menu__avatar"
+                            id="artist-profile-avatar"
+                    />
+                </button>
+
+                <div class="artist-profile-menu__dropdown" id="artist-profile-dropdown">
+                    <div class="artist-profile-menu__section">
+                        <p class="artist-profile-menu__label">Account</p>
+                        <button type="button" class="artist-profile-menu__item">Edit Profile Picture</button>
+                        <button type="button" class="artist-profile-menu__item">Edit Artist Page</button>
+                        <button type="button" class="artist-profile-menu__item">Account Settings</button>
+                    </div>
+
+                    <div class="artist-profile-menu__section">
+                        <p class="artist-profile-menu__label">Security</p>
+                        <button type="button" class="artist-profile-menu__item">Change Password</button>
+                        <button type="button" class="artist-profile-menu__item">Change Email</button>
+                        <button type="button" class="artist-profile-menu__item">Change Username</button>
+                    </div>
+                </div>
+            </div>
+
+            <button class="artist-signout-button" id="artist-signout-button" type="button">
+                Sign Out
+            </button>
+        </div>
+    </div>
 </header>
 
 <main class="dashboard-shell">
