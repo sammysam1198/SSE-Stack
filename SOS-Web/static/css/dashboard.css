@@ -176,14 +176,12 @@
 
 .dashboard-hero__bg {
     position: absolute;
-    inset: -30px;
+    inset: 0;
     background-image: var(--hero-image, linear-gradient(135deg, #08101d, #0c0f18));
     background-size: cover;
     background-position: center;
     background-repeat: no-repeat;
-    filter: blur(34px) saturate(1.08);
-    transform: scale(1.16);
-    opacity: 0.72;
+    opacity: 0.98;
 }
 
 .dashboard-hero__overlay {
