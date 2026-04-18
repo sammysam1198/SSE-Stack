@@ -61,6 +61,16 @@ function setAvatarFromProfile(profile) {
     avatar.src = portraitUrl || logoUrl || "/static/logos/sse.png";
 }
 
+function setReleaseSpotlightArtFromProfile(profile) {
+    const art = document.getElementById("release-spotlight-art");
+    if (!art) return;
+
+    const logoUrl = resolveAssetUrl(profile.artist_logo_key);
+    const portraitUrl = resolveAssetUrl(profile.profile_portrait_key);
+
+    art.src = logoUrl || portraitUrl || "/static/logos/sse.png";
+}
+
 function setImagePreview(imgId, keyValue, fallbackSrc = "") {
     const img = document.getElementById(imgId);
     if (!img) return;
@@ -219,6 +229,7 @@ function populateArtistDashboard(profile) {
     setImagePreview("artist-logo-preview", profile.artist_logo_key, "/static/logos/sse.png");
     setImagePreview("artist-portrait-preview", profile.profile_portrait_key, "/static/logos/sse.png");
 
+    setReleaseSpotlightArtFromProfile(profile);
     updateArtistPageStatus(profile);
 }
 
@@ -314,6 +325,7 @@ function bindPreviewButton() {
         setText("artist-display-name", payload.artist_name || "Artist", "Artist");
         setHeroImageFromProfile(payload);
         setAvatarFromProfile(payload);
+        setReleaseSpotlightArtFromProfile(payload);
 
         setImagePreview("artist-banner-preview", payload.dashboard_banner_key, "/static/logos/sse.png");
         setImagePreview("artist-logo-preview", payload.artist_logo_key, "/static/logos/sse.png");
