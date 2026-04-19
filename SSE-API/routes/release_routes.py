@@ -13,10 +13,16 @@ release_bp = Blueprint("releases", __name__)
 
 
 def _current_user_id():
+    user = session.get("user")
+    if isinstance(user, dict) and user.get("user_id") is not None:
+        return user.get("user_id")
     return session.get("user_id")
 
 
 def _current_role():
+    user = session.get("user")
+    if isinstance(user, dict) and user.get("role"):
+        return user.get("role")
     return session.get("role")
 
 

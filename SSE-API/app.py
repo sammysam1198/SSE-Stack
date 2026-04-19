@@ -1,5 +1,4 @@
 import os
-
 from dotenv import load_dotenv
 from flask import Flask, jsonify
 from flask_cors import CORS
@@ -32,7 +31,11 @@ def create_app() -> Flask:
         supports_credentials=True,
         resources={
             r"/api/*": {
-                "origins": [frontend_origin]
+                "origins": [
+                    "https://www.spacedoutstudiosent.com",
+                    "https://spacedoutstudiosent.com",
+                    "https://sseparallax.onrender.com",
+                ]
             }
         },
     )
