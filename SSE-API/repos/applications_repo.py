@@ -179,7 +179,10 @@ def list_applications():
             review_notes,
             created_user_id,
             created_at,
-            updated_at
+            updated_at,
+            opened_at,
+            application_pdf_path
+
         FROM artist_applications
         ORDER BY created_at DESC
     """
@@ -231,4 +234,36 @@ def update_application_pdf_path(application_id: int, application_pdf_path: str):
         """
     execute_write(query, (application_pdf_path, application_id))
 
+def mark_application_opened(application_id: int):
+    query = """
+        UPDATE artist_applications
+        SET
+            opened_at = COALESCE(opened_at, NOW()),
+            updated_at = NOW()
+        WHERE id = %s
+        RETURNING id, artist_name, status, created_at, opened_at, application_pdf_path
+    """
+    return execute_returning_one(query, (application_id,))
 
+
+def update_application_status(
+    application_id: int,
+    status: str,
+    reviewed_by_user_id: int,
+    review_notes: str | None = None,
+):
+    query = """
+        UPDATE artist_applications
+        SET
+            status = %s,
+            reviewed_by_user_id = %s,
+            reviewed_at = NOW(),
+            review_notes = %s,
+            updated_at = NOW()
+        WHERE id = %s
+        RETURNING *
+    """
+    return execute_returning_one(
+        query,
+        (status, reviewed_by_user_id, review_notes, application_id),
+    )
