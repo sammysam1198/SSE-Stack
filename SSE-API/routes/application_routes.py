@@ -1,10 +1,19 @@
+import os
 from io import BytesIO
 from datetime import datetime
 from urllib.parse import urlparse
+from utils.auth_utils import hash_password
 from flask import Blueprint, request, jsonify, session, send_file
 from utils.r2_utils import upload_bytes_to_r2, download_bytes_from_r2
-from utils.mail_utils import send_artist_application_email
 from utils.application_pdf_utils import build_application_pdf_bytes
+from utils.token_utils import generate_raw_token, hash_token, expiry_from_now
+from repos.user_action_tokens_repo import create_user_action_token, invalidate_user_tokens
+from repos.users_repo import get_user_by_email, create_user
+from utils.mail_utils import (
+send_artist_application_email,
+send_application_approved_email,
+    send_application_denied_email,
+)
 from repos.applications_repo import (
     approve_application as repo_approve_application,
     create_application as repo_create_application,
@@ -12,8 +21,59 @@ from repos.applications_repo import (
     get_application_by_id,
     list_applications as repo_list_applications,
     update_application_pdf_path,
+    mark_application_opened,
+    update_application_status,
 )
+
+
 applications_bp = Blueprint("applications", __name__)
+
+
+def _slugify_artist_page(value: str) -> str:
+    cleaned = (value or "").strip().lower()
+    cleaned = "".join(ch if ch.isalnum() else "-" for ch in cleaned)
+    cleaned = "-".join(part for part in cleaned.split("-") if part)
+    return cleaned or "artist"
+
+
+def _build_setup_url_for_application(application: dict) -> str:
+    email = application["email"]
+    artist_name = application["artist_name"]
+    artist_page = _slugify_artist_page(artist_name)
+
+    user = get_user_by_email(email)
+
+    if not user:
+        temp_password_hash = hash_password(generate_raw_token())
+        user = create_user(
+            email=email,
+            password_hash=temp_password_hash,
+            role="artist",
+            username=None,
+            email_verified=False,
+            artist_name=artist_name,
+            artist_page=artist_page,
+        )
+
+    invalidate_user_tokens(user["id"], "setup_account")
+
+    raw_token = generate_raw_token()
+    token_hash = hash_token(raw_token)
+    expires_at = expiry_from_now(60 * 24 * 3)
+
+    create_user_action_token(
+        user_id=user["id"],
+        email=email,
+        token_hash=token_hash,
+        token_type="setup_account",
+        expires_at=expires_at,
+    )
+
+    frontend_base = os.getenv("FRONTEND_ORIGIN")
+    if not frontend_base:
+        raise RuntimeError("FRONTEND_ORIGIN is not set.")
+
+    return f"{frontend_base}/setup-account?token={raw_token}"
 
 
 def _current_role():
@@ -317,11 +377,67 @@ def download_application_pdf(application_id: int):
     except Exception as exc:
         return jsonify({"error": f"Failed to download application PDF: {exc}"}), 500
 
+    disposition = (request.args.get("disposition") or "inline").strip().lower()
+    as_attachment = disposition == "attachment"
+
     download_name = f"{application.get('artist_name', 'artist')}_application.pdf"
 
     return send_file(
         BytesIO(pdf_bytes),
-        as_attachment=True,
+        as_attachment=as_attachment,
         download_name=download_name,
         mimetype="application/pdf",
     )
+
+
+@applications_bp.post("/<int:application_id>/open")
+def open_application(application_id: int):
+    if not _require_admin_or_dev():
+        return jsonify({"error": "Forbidden."}), 403
+
+    application = get_application_by_id(application_id)
+    if not application:
+        return jsonify({"error": "Application not found."}), 404
+
+    updated = mark_application_opened(application_id)
+    return jsonify({"application": updated}), 200
+
+
+@applications_bp.patch("/<int:application_id>/status")
+def patch_application_status(application_id: int):
+    if not _require_admin_or_dev():
+        return jsonify({"error": "Forbidden."}), 403
+
+    application = get_application_by_id(application_id)
+    if not application:
+        return jsonify({"error": "Application not found."}), 404
+
+    data = request.get_json(silent=True) or {}
+    status = _clean(data.get("status"))
+    review_notes = _clean(data.get("review_notes"))
+
+    if status not in {"approved", "denied", "pending"}:
+        return jsonify({"error": "Invalid status."}), 400
+
+    updated = update_application_status(
+        application_id=application_id,
+        status=status,
+        reviewed_by_user_id=_current_user_id(),
+        review_notes=review_notes,
+    )
+
+    if status == "approved":
+        setup_url = _build_setup_url_for_application(application)
+        send_application_approved_email(
+            to_email=application["email"],
+            artist_name=application["artist_name"],
+            setup_url=setup_url,
+        )
+
+    elif status == "denied":
+        send_application_denied_email(
+            to_email=application["email"],
+            artist_name=application["artist_name"],
+        )
+
+    return jsonify({"application": updated}), 200

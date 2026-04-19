@@ -159,3 +159,68 @@ def send_artist_application_email(application: dict):
         subject=subject,
         html=html,
     )
+
+
+def send_application_approved_email(to_email: str, artist_name: str, setup_url: str):
+    subject = "Your SpacedOut Studios application has been approved"
+    html = f"""
+    <div style="font-family:Arial,Helvetica,sans-serif; color:#111; line-height:1.65;">
+        <p>Dear {escape(artist_name)},</p>
+
+        <p>
+            On behalf of SpacedOut Studios Entertainment and its affiliates,
+            it is my great pleasure to offer you a record deal with our company.
+            We’re really excited to learn more about you and how you shine in music.
+        </p>
+
+        <p>
+            To get started, please create your account below.
+            Please note that creating an account does not bind you legally.
+            It is simply the way that we manage communication and onboarding.
+        </p>
+
+        <p>
+            <a href="{setup_url}">Create your account</a>
+        </p>
+
+        <p style="margin-top:24px;">
+            Warmly,<br><br>
+            Aliem Jumpp<br>
+            Owner<br>
+            SpacedOut Studios Entertainment<br><br>
+
+            Sammi Fishbein<br>
+            Chroma Glow<br>
+            PR & Operations<br>
+            SpacedOut Studios Entertainment
+        </p>
+    </div>
+    """
+    return send_email(to_email, subject, html)
+
+
+def send_application_denied_email(to_email: str, artist_name: str):
+    subject = "Update on your SpacedOut Studios application"
+    html = f"""
+    <div style="font-family:Arial,Helvetica,sans-serif; color:#111; line-height:1.65;">
+        <p>Dear {escape(artist_name)},</p>
+
+        <p>
+            Thank you for taking the time to apply to SpacedOut Studios Entertainment.
+            We truly appreciate the opportunity to review your work and learn more about your artistry.
+        </p>
+
+        <p>
+            After careful consideration, we will not be moving forward at this time.
+            This decision is not meant to diminish the value of your work, and we sincerely wish you continued growth and success in your music journey.
+        </p>
+
+        <p style="margin-top:24px;">
+            Warm regards,<br><br>
+            Aliem Jumpp<br>
+            Owner<br>
+            SpacedOut Studios Entertainment
+        </p>
+    </div>
+    """
+    return send_email(to_email, subject, html)
