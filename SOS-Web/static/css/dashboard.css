@@ -720,38 +720,46 @@
     margin-top: 1.5rem;
     display: flex;
     justify-content: center;
-    gap: 1rem;
+    gap: 0.75rem;
     flex-wrap: wrap;
 }
 
+/* base button */
 .release-btn {
-    padding: 0.65rem 1.2rem;
+    padding: 0.55rem 1.1rem;
     border-radius: 999px;
+    font-size: 0.85rem;
+    letter-spacing: 0.04em;
     text-decoration: none;
-    font-size: 0.9rem;
-    letter-spacing: 0.03em;
     transition: all 0.2s ease;
-    backdrop-filter: blur(10px);
+
+    backdrop-filter: blur(14px);
 }
 
-/* PRIMARY BUTTON */
+/* primary = subtle glass highlight */
 .release-btn.primary {
-    background: linear-gradient(135deg, #ff6ec7, #ff9a8b);
-    color: #fff;
-    box-shadow: 0 4px 18px rgba(255, 110, 199, 0.25);
+    background: rgba(255, 255, 255, 0.12);
+    color: #ffffff;
+    border: 1px solid rgba(255, 255, 255, 0.18);
 }
 
-/* SECONDARY BUTTONS */
+/* secondary = softer, more faded */
 .release-btn.secondary {
-    background: rgba(255, 255, 255, 0.06);
-    color: #ffffffcc;
-    border: 1px solid rgba(255, 255, 255, 0.12);
+    background: rgba(255, 255, 255, 0.04);
+    color: rgba(255, 255, 255, 0.7);
+    border: 1px solid rgba(255, 255, 255, 0.08);
 }
 
-/* HOVER */
+/* hover = subtle lift + glow */
 .release-btn:hover {
     transform: translateY(-1px);
-    opacity: 0.95;
+    background: rgba(255, 255, 255, 0.18);
+    border-color: rgba(255, 255, 255, 0.25);
+}
+
+/* active press */
+.release-btn:active {
+    transform: translateY(0);
 }
 
 .application-pdf-overlay__actions {
