@@ -1,39 +1,124 @@
-from config.db import (
-    execute_returning_one,
-    execute_write,
-    fetch_all,
-    fetch_one,
-)
+from typing import Any
+
+from config.db import fetch_all, fetch_one, get_db_conn
 
 
-def create_release_submission(
-    artist_profile_id: int,
-    created_by_user_id: int,
+def create_release_draft(
+    *,
+    submitting_user_id: int,
+    artist_profile_id: int | None,
+    main_artist_name: str,
     release_title: str,
     release_type: str,
-    artist_notes: str | None = None,
+    preferred_release_date: str | None = None,
+    primary_genre: str | None = None,
+    other_genres: str | None = None,
+    release_pitch: str | None = None,
+    artists: list[dict[str, Any]] | None = None,
 ):
+    artists = artists or []
+
+    conn = get_db_conn()
+    try:
+        with conn:
+            with conn.cursor() as cur:
+                cur.execute(
+                    """
+                    INSERT INTO release_submissions (
+                        submitting_user_id,
+                        artist_profile_id,
+                        main_artist_name,
+                        release_title,
+                        release_type,
+                        preferred_release_date,
+                        primary_genre,
+                        other_genres,
+                        release_pitch
+                    )
+                    VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)
+                    RETURNING *
+                    """,
+                    (
+                        submitting_user_id,
+                        artist_profile_id,
+                        main_artist_name,
+                        release_title,
+                        release_type,
+                        preferred_release_date,
+                        primary_genre,
+                        other_genres,
+                        release_pitch,
+                    ),
+                )
+                release = cur.fetchone()
+                release_id = release["id"]
+
+                for index, artist in enumerate(artists, start=1):
+                    cur.execute(
+                        """
+                        INSERT INTO release_submission_artists (
+                            release_submission_id,
+                            artist_order,
+                            role_type,
+                            display_name,
+                            email,
+                            first_name,
+                            last_name,
+                            ipi,
+                            pro,
+                            publisher,
+                            spotify_url,
+                            apple_music_url,
+                            youtube_url,
+                            soundcloud_url,
+                            saved_featured_artist_id
+                        )
+                        VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+                        """,
+                        (
+                            release_id,
+                            index,
+                            artist.get("role_type"),
+                            artist.get("display_name"),
+                            artist.get("email"),
+                            artist.get("first_name"),
+                            artist.get("last_name"),
+                            artist.get("ipi"),
+                            artist.get("pro"),
+                            artist.get("publisher"),
+                            artist.get("spotify_url"),
+                            artist.get("apple_music_url"),
+                            artist.get("youtube_url"),
+                            artist.get("soundcloud_url"),
+                            artist.get("saved_featured_artist_id"),
+                        ),
+                    )
+
+                cur.execute(
+                    """
+                    SELECT *
+                    FROM release_submission_artists
+                    WHERE release_submission_id = %s
+                    ORDER BY artist_order ASC
+                    """,
+                    (release_id,),
+                )
+                release_artists = cur.fetchall()
+
+        release["artists"] = release_artists
+        return release
+    finally:
+        conn.close()
+
+
+def list_releases_for_submitter(submitting_user_id: int):
     query = """
-        INSERT INTO release_submissions (
-            artist_profile_id,
-            created_by_user_id,
-            release_title,
-            release_type,
-            artist_notes
-        )
-        VALUES (%s, %s, %s, %s, %s)
-        RETURNING *
+        SELECT *
+        FROM release_submissions
+        WHERE submitting_user_id = %s
+        ORDER BY created_at DESC
     """
-    return execute_returning_one(
-        query,
-        (
-            artist_profile_id,
-            created_by_user_id,
-            release_title,
-            release_type,
-            artist_notes,
-        ),
-    )
+    return fetch_all(query, (submitting_user_id,))
 
 
 def list_all_releases():
@@ -45,177 +130,21 @@ def list_all_releases():
     return fetch_all(query)
 
 
-def list_releases_for_artist(artist_profile_id: int):
-    query = """
-        SELECT *
-        FROM release_submissions
-        WHERE artist_profile_id = %s
-        ORDER BY created_at DESC
-    """
-    return fetch_all(query, (artist_profile_id,))
-
-
 def get_release_by_id(release_id: int):
     query = """
         SELECT *
         FROM release_submissions
         WHERE id = %s
+        LIMIT 1
     """
     return fetch_one(query, (release_id,))
 
 
-def update_release_submission(
-    release_id: int,
-    release_title: str,
-    release_type: str,
-    artist_notes: str | None = None,
-):
-    query = """
-        UPDATE release_submissions
-        SET
-            release_title = %s,
-            release_type = %s,
-            artist_notes = %s,
-            updated_at = NOW()
-        WHERE id = %s
-    """
-    execute_write(query, (release_title, release_type, artist_notes, release_id))
-
-
-def delete_release_submission(release_id: int):
-    query = """
-        DELETE FROM release_submissions
-        WHERE id = %s
-    """
-    execute_write(query, (release_id,))
-
-
-def submit_release_submission(release_id: int):
-    query = """
-        UPDATE release_submissions
-        SET
-            status = 'submitted',
-            submitted_at = NOW(),
-            updated_at = NOW()
-        WHERE id = %s
-    """
-    execute_write(query, (release_id,))
-
-
-def approve_release_submission(release_id: int, reviewed_by_user_id: int):
-    query = """
-        UPDATE release_submissions
-        SET
-            status = 'approved',
-            reviewed_by_user_id = %s,
-            reviewed_at = NOW(),
-            approved_at = NOW(),
-            updated_at = NOW()
-        WHERE id = %s
-    """
-    execute_write(query, (reviewed_by_user_id, release_id))
-
-
-def reject_release_submission(release_id: int, reviewed_by_user_id: int, admin_notes: str | None = None):
-    query = """
-        UPDATE release_submissions
-        SET
-            status = 'rejected',
-            reviewed_by_user_id = %s,
-            reviewed_at = NOW(),
-            rejected_at = NOW(),
-            admin_notes = %s,
-            updated_at = NOW()
-        WHERE id = %s
-    """
-    execute_write(query, (reviewed_by_user_id, admin_notes, release_id))
-
-
-def request_release_changes(release_id: int, reviewed_by_user_id: int, admin_notes: str | None = None):
-    query = """
-        UPDATE release_submissions
-        SET
-            status = 'changes_requested',
-            reviewed_by_user_id = %s,
-            reviewed_at = NOW(),
-            requested_changes_at = NOW(),
-            admin_notes = %s,
-            updated_at = NOW()
-        WHERE id = %s
-    """
-    execute_write(query, (reviewed_by_user_id, admin_notes, release_id))
-
-
-def create_release_asset(
-    release_submission_id: int,
-    asset_type: str,
-    file_name: str | None = None,
-    mime_type: str | None = None,
-    storage_url: str | None = None,
-    external_url: str | None = None,
-    byte_size: int | None = None,
-    width_px: int | None = None,
-    height_px: int | None = None,
-    duration_seconds: float | None = None,
-    uploaded_by_user_id: int | None = None,
-):
-    query = """
-        INSERT INTO release_assets (
-            release_submission_id,
-            asset_type,
-            file_name,
-            mime_type,
-            storage_url,
-            external_url,
-            byte_size,
-            width_px,
-            height_px,
-            duration_seconds,
-            uploaded_by_user_id
-        )
-        VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
-        RETURNING *
-    """
-    return execute_returning_one(
-        query,
-        (
-            release_submission_id,
-            asset_type,
-            file_name,
-            mime_type,
-            storage_url,
-            external_url,
-            byte_size,
-            width_px,
-            height_px,
-            duration_seconds,
-            uploaded_by_user_id,
-        ),
-    )
-
-
-def list_release_assets(release_submission_id: int):
+def get_release_artists(release_id: int):
     query = """
         SELECT *
-        FROM release_assets
+        FROM release_submission_artists
         WHERE release_submission_id = %s
-        ORDER BY created_at ASC
+        ORDER BY artist_order ASC
     """
-    return fetch_all(query, (release_submission_id,))
-
-
-def get_release_asset_by_id(asset_id: int):
-    query = """
-        SELECT *
-        FROM release_assets
-        WHERE id = %s
-    """
-    return fetch_one(query, (asset_id,))
-
-
-def delete_release_asset(asset_id: int):
-    query = """
-        DELETE FROM release_assets
-        WHERE id = %s
-    """
-    execute_write(query, (asset_id,))
+    return fetch_all(query, (release_id,))
