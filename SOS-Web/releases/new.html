@@ -34,7 +34,7 @@
 
 <main class="page-shell">
     <div class="page-shell__header">
-        <p class="eyebrow">Release Intake</p>
+        <p class="eyebrow">Releases</p>
         <h1 id="release-page-title">New Release</h1>
         <p id="artist-context"></p>
     </div>
@@ -43,45 +43,53 @@
     <div id="release-success" role="status"></div>
 
     <form id="release-form" novalidate>
-        <label>
-            Release Title
-            <input type="text" name="release_title" required />
-        </label>
+        <section class="release-section">
+            <h2>Basic Info</h2>
 
-        <label>
-            Release Type
-            <select name="release_type" required>
-                <option value="">Select one</option>
-                <option value="single">Single</option>
-                <option value="ep">EP</option>
-                <option value="album">Album</option>
-            </select>
-        </label>
+            <label>
+                Release Title
+                <input type="text" name="release_title" required />
+            </label>
 
-        <label>
-            Language
-            <input type="text" name="language" placeholder="English, Spanish, Instrumental, etc." />
-        </label>
+            <label>
+                Release Type
+                <select name="release_type" required>
+                    <option value="">Select one</option>
+                    <option value="single">Single</option>
+                    <option value="ep">EP</option>
+                    <option value="album">Album</option>
+                </select>
+            </label>
 
-        <label>
-            Preferred Release Date
-            <input type="date" name="preferred_release_date" />
-        </label>
+            <label>
+                Preferred Release Date
+                <input type="date" name="preferred_release_date" />
+            </label>
 
-        <label>
-            Genre Notes
-            <textarea name="genre_notes" placeholder="If more than one genre applies, note it here."></textarea>
-        </label>
+            <label>
+                Primary Genre
+                <input type="text" name="primary_genre" placeholder="Synthwave, House, Trance, etc." />
+            </label>
 
-        <label>
-            Pitch
-            <textarea name="pitch" placeholder="What is the song or release about? Why was it made? Any notable features or producer notes?"></textarea>
-        </label>
+            <label>
+                Other Genres
+                <textarea name="other_genres" placeholder="If other genres apply, explain them here."></textarea>
+            </label>
 
-        <label>
-            Lyrics
-            <textarea name="lyrics" placeholder="Paste lyrics here, or write Instrumental if there are no lyrics."></textarea>
-        </label>
+            <label>
+                Release Pitch
+                <textarea name="release_pitch" placeholder="What is this release about? What makes it special?"></textarea>
+            </label>
+        </section>
+
+        <section class="release-section">
+            <div class="section-row">
+                <h2>Artists</h2>
+                <button type="button" id="add-artist-button">+ Add Artist</button>
+            </div>
+
+            <div id="artists-container"></div>
+        </section>
 
         <div class="form-actions">
             <button type="submit">Create Release Draft</button>
