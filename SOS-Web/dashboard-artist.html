@@ -9,69 +9,62 @@
     <link rel="stylesheet" href="/static/css/header.css" />
     <link rel="stylesheet" href="/static/css/auth.css" />
     <link rel="stylesheet" href="/static/css/dashboard.css" />
+    <link rel="icon" type="image/png" href="/favicon.png">
 </head>
 <body>
-<header>
-    <div id="auth-slot"></div>
+<header class="dashboard-site-header">
+    <div class="dashboard-site-header__inner">
+        <nav class="dashboard-site-nav">
+            <a href="/">Home</a>
+            <a href="/artists">Artists</a>
+            <a href="/submissions">Apply</a>
+            <a href="/contact">Contact</a>
+            <a href="/dashboard-artist" class="dashboard-site-nav__dashboard-link">Dashboard</a>
+        </nav>
+
+        <div class="dashboard-site-header__actions">
+            <div class="artist-profile-menu" id="artist-profile-menu">
+                <button
+                        class="artist-profile-menu__trigger"
+                        id="artist-profile-trigger"
+                        type="button"
+                        aria-haspopup="true"
+                        aria-expanded="false"
+                >
+                    <img
+                            src="/static/logos/sse.png"
+                            alt="Profile picture"
+                            class="artist-profile-menu__avatar"
+                            id="artist-profile-avatar"
+                    />
+                </button>
+
+                <div class="artist-profile-menu__dropdown" id="artist-profile-dropdown">
+                    <div class="artist-profile-menu__section">
+                        <p class="artist-profile-menu__label">Account</p>
+                        <button type="button" class="artist-profile-menu__item">Edit Profile Picture</button>
+                        <button type="button" class="artist-profile-menu__item">Edit Artist Page</button>
+                        <button type="button" class="artist-profile-menu__item">Account Settings</button>
+                    </div>
+
+                    <div class="artist-profile-menu__section">
+                        <p class="artist-profile-menu__label">Security</p>
+                        <button type="button" class="artist-profile-menu__item">Change Password</button>
+                        <button type="button" class="artist-profile-menu__item">Change Email</button>
+                        <button type="button" class="artist-profile-menu__item">Change Username</button>
+                    </div>
+                </div>
+            </div>
+
+            <button class="artist-signout-button" id="artist-signout-button" type="button">
+                Sign Out
+            </button>
+        </div>
+    </div>
 </header>
 
 <main class="artist-dashboard-page">
     <div class="artist-dashboard-container">
-
-        <section class="artist-dashboard-topbar">
-            <div class="artist-dashboard-topbar__left"></div>
-
-            <div class="artist-dashboard-topbar__right">
-                <div class="artist-profile-menu" id="artist-profile-menu">
-                    <button
-                            class="artist-profile-menu__trigger"
-                            id="artist-profile-trigger"
-                            type="button"
-                            aria-haspopup="true"
-                            aria-expanded="false"
-                    >
-                        <img
-                                src="/static/logos/sse.png"
-                                alt="Profile picture"
-                                class="artist-profile-menu__avatar"
-                                id="artist-profile-avatar"
-                        />
-                    </button>
-
-                    <div class="artist-profile-menu__dropdown" id="artist-profile-dropdown">
-                        <div class="artist-profile-menu__section">
-                            <p class="artist-profile-menu__label">Account</p>
-                            <button type="button" class="artist-profile-menu__item">
-                                Edit Profile Picture
-                            </button>
-                            <button type="button" class="artist-profile-menu__item">
-                                Edit Artist Page
-                            </button>
-                            <button type="button" class="artist-profile-menu__item">
-                                Account Settings
-                            </button>
-                        </div>
-
-                        <div class="artist-profile-menu__section">
-                            <p class="artist-profile-menu__label">Security</p>
-                            <button type="button" class="artist-profile-menu__item">
-                                Change Password
-                            </button>
-                            <button type="button" class="artist-profile-menu__item">
-                                Change Email
-                            </button>
-                            <button type="button" class="artist-profile-menu__item">
-                                Change Username
-                            </button>
-                        </div>
-                    </div>
-                </div>
-
-                <button class="artist-signout-button" id="artist-signout-button" type="button">
-                    Sign Out
-                </button>
-            </div>
-        </section>
 
         <section
                 class="dashboard-hero"
@@ -111,7 +104,7 @@
                 <div class="release-spotlight">
                     <div class="release-spotlight__art-wrap">
                         <img
-                                src="/static/logos/4nzek.png"
+                                src="/static/logos/sse.png"
                                 alt="Release artwork"
                                 class="release-spotlight__art"
                                 id="release-spotlight-art"
@@ -475,6 +468,9 @@
 <script src="/static/js/api.js"></script>
 <script src="/static/js/auth.js"></script>
 <script src="/static/js/header_auth.js"></script>
+<script>
+    window.SSE_ASSET_BASE_URL = "https://pub-4d4f2d565e844d6fb3e84f51d1093198.r2.dev";
+</script>
 <script src="/static/js/dashboard.js"></script>
 </body>
 </html>
