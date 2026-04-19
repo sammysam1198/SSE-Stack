@@ -91,7 +91,7 @@
 
         <nav class="dashboard-sidebar-nav">
             <a href="#" class="is-active">System Overview</a>
-            <a href="#">Users</a>
+            <a href="#applications-review-card">Applications Review</a>
             <a href="#">Logs</a>
             <a href="#">Mail Events</a>
             <a href="#">Debug Tools</a>
@@ -238,6 +238,67 @@
             </form>
         </section>
 
+        <section class="dashboard-card dashboard-card--full" id="applications-review-card">
+            <div class="applications-review-head">
+                <div>
+                    <h3>Applications Review</h3>
+                    <p class="dashboard-card__intro">
+                        Review artist applications, open PDFs, and update statuses.
+                    </p>
+                </div>
+
+                <div class="applications-review-controls">
+                    <select id="application-sort-select">
+                        <option value="newest">Newest</option>
+                        <option value="oldest">Oldest</option>
+                        <option value="az">A to Z</option>
+                        <option value="za">Z to A</option>
+                    </select>
+
+                    <select id="application-status-filter">
+                        <option value="all">All</option>
+                        <option value="approved">Approved</option>
+                        <option value="denied">Denied</option>
+                        <option value="pending">Pending</option>
+                        <option value="unopened">Unopened</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="applications-table-wrap">
+                <table class="applications-table">
+                    <thead>
+                    <tr>
+                        <th>Artist Name</th>
+                        <th>Date</th>
+                        <th>Status</th>
+                        <th>Actions</th>
+                    </tr>
+                    </thead>
+                    <tbody id="applications-table-body">
+                    <tr>
+                        <td colspan="4">Loading applications...</td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <div class="application-pdf-overlay" id="application-pdf-overlay" hidden>
+            <div class="application-pdf-overlay__backdrop" id="application-pdf-close-backdrop"></div>
+            <div class="application-pdf-overlay__panel">
+                <div class="application-pdf-overlay__topbar">
+                    <div class="application-pdf-overlay__title" id="application-pdf-title">Application PDF</div>
+                    <div class="application-pdf-overlay__actions">
+                        <a id="application-pdf-download" class="artist-action-button" target="_blank">Download</a>
+                        <button id="application-pdf-close" class="artist-action-button" type="button">Close</button>
+                    </div>
+                </div>
+
+                <iframe id="application-pdf-frame" class="application-pdf-frame" title="Application PDF Viewer"></iframe>
+            </div>
+        </div>
+
     </div>
 </main>
 
@@ -271,6 +332,7 @@
 <script src="/static/js/auth.js"></script>
 <script src="/static/js/header_auth.js"></script>
 <script src="/static/js/dashboard.js"></script>
+<script src="/static/js/application_review.js"></script>
 <script src="/static/js/invite_artist.js"></script>
 
 <script>
