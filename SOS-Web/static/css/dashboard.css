@@ -716,6 +716,44 @@
     border-bottom: 1px solid rgba(255,255,255,0.08);
 }
 
+.release-actions {
+    margin-top: 1.5rem;
+    display: flex;
+    justify-content: center;
+    gap: 1rem;
+    flex-wrap: wrap;
+}
+
+.release-btn {
+    padding: 0.65rem 1.2rem;
+    border-radius: 999px;
+    text-decoration: none;
+    font-size: 0.9rem;
+    letter-spacing: 0.03em;
+    transition: all 0.2s ease;
+    backdrop-filter: blur(10px);
+}
+
+/* PRIMARY BUTTON */
+.release-btn.primary {
+    background: linear-gradient(135deg, #ff6ec7, #ff9a8b);
+    color: #fff;
+    box-shadow: 0 4px 18px rgba(255, 110, 199, 0.25);
+}
+
+/* SECONDARY BUTTONS */
+.release-btn.secondary {
+    background: rgba(255, 255, 255, 0.06);
+    color: #ffffffcc;
+    border: 1px solid rgba(255, 255, 255, 0.12);
+}
+
+/* HOVER */
+.release-btn:hover {
+    transform: translateY(-1px);
+    opacity: 0.95;
+}
+
 .application-pdf-overlay__actions {
     display: flex;
     gap: 0.75rem;
