@@ -44,7 +44,6 @@ def create_app() -> Flask:
     app.register_blueprint(applications_bp, url_prefix="/api/applications")
     app.register_blueprint(artists_bp, url_prefix="/api/artists")
     app.register_blueprint(release_bp, url_prefix="/api/releases")
-    app.register_blueprint(release_bp, url_prefix="/api/release")
     app.register_blueprint(requests_bp, url_prefix="/api/requests")
     app.register_blueprint(news_bp, url_prefix="/api/news")
     app.register_blueprint(admin_bp, url_prefix="/api/admin")
