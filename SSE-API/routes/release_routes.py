@@ -9,7 +9,7 @@ from repos.releases_repo import (
     list_releases_for_submitter,
 )
 
-release_bp = Blueprint("releases", __name__)
+release_bp = Blueprint("release", __name__)
 
 
 def _current_user_id():
