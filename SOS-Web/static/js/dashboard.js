@@ -362,6 +362,68 @@ function bindLocalFilePreviews() {
     });
 }
 
+async function loadReleaseReview() {
+    const tbody = document.getElementById("release-review-body");
+    if (!tbody) return;
+
+    try {
+        const res = await apiFetch("/api/releases");
+        const releases = res.releases || [];
+
+        if (!releases.length) {
+            tbody.innerHTML = `<tr><td colspan="5">No releases found.</td></tr>`;
+            return;
+        }
+
+        tbody.innerHTML = releases.map(r => `
+            <tr>
+                <td>${r.release_title}</td>
+                <td>${r.artists?.[0]?.display_name || "—"}</td>
+                <td>${new Date(r.created_at).toLocaleDateString()}</td>
+                <td>${r.status}</td>
+                <td>
+                    <button onclick="viewPDF(${r.id})">PDF</button>
+                    <button onclick="downloadZip(${r.id})">ZIP</button>
+                    <button onclick="approveRelease(${r.id})">Approve</button>
+                    <button onclick="rejectRelease(${r.id})">Reject</button>
+                </td>
+            </tr>
+        `).join("");
+
+    } catch (err) {
+        tbody.innerHTML = `<tr><td colspan="5">Failed to load releases.</td></tr>`;
+    }
+}
+
+async function approveRelease(id) {
+    const releaseDate = prompt("Enter label release date (YYYY-MM-DD)");
+    if (!releaseDate) return;
+
+    await apiFetch(`/api/releases/${id}/approve`, {
+        method: "POST",
+        body: { release_date: releaseDate }
+    });
+
+    loadReleaseReview();
+}
+
+async function rejectRelease(id) {
+    const reason = prompt("Enter rejection reason");
+    if (!reason) {
+        alert("Reason is required.");
+        return;
+    }
+
+    await apiFetch(`/api/releases/${id}/reject`, {
+        method: "POST",
+        body: { reason }
+    });
+
+    loadReleaseReview();
+}
+
+
+
 async function handleAssetUploads(statusEl) {
     const uploads = [
         {
