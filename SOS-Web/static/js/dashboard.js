@@ -422,6 +422,14 @@ async function rejectRelease(id) {
     loadReleaseReview();
 }
 
+function downloadZip(id) {
+    window.open(`${API_BASE}/api/releases/${id}/package`, "_blank");
+}
+
+function viewPDF(id) {
+    window.open(`${API_BASE}/api/releases/${id}/pdf`, "_blank");
+}
+
 
 
 async function handleAssetUploads(statusEl) {
@@ -467,53 +475,65 @@ document.addEventListener("DOMContentLoaded", async () => {
     const statusEl = document.getElementById("artist-editor-status");
     const saveButton = document.getElementById("artist-profile-save");
 
-    if (!form) return;
-
     try {
         const user = await getCurrentUser();
-        if (!requireRole(user, ["artist"])) return;
+        if (!user) {
+            window.location.href = "/";
+            return;
+        }
 
         bindProfileMenu();
-        bindPreviewButton();
-        bindLocalFilePreviews();
 
-        const profile = await getMyArtistProfile();
-        populateArtistDashboard(profile || {});
+        // admin/dev release review card
+        if (document.getElementById("release-review-body")) {
+            loadReleaseReview();
+        }
+
+        // artist dashboard only
+        if (form) {
+            if (!requireRole(user, ["artist"])) return;
+
+            bindPreviewButton();
+            bindLocalFilePreviews();
+
+            const profile = await getMyArtistProfile();
+            populateArtistDashboard(profile || {});
+
+            form.addEventListener("submit", async (event) => {
+                event.preventDefault();
+
+                if (statusEl) statusEl.textContent = "";
+                if (saveButton) saveButton.disabled = true;
+
+                try {
+                    await handleAssetUploads(statusEl);
+
+                    if (statusEl) {
+                        statusEl.textContent = "Saving profile...";
+                    }
+
+                    const payload = collectArtistProfilePayload();
+                    const updatedProfile = await saveMyArtistProfile(payload);
+
+                    populateArtistDashboard(updatedProfile || payload);
+
+                    if (statusEl) {
+                        statusEl.textContent = "Profile saved successfully.";
+                    }
+                } catch (error) {
+                    console.error("Failed to save artist profile:", error);
+                    if (statusEl) {
+                        statusEl.textContent = error.message || "Could not save profile.";
+                    }
+                } finally {
+                    if (saveButton) saveButton.disabled = false;
+                }
+            });
+        }
     } catch (error) {
-        console.error("Failed to load artist dashboard profile:", error);
+        console.error("Dashboard load failed:", error);
         if (statusEl) {
             statusEl.textContent = "Could not load your artist profile.";
         }
     }
-
-    form.addEventListener("submit", async (event) => {
-        event.preventDefault();
-
-        if (statusEl) statusEl.textContent = "";
-        if (saveButton) saveButton.disabled = true;
-
-        try {
-            await handleAssetUploads(statusEl);
-
-            if (statusEl) {
-                statusEl.textContent = "Saving profile...";
-            }
-
-            const payload = collectArtistProfilePayload();
-            const updatedProfile = await saveMyArtistProfile(payload);
-
-            populateArtistDashboard(updatedProfile || payload);
-
-            if (statusEl) {
-                statusEl.textContent = "Profile saved successfully.";
-            }
-        } catch (error) {
-            console.error("Failed to save artist profile:", error);
-            if (statusEl) {
-                statusEl.textContent = error.message || "Could not save profile.";
-            }
-        } finally {
-            if (saveButton) saveButton.disabled = false;
-        }
-    });
 });
