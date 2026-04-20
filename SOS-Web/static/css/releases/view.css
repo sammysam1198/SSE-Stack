@@ -5,6 +5,8 @@
 }
 
 .release-card--rich {
+    --release-art: none;
+
     position: relative;
     display: grid;
     grid-template-columns: 180px minmax(0, 1fr);
@@ -25,7 +27,7 @@
     background:
             radial-gradient(circle at top left, rgba(255, 0, 170, 0.18), transparent 35%),
             radial-gradient(circle at bottom right, rgba(0, 200, 255, 0.18), transparent 35%),
-            var(--release-art);
+            var(--release-art, none);
     background-size: cover;
     background-position: center;
     filter: blur(28px) saturate(1.2);
