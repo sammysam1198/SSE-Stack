@@ -116,6 +116,27 @@
         </section>
 
         <section class="release-section">
+            <h2>Release Artwork</h2>
+
+            <div class="upload-box">
+                <label>
+                    Artwork Upload
+                    <input
+                            type="file"
+                            id="release-artwork-file"
+                            accept="image/png,image/jpeg,image/webp"
+                    />
+                </label>
+
+                <p class="upload-help">
+                    Required. Max 30 MB. Minimum dimensions 3000x3000.
+                </p>
+
+                <div id="release-artwork-status"></div>
+            </div>
+        </section>
+
+        <section class="release-section">
             <div class="section-row">
                 <h2>Artists</h2>
                 <button type="button" id="add-artist-button">+ Add Artist</button>

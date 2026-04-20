@@ -7,6 +7,10 @@ document.addEventListener("DOMContentLoaded", async () => {
     const tracksContainer = document.getElementById("tracks-container");
     const addArtistButton = document.getElementById("add-artist-button");
     const addTrackButton = document.getElementById("add-track-button");
+    const artworkInput = document.getElementById("release-artwork-file");
+    const artworkStatus = document.getElementById("release-artwork-status");
+
+    let uploadedArtwork = null;
 
     let artistCount = 0;
     let trackCount = 0;
@@ -394,6 +398,51 @@ document.addEventListener("DOMContentLoaded", async () => {
         });
     }
 
+    async function uploadArtwork() {
+        if (!artworkInput?.files?.length) {
+            uploadedArtwork = null;
+            if (artworkStatus) artworkStatus.textContent = "";
+            return;
+        }
+
+        const file = artworkInput.files[0];
+        const releaseTitle = document.querySelector('[name="release_title"]')?.value?.trim() || "untitled_release";
+        const mainArtistName =
+            document.querySelector(".artist-card .artist-display-name")?.value?.trim() || "artist";
+
+        const formData = new FormData();
+        formData.append("artwork", file);
+        formData.append("release_title", releaseTitle);
+        formData.append("artist_name", mainArtistName);
+
+        if (artworkStatus) {
+            artworkStatus.textContent = "Uploading artwork...";
+        }
+
+        const response = await fetch(`${API_BASE}/api/releases/upload-artwork`, {
+            method: "POST",
+            body: formData,
+            credentials: "include",
+        });
+
+        let data = {};
+        try {
+            data = await response.json();
+        } catch (error) {
+            data = {};
+        }
+
+        if (!response.ok) {
+            throw new Error(data.error || "Artwork upload failed.");
+        }
+
+        uploadedArtwork = data.artwork;
+
+        if (artworkStatus) {
+            artworkStatus.textContent = `Artwork uploaded: ${uploadedArtwork.original_filename} (${uploadedArtwork.width}x${uploadedArtwork.height})`;
+        }
+    }
+
     async function loadMainArtist() {
         currentUser = await getCurrentUser();
         if (!currentUser) {
@@ -434,6 +483,21 @@ document.addEventListener("DOMContentLoaded", async () => {
         }
     }
 
+    artworkInput?.addEventListener("change", async () => {
+        clearMessages();
+        try {
+            await uploadArtwork();
+        } catch (error) {
+            uploadedArtwork = null;
+            if (artworkStatus) {
+                artworkStatus.textContent = "";
+            }
+            if (errorBox) {
+                errorBox.textContent = error.message || "Artwork upload failed.";
+            }
+        }
+    });
+
     addArtistButton?.addEventListener("click", () => {
         clearMessages();
 
@@ -462,6 +526,12 @@ document.addEventListener("DOMContentLoaded", async () => {
         if (!validateSplitTotals()) {
             errorBox.textContent = "Artist splits must add up to 100.";
             return;
+
+        }
+
+        if (!uploadedArtwork?.object_key) {
+            errorBox.textContent = "Release artwork is required.";
+            return;
         }
 
         const payload = {
@@ -471,9 +541,11 @@ document.addEventListener("DOMContentLoaded", async () => {
             primary_genre: formData.get("primary_genre")?.trim(),
             other_genres: formData.get("other_genres")?.trim(),
             release_pitch: formData.get("release_pitch")?.trim(),
+            artwork: uploadedArtwork,
             artists,
             tracks,
         };
+
 
         try {
             const data = await apiFetch("/api/releases", {
