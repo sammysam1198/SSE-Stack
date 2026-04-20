@@ -1,6 +1,8 @@
 from typing import Any
 
-from config.db import fetch_all, fetch_one, get_db_conn
+from config.db import fetch_all, fetch_one, execute_write, get_db_conn
+
+
 
 
 def create_release_draft(
@@ -20,8 +22,10 @@ def create_release_draft(
     artwork_width: int | None = None,
     artwork_height: int | None = None,
     artists: list[dict[str, Any]] | None = None,
+    tracks: list[dict[str, Any]] | None = None,
 ):
     artists = artists or []
+    tracks = tracks or []
 
     conn = get_db_conn()
     try:
@@ -112,19 +116,82 @@ def create_release_draft(
                         ),
                     )
 
-                cur.execute(
-                    """
-                    SELECT *
-                    FROM release_submission_artists
-                    WHERE release_submission_id = %s
-                    ORDER BY artist_order ASC
-                    """,
-                    (release_id,),
-                )
-                release_artists = cur.fetchall()
+                for track in tracks:
+                    cur.execute(
+                        """
+                        INSERT INTO release_tracks (
+                            release_submission_id,
+                            track_number,
+                            track_title,
+                            track_artists_text,
+                            track_length,
+                            language,
+                            is_instrumental,
+                            lyrics,
+                            track_pitch,
+                            audio_object_key,
+                            audio_original_filename,
+                            audio_mime_type,
+                            audio_size_bytes,
+                            sample_rate_hz,
+                            bit_depth
+                        )
+                        VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+                        RETURNING id
+                        """,
+                        (
+                            release_id,
+                            track.get("track_number"),
+                            track.get("track_title"),
+                            track.get("track_artists_text"),
+                            track.get("track_length"),
+                            track.get("language"),
+                            track.get("is_instrumental", False),
+                            track.get("lyrics"),
+                            track.get("track_pitch"),
+                            track.get("audio_object_key"),
+                            track.get("audio_original_filename"),
+                            track.get("audio_mime_type"),
+                            track.get("audio_size_bytes"),
+                            track.get("sample_rate_hz"),
+                            track.get("bit_depth"),
+                        ),
+                    )
+                    track_row = cur.fetchone()
+                    track_id = track_row["id"]
 
-        release["artists"] = release_artists
-        return release
+                    for credit_index, credit in enumerate(track.get("credits", []), start=1):
+                        cur.execute(
+                            """
+                            INSERT INTO release_track_credits (
+                                release_track_id,
+                                credit_order,
+                                credit_type,
+                                artist_name,
+                                first_name,
+                                last_name,
+                                email,
+                                ipi,
+                                pro,
+                                publisher
+                            )
+                            VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+                            """,
+                            (
+                                track_id,
+                                credit_index,
+                                credit.get("credit_type"),
+                                credit.get("artist_name"),
+                                credit.get("first_name"),
+                                credit.get("last_name"),
+                                credit.get("email"),
+                                credit.get("ipi"),
+                                credit.get("pro"),
+                                credit.get("publisher"),
+                            ),
+                        )
+
+        return get_release_package_by_id(release["id"])
     finally:
         conn.close()
 
@@ -165,3 +232,76 @@ def get_release_artists(release_id: int):
         ORDER BY artist_order ASC
     """
     return fetch_all(query, (release_id,))
+
+
+
+
+def update_release_pdf_object_key(release_id: int, object_key: str):
+    execute_write(
+        """
+        UPDATE release_submissions
+        SET release_pdf_object_key = %s,
+            updated_at = NOW()
+        WHERE id = %s
+        """,
+        (object_key, release_id),
+    )
+
+
+def get_release_tracks(release_id: int):
+    return fetch_all(
+        """
+        SELECT *
+        FROM release_tracks
+        WHERE release_submission_id = %s
+        ORDER BY track_number ASC, created_at ASC
+        """,
+        (release_id,),
+    )
+
+
+def get_track_credits_for_release(release_id: int):
+    return fetch_all(
+        """
+        SELECT
+            rtc.*,
+            rt.release_submission_id,
+            rt.track_number,
+            rt.track_title
+        FROM release_track_credits rtc
+        JOIN release_tracks rt ON rt.id = rtc.release_track_id
+        WHERE rt.release_submission_id = %s
+        ORDER BY rt.track_number ASC, rtc.credit_order ASC
+        """,
+        (release_id,),
+    )
+
+
+def get_release_package_by_id(release_id: int):
+    release = fetch_one(
+        """
+        SELECT *
+        FROM release_submissions
+        WHERE id = %s
+        LIMIT 1
+        """,
+        (release_id,),
+    )
+
+    if not release:
+        return None
+
+    release["artists"] = fetch_all(
+        """
+        SELECT *
+        FROM release_submission_artists
+        WHERE release_submission_id = %s
+        ORDER BY artist_order ASC
+        """,
+        (release_id,),
+    )
+
+    release["tracks"] = get_release_tracks(release_id)
+    release["track_credits"] = get_track_credits_for_release(release_id)
+
+    return release

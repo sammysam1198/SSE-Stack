@@ -7,6 +7,8 @@ from PIL import Image
 from utils.r2_utils import upload_bytes_to_r2
 from flask import Blueprint, jsonify, request, session
 from repos.artists_repo import get_artist_profile_by_user_id
+from utils.release_pdf_utils import build_release_details_pdf_bytes
+from repos.releases_repo import update_release_pdf_object_key, get_release_package_by_id
 from repos.releases_repo import (
     create_release_draft,
     get_release_artists,
@@ -17,11 +19,26 @@ from repos.releases_repo import (
 
 release_bp = Blueprint("releases", __name__)
 
-
 def _sanitize_filename_part(value: str) -> str:
     value = (value or "").strip()
     value = re.sub(r"[^A-Za-z0-9_-]+", "_", value)
-    return value[:80] or "release"
+    return value[:80] or "file"
+
+
+def _allowed_audio_extension(filename: str) -> bool:
+    lower = (filename or "").lower()
+    return lower.endswith(".wav") or lower.endswith(".flac") or lower.endswith(".aac")
+
+
+def _guess_audio_mime(filename: str, fallback: str | None = None) -> str:
+    lower = (filename or "").lower()
+    if lower.endswith(".wav"):
+        return "audio/wav"
+    if lower.endswith(".flac"):
+        return "audio/flac"
+    if lower.endswith(".aac"):
+        return "audio/aac"
+    return fallback or "application/octet-stream"
 
 
 def _allowed_artwork_mime(mime_type: str | None) -> bool:
@@ -62,6 +79,49 @@ def _clean_split(value):
         return int(value)
     except (TypeError, ValueError):
         raise ValueError("Split percent must be a whole number.")
+
+def _validate_track_payload(raw_track: dict, index: int):
+    track_number = raw_track.get("track_number")
+    track_title = _clean_text(raw_track.get("track_title"))
+    track_artists_text = _clean_text(raw_track.get("track_artists_text"))
+    track_length = _clean_text(raw_track.get("track_length"))
+    language = _clean_text(raw_track.get("language"))
+    is_instrumental = bool(raw_track.get("is_instrumental"))
+    lyrics = _clean_text(raw_track.get("lyrics"))
+    track_pitch = _clean_text(raw_track.get("track_pitch"))
+    credits = raw_track.get("credits") or []
+
+    if not track_number:
+        raise ValueError(f"Track #{index}: track number is required.")
+    if not track_title:
+        raise ValueError(f"Track #{index}: track title is required.")
+    if not track_artists_text:
+        raise ValueError(f"Track #{index}: track artist(s) are required.")
+
+    audio = raw_track.get("audio") or {}
+    if not audio.get("object_key"):
+        raise ValueError(f"Track #{index}: audio upload is required.")
+
+    if not is_instrumental and not lyrics:
+        raise ValueError(f"Track #{index}: lyrics are required unless the track is instrumental.")
+
+    return {
+        "track_number": int(track_number),
+        "track_title": track_title,
+        "track_artists_text": track_artists_text,
+        "track_length": track_length,
+        "language": language,
+        "is_instrumental": is_instrumental,
+        "lyrics": lyrics,
+        "track_pitch": track_pitch,
+        "audio_object_key": audio.get("object_key"),
+        "audio_original_filename": audio.get("original_filename"),
+        "audio_mime_type": audio.get("mime_type"),
+        "audio_size_bytes": audio.get("size_bytes"),
+        "sample_rate_hz": audio.get("sample_rate_hz"),
+        "bit_depth": audio.get("bit_depth"),
+        "credits": credits,
+    }
 
 
 def _validate_artist_payload(raw_artist: dict, index: int):
@@ -113,6 +173,7 @@ def create_release():
         release_type = _clean_text(data.get("release_type"))
         raw_artists = data.get("artists") or []
         artwork = data.get("artwork") or {}
+        raw_tracks = data.get("tracks") or []
 
         if not release_title:
             return jsonify({"error": "Release title is required."}), 400
@@ -122,6 +183,9 @@ def create_release():
 
         if not isinstance(raw_artists, list) or not raw_artists:
             return jsonify({"error": "At least one artist is required."}), 400
+
+        if not isinstance(raw_tracks, list) or not raw_tracks:
+            return jsonify({"error": "At least one track is required."}), 400
 
         if not artwork.get("object_key"):
             return jsonify({"error": "Release artwork is required."}), 400
@@ -134,8 +198,18 @@ def create_release():
                 _validate_artist_payload(artist, index + 1)
                 for index, artist in enumerate(raw_artists)
             ]
+
         except ValueError as exc:
             return jsonify({"error": str(exc)}), 400
+
+        try:
+            tracks = [
+                _validate_track_payload(track, index + 1)
+                for index, track in enumerate(raw_tracks)
+            ]
+        except ValueError as exc:
+            return jsonify({"error": str(exc)}), 400
+
 
         artists[0]["role_type"] = "main"
 
@@ -166,7 +240,25 @@ def create_release():
             artwork_width=artwork.get("width"),
             artwork_height=artwork.get("height"),
             artists=artists,
+            tracks=tracks,
         )
+
+        pdf_bytes, pdf_filename = build_release_details_pdf_bytes(release)
+
+        pdf_object_key = f"releases/details/{pdf_filename}"
+
+        saved_pdf_key = upload_bytes_to_r2(
+            data=pdf_bytes,
+            object_key=pdf_object_key,
+            content_type="application/pdf",
+            content_disposition=f'attachment; filename="{pdf_filename}"',
+        )
+
+        update_release_pdf_object_key(release["id"], saved_pdf_key)
+
+        release["release_pdf_object_key"] = saved_pdf_key
+
+
         return jsonify({
             "message": "Release draft created.",
             "release": release,
@@ -276,5 +368,58 @@ def upload_release_artwork():
             "size_bytes": size_bytes,
             "width": width,
             "height": height,
+        }
+    }), 201
+
+
+@release_bp.post("/upload-audio")
+def upload_release_audio():
+    if not _require_login():
+        return jsonify({"error": "Unauthorized."}), 401
+
+    file = request.files.get("audio")
+    artist_name = request.form.get("artist_name", "")
+    track_title = request.form.get("track_title", "")
+
+    if not file:
+        return jsonify({"error": "Audio file is required."}), 400
+
+    if not _allowed_audio_extension(file.filename):
+        return jsonify({"error": "Audio must be WAV, FLAC, or AAC. MP3 is not allowed."}), 400
+
+    file_bytes = file.read()
+    size_bytes = len(file_bytes)
+
+    max_size = 200 * 1024 * 1024
+    if size_bytes > max_size:
+        return jsonify({"error": "Audio file must be 200 MB or smaller."}), 400
+
+    artist_part = _sanitize_filename_part(artist_name)
+    track_part = _sanitize_filename_part(track_title)
+    ext = file.filename.rsplit(".", 1)[-1].lower()
+
+    filename = f"{artist_part}_{track_part}_audio.{ext}"
+    object_key = f"releases/audio/{filename}"
+    mime_type = _guess_audio_mime(file.filename, file.mimetype)
+
+    try:
+        saved_key = upload_bytes_to_r2(
+            data=file_bytes,
+            object_key=object_key,
+            content_type=mime_type,
+            content_disposition=f'inline; filename="{filename}"',
+        )
+    except Exception as exc:
+        return jsonify({"error": f"Audio upload failed: {exc}"}), 500
+
+    return jsonify({
+        "message": "Audio uploaded successfully.",
+        "audio": {
+            "object_key": saved_key,
+            "original_filename": file.filename,
+            "mime_type": mime_type,
+            "size_bytes": size_bytes,
+            "sample_rate_hz": None,
+            "bit_depth": None,
         }
     }), 201
