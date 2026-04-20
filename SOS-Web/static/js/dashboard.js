@@ -489,15 +489,29 @@ document.addEventListener("DOMContentLoaded", async () => {
             loadReleaseReview();
         }
 
+        // load avatar/profile art anywhere an artist is signed in
+        if (user.role === "artist") {
+            try {
+                const profile = await getMyArtistProfile();
+                if (profile) {
+                    setAvatarFromProfile(profile);
+                    setReleaseSpotlightArtFromProfile(profile);
+
+                    if (form) {
+                        populateArtistDashboard(profile);
+                    }
+                }
+            } catch (error) {
+                console.warn("Could not preload artist profile for avatar:", error);
+            }
+        }
+
         // artist dashboard only
         if (form) {
             if (!requireRole(user, ["artist"])) return;
 
             bindPreviewButton();
             bindLocalFilePreviews();
-
-            const profile = await getMyArtistProfile();
-            populateArtistDashboard(profile || {});
 
             form.addEventListener("submit", async (event) => {
                 event.preventDefault();

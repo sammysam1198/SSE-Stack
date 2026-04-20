@@ -1,3 +1,166 @@
 #release-list {
     margin-top: 1.5rem;
+    display: grid;
+    gap: 1.2rem;
+}
+
+.release-card--rich {
+    position: relative;
+    display: grid;
+    grid-template-columns: 180px minmax(0, 1fr);
+    gap: 1.1rem;
+    padding: 1rem;
+    overflow: hidden;
+    border-radius: 24px;
+    background:
+            linear-gradient(135deg, rgba(255,255,255,0.08), rgba(255,255,255,0.03));
+    border: 1px solid rgba(255,255,255,0.10);
+    box-shadow: 0 18px 60px rgba(0, 0, 0, 0.22);
+    isolation: isolate;
+}
+
+.release-card__bg {
+    position: absolute;
+    inset: 0;
+    background:
+            radial-gradient(circle at top left, rgba(255, 0, 170, 0.18), transparent 35%),
+            radial-gradient(circle at bottom right, rgba(0, 200, 255, 0.18), transparent 35%),
+            var(--release-art);
+    background-size: cover;
+    background-position: center;
+    filter: blur(28px) saturate(1.2);
+    transform: scale(1.12);
+    opacity: 0.34;
+    z-index: -1;
+}
+
+.release-card__media {
+    display: flex;
+    align-items: stretch;
+}
+
+.release-card__art {
+    width: 100%;
+    aspect-ratio: 1 / 1;
+    object-fit: cover;
+    border-radius: 18px;
+    border: 1px solid rgba(255,255,255,0.10);
+    box-shadow: 0 12px 36px rgba(0,0,0,0.28);
+    background: rgba(255,255,255,0.05);
+}
+
+.release-card__body {
+    display: grid;
+    gap: 0.8rem;
+    min-width: 0;
+}
+
+.release-card__topline {
+    display: flex;
+    gap: 0.55rem;
+    flex-wrap: wrap;
+}
+
+.release-pill {
+    display: inline-flex;
+    align-items: center;
+    padding: 0.45rem 0.8rem;
+    border-radius: 999px;
+    font-size: 0.84rem;
+    font-weight: 600;
+    background: rgba(255,255,255,0.14);
+    border: 1px solid rgba(255,255,255,0.14);
+}
+
+.release-pill--ghost {
+    background: rgba(255,255,255,0.07);
+}
+
+.release-card__title {
+    margin: 0;
+    font-size: 1.35rem;
+    line-height: 1.15;
+}
+
+.release-card__artists {
+    margin: 0;
+    color: rgba(255,255,255,0.76);
+}
+
+.release-card__meta {
+    display: flex;
+    gap: 1rem;
+    flex-wrap: wrap;
+    color: rgba(255,255,255,0.74);
+    font-size: 0.92rem;
+}
+
+.release-player {
+    display: grid;
+    gap: 0.45rem;
+}
+
+.release-player__label {
+    margin: 0;
+    font-size: 0.92rem;
+    color: rgba(255,255,255,0.84);
+}
+
+.release-player__audio {
+    width: 100%;
+}
+
+.release-audio-empty,
+.release-empty-state-copy {
+    margin: 0;
+    color: rgba(255,255,255,0.68);
+}
+
+.release-card-actions {
+    display: flex;
+    gap: 0.7rem;
+    flex-wrap: wrap;
+    margin-top: 0.25rem;
+}
+
+.release-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 42px;
+    padding: 0.8rem 1rem;
+    border-radius: 999px;
+    text-decoration: none;
+    font-weight: 700;
+    border: 1px solid rgba(255,255,255,0.14);
+    background: rgba(255,255,255,0.08);
+    color: white;
+}
+
+.release-btn.primary {
+    background: linear-gradient(135deg, #ff4fcf, #6be7ff);
+    color: black;
+    border: none;
+}
+
+.release-btn.is-disabled {
+    opacity: 0.55;
+    pointer-events: none;
+}
+
+.release-empty-state {
+    padding: 1.4rem;
+    border-radius: 24px;
+    background: rgba(255,255,255,0.05);
+    border: 1px solid rgba(255,255,255,0.10);
+}
+
+@media (max-width: 760px) {
+    .release-card--rich {
+        grid-template-columns: 1fr;
+    }
+
+    .release-card__media {
+        max-width: 220px;
+    }
 }

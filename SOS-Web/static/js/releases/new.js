@@ -630,9 +630,8 @@ document.addEventListener("DOMContentLoaded", async () => {
 
             successBox.textContent = "Release draft created successfully.";
 
-            if (data.release?.id) {
-                window.location.href = `/releases/edit?submission=${data.release.id}`;
-            }
+            window.location.href = "/releases/all";
+            
         } catch (error) {
             errorBox.textContent = error.message || "Failed to create release draft.";
         }
