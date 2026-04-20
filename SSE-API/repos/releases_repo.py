@@ -9,6 +9,16 @@ def create_release_draft(
     artist_profile_id: int | None,
     release_title: str,
     release_type: str,
+    preferred_release_date: str | None = None,
+    primary_genre: str | None = None,
+    other_genres: str | None = None,
+    release_pitch: str | None = None,
+    artwork_object_key: str | None = None,
+    artwork_original_filename: str | None = None,
+    artwork_mime_type: str | None = None,
+    artwork_size_bytes: int | None = None,
+    artwork_width: int | None = None,
+    artwork_height: int | None = None,
     artists: list[dict[str, Any]] | None = None,
 ):
     artists = artists or []
@@ -24,9 +34,19 @@ def create_release_draft(
                         created_by_user_id,
                         release_title,
                         release_type,
+                        preferred_release_date,
+                        primary_genre,
+                        other_genres,
+                        release_pitch,
+                        artwork_object_key,
+                        artwork_original_filename,
+                        artwork_mime_type,
+                        artwork_size_bytes,
+                        artwork_width,
+                        artwork_height,
                         status
                     )
-                    VALUES (%s, %s, %s, %s, 'draft')
+                    VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, 'draft')
                     RETURNING *
                     """,
                     (
@@ -34,6 +54,16 @@ def create_release_draft(
                         created_by_user_id,
                         release_title,
                         release_type,
+                        preferred_release_date,
+                        primary_genre,
+                        other_genres,
+                        release_pitch,
+                        artwork_object_key,
+                        artwork_original_filename,
+                        artwork_mime_type,
+                        artwork_size_bytes,
+                        artwork_width,
+                        artwork_height,
                     ),
                 )
                 release = cur.fetchone()
@@ -97,7 +127,6 @@ def create_release_draft(
         return release
     finally:
         conn.close()
-
 
 def list_releases_for_creator(created_by_user_id: int):
     query = """

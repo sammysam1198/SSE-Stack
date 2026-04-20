@@ -1,7 +1,11 @@
 import traceback
+import os
+import re
+from io import BytesIO
 
+from PIL import Image
+from utils.r2_utils import upload_bytes_to_r2
 from flask import Blueprint, jsonify, request, session
-
 from repos.artists_repo import get_artist_profile_by_user_id
 from repos.releases_repo import (
     create_release_draft,
@@ -12,6 +16,16 @@ from repos.releases_repo import (
 )
 
 release_bp = Blueprint("releases", __name__)
+
+
+def _sanitize_filename_part(value: str) -> str:
+    value = (value or "").strip()
+    value = re.sub(r"[^A-Za-z0-9_-]+", "_", value)
+    return value[:80] or "release"
+
+
+def _allowed_artwork_mime(mime_type: str | None) -> bool:
+    return mime_type in {"image/jpeg", "image/png", "image/webp"}
 
 
 def _current_user_id():
@@ -83,6 +97,7 @@ def _validate_artist_payload(raw_artist: dict, index: int):
         "soundcloud_url": _clean_text(raw_artist.get("soundcloud_url")),
         "saved_featured_artist_id": raw_artist.get("saved_featured_artist_id"),
         "split_percent": split_percent,
+
     }
 
 
@@ -97,6 +112,7 @@ def create_release():
         release_title = _clean_text(data.get("release_title"))
         release_type = _clean_text(data.get("release_type"))
         raw_artists = data.get("artists") or []
+        artwork = data.get("artwork") or {}
 
         if not release_title:
             return jsonify({"error": "Release title is required."}), 400
@@ -106,6 +122,9 @@ def create_release():
 
         if not isinstance(raw_artists, list) or not raw_artists:
             return jsonify({"error": "At least one artist is required."}), 400
+
+        if not artwork.get("object_key"):
+            return jsonify({"error": "Release artwork is required."}), 400
 
         if len(raw_artists) > 5:
             return jsonify({"error": "A maximum of 5 artists is allowed for now."}), 400
@@ -136,9 +155,18 @@ def create_release():
             artist_profile_id=artist_profile_id,
             release_title=release_title,
             release_type=release_type,
+            preferred_release_date=_clean_text(data.get("preferred_release_date")),
+            primary_genre=_clean_text(data.get("primary_genre")),
+            other_genres=_clean_text(data.get("other_genres")),
+            release_pitch=_clean_text(data.get("release_pitch")),
+            artwork_object_key=artwork.get("object_key"),
+            artwork_original_filename=artwork.get("original_filename"),
+            artwork_mime_type=artwork.get("mime_type"),
+            artwork_size_bytes=artwork.get("size_bytes"),
+            artwork_width=artwork.get("width"),
+            artwork_height=artwork.get("height"),
             artists=artists,
         )
-
         return jsonify({
             "message": "Release draft created.",
             "release": release,
@@ -181,3 +209,72 @@ def get_release(submission_id: int):
     release["artists"] = get_release_artists(submission_id)
 
     return jsonify({"release": release}), 200
+
+
+
+@release_bp.post("/upload-artwork")
+def upload_release_artwork():
+    if not _require_login():
+        return jsonify({"error": "Unauthorized."}), 401
+
+    file = request.files.get("artwork")
+    release_title = request.form.get("release_title", "")
+    artist_name = request.form.get("artist_name", "")
+
+    if not file:
+        return jsonify({"error": "Artwork file is required."}), 400
+
+    mime_type = file.mimetype
+    if not _allowed_artwork_mime(mime_type):
+        return jsonify({"error": "Artwork must be PNG, JPEG, or WEBP."}), 400
+
+    file_bytes = file.read()
+    size_bytes = len(file_bytes)
+
+    max_size = 30 * 1024 * 1024
+    if size_bytes > max_size:
+        return jsonify({"error": "Artwork must be 30 MB or smaller."}), 400
+
+    try:
+        image = Image.open(BytesIO(file_bytes))
+        width, height = image.size
+    except Exception:
+        return jsonify({"error": "Invalid artwork file."}), 400
+
+    if width < 3000 or height < 3000:
+        return jsonify({"error": "Artwork must be at least 3000x3000."}), 400
+
+    ext_map = {
+        "image/jpeg": "jpg",
+        "image/png": "png",
+        "image/webp": "webp",
+    }
+    ext = ext_map[mime_type]
+
+    artist_part = _sanitize_filename_part(artist_name)
+    title_part = _sanitize_filename_part(release_title)
+
+    filename = f"{artist_part}_{title_part}_art.{ext}"
+    object_key = f"releases/artwork/{filename}"
+
+    try:
+        saved_key = upload_bytes_to_r2(
+            data=file_bytes,
+            object_key=object_key,
+            content_type=mime_type,
+            content_disposition=f'inline; filename="{filename}"',
+        )
+    except Exception as exc:
+        return jsonify({"error": f"Artwork upload failed: {exc}"}), 500
+
+    return jsonify({
+        "message": "Artwork uploaded successfully.",
+        "artwork": {
+            "object_key": saved_key,
+            "original_filename": file.filename,
+            "mime_type": mime_type,
+            "size_bytes": size_bytes,
+            "width": width,
+            "height": height,
+        }
+    }), 201
