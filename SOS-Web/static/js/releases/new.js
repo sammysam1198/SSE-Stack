@@ -353,6 +353,18 @@ document.addEventListener("DOMContentLoaded", async () => {
         const deleteButton = card.querySelector(".track-delete-button");
         const creditList = card.querySelector(".credit-list");
 
+        const audioInput = card.querySelector(".track-audio-file");
+
+        const audioStatus = document.createElement("div");
+        audioStatus.className = "track-audio-status";
+        audioStatus.style.marginTop = "0.55rem";
+        audioStatus.style.color = "rgba(255,255,255,0.75)";
+
+        const uploadBox = card.querySelector(".upload-box");
+        if (uploadBox) {
+            uploadBox.appendChild(audioStatus);
+        }
+
         toggleButton.addEventListener("click", () => {
             const collapsed = card.classList.toggle("is-collapsed");
             toggleButton.textContent = collapsed ? "Expand" : "Collapse";
@@ -366,6 +378,34 @@ document.addEventListener("DOMContentLoaded", async () => {
         card.querySelector(".add-producer-button").addEventListener("click", () => addCreditCard(creditList, "Producer"));
         card.querySelector(".add-performer-button").addEventListener("click", () => addCreditCard(creditList, "Performer"));
         card.querySelector(".add-composer-button").addEventListener("click", () => addCreditCard(creditList, "Composer"));
+
+        audioInput?.addEventListener("change", async () => {
+            clearMessages();
+
+            const file = audioInput.files?.[0];
+            if (!file) {
+                card._uploadedAudio = null;
+                audioStatus.textContent = "";
+                return;
+            }
+
+            const mainArtistName =
+                document.querySelector(".artist-card .artist-display-name")?.value?.trim() || "artist";
+
+            const trackTitle =
+                card.querySelector(".track-title")?.value?.trim() || `track_${trackCount}`;
+
+            try {
+                audioStatus.textContent = "Uploading audio...";
+                const uploadedAudio = await uploadTrackAudio(file, mainArtistName, trackTitle);
+                card._uploadedAudio = uploadedAudio;
+                audioStatus.textContent = `Audio uploaded: ${uploadedAudio.original_filename}`;
+            } catch (error) {
+                card._uploadedAudio = null;
+                audioStatus.textContent = "";
+                errorBox.textContent = error.message || "Audio upload failed.";
+            }
+        });
 
         tracksContainer.appendChild(card);
     }
@@ -393,6 +433,7 @@ document.addEventListener("DOMContentLoaded", async () => {
                 is_instrumental: card.querySelector(".track-is-instrumental")?.checked || false,
                 lyrics: card.querySelector(".track-lyrics")?.value?.trim() || "",
                 track_pitch: card.querySelector(".track-pitch")?.value?.trim() || "",
+                audio: card._uploadedAudio || null,
                 credits,
             };
         });
@@ -441,6 +482,32 @@ document.addEventListener("DOMContentLoaded", async () => {
         if (artworkStatus) {
             artworkStatus.textContent = `Artwork uploaded: ${uploadedArtwork.original_filename} (${uploadedArtwork.width}x${uploadedArtwork.height})`;
         }
+    }
+
+    async function uploadTrackAudio(file, artistName, trackTitle) {
+        const formData = new FormData();
+        formData.append("audio", file);
+        formData.append("artist_name", artistName || "artist");
+        formData.append("track_title", trackTitle || "track");
+
+        const response = await fetch(`${API_BASE}/api/releases/upload-audio`, {
+            method: "POST",
+            body: formData,
+            credentials: "include",
+        });
+
+        let data = {};
+        try {
+            data = await response.json();
+        } catch (error) {
+            data = {};
+        }
+
+        if (!response.ok) {
+            throw new Error(data.error || "Audio upload failed.");
+        }
+
+        return data.audio;
     }
 
     async function loadMainArtist() {
@@ -522,6 +589,14 @@ document.addEventListener("DOMContentLoaded", async () => {
         const formData = new FormData(form);
         const artists = Array.from(document.querySelectorAll(".artist-card")).map(collectArtistCard);
         const tracks = collectTracks();
+        const missingTrackAudio = tracks.find(
+            (track) => !track.audio?.object_key
+        );
+
+        if (missingTrackAudio) {
+            errorBox.textContent = "Every track must have an uploaded audio file.";
+            return;
+        }
 
         if (!validateSplitTotals()) {
             errorBox.textContent = "Artist splits must add up to 100.";
