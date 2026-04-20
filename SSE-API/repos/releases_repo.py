@@ -5,15 +5,10 @@ from config.db import fetch_all, fetch_one, get_db_conn
 
 def create_release_draft(
     *,
-    submitting_user_id: int,
+    created_by_user_id: int,
     artist_profile_id: int | None,
-    main_artist_name: str,
     release_title: str,
     release_type: str,
-    preferred_release_date: str | None = None,
-    primary_genre: str | None = None,
-    other_genres: str | None = None,
-    release_pitch: str | None = None,
     artists: list[dict[str, Any]] | None = None,
 ):
     artists = artists or []
@@ -25,29 +20,20 @@ def create_release_draft(
                 cur.execute(
                     """
                     INSERT INTO release_submissions (
-                        submitting_user_id,
                         artist_profile_id,
-                        main_artist_name,
+                        created_by_user_id,
                         release_title,
                         release_type,
-                        preferred_release_date,
-                        primary_genre,
-                        other_genres,
-                        release_pitch
+                        status
                     )
-                    VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)
+                    VALUES (%s, %s, %s, %s, 'draft')
                     RETURNING *
                     """,
                     (
-                        submitting_user_id,
                         artist_profile_id,
-                        main_artist_name,
+                        created_by_user_id,
                         release_title,
                         release_type,
-                        preferred_release_date,
-                        primary_genre,
-                        other_genres,
-                        release_pitch,
                     ),
                 )
                 release = cur.fetchone()
@@ -61,7 +47,6 @@ def create_release_draft(
                             artist_order,
                             role_type,
                             display_name,
-                            email,
                             first_name,
                             last_name,
                             ipi,
@@ -71,16 +56,17 @@ def create_release_draft(
                             apple_music_url,
                             youtube_url,
                             soundcloud_url,
-                            saved_featured_artist_id
+                            saved_featured_artist_id,
+                            email,
+                            split_percent
                         )
-                        VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+                        VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
                         """,
                         (
                             release_id,
                             index,
                             artist.get("role_type"),
                             artist.get("display_name"),
-                            artist.get("email"),
                             artist.get("first_name"),
                             artist.get("last_name"),
                             artist.get("ipi"),
@@ -91,6 +77,8 @@ def create_release_draft(
                             artist.get("youtube_url"),
                             artist.get("soundcloud_url"),
                             artist.get("saved_featured_artist_id"),
+                            artist.get("email"),
+                            artist.get("split_percent"),
                         ),
                     )
 
@@ -111,14 +99,14 @@ def create_release_draft(
         conn.close()
 
 
-def list_releases_for_submitter(submitting_user_id: int):
+def list_releases_for_creator(created_by_user_id: int):
     query = """
         SELECT *
         FROM release_submissions
-        WHERE submitting_user_id = %s
+        WHERE created_by_user_id = %s
         ORDER BY created_at DESC
     """
-    return fetch_all(query, (submitting_user_id,))
+    return fetch_all(query, (created_by_user_id,))
 
 
 def list_all_releases():

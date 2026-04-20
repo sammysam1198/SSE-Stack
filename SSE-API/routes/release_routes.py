@@ -1,3 +1,5 @@
+import traceback
+
 from flask import Blueprint, jsonify, request, session
 
 from repos.artists_repo import get_artist_profile_by_user_id
@@ -6,10 +8,10 @@ from repos.releases_repo import (
     get_release_artists,
     get_release_by_id,
     list_all_releases,
-    list_releases_for_submitter,
+    list_releases_for_creator,
 )
 
-release_bp = Blueprint("release", __name__)
+release_bp = Blueprint("releases", __name__)
 
 
 def _current_user_id():
@@ -39,10 +41,20 @@ def _clean_text(value):
     return value or None
 
 
+def _clean_split(value):
+    if value in (None, ""):
+        return None
+    try:
+        return int(value)
+    except (TypeError, ValueError):
+        raise ValueError("Split percent must be a whole number.")
+
+
 def _validate_artist_payload(raw_artist: dict, index: int):
     display_name = _clean_text(raw_artist.get("display_name"))
     email = _clean_text(raw_artist.get("email"))
     role_type = _clean_text(raw_artist.get("role_type")) or "featured"
+    split_percent = _clean_split(raw_artist.get("split_percent"))
 
     if role_type not in {"main", "featured"}:
         raise ValueError(f"Artist #{index}: role_type must be main or featured.")
@@ -52,6 +64,9 @@ def _validate_artist_payload(raw_artist: dict, index: int):
 
     if not email:
         raise ValueError(f"Artist #{index}: email is required.")
+
+    if split_percent is not None and (split_percent < 0 or split_percent > 100):
+        raise ValueError(f"Artist #{index}: split percent must be between 0 and 100.")
 
     return {
         "role_type": role_type,
@@ -67,6 +82,7 @@ def _validate_artist_payload(raw_artist: dict, index: int):
         "youtube_url": _clean_text(raw_artist.get("youtube_url")),
         "soundcloud_url": _clean_text(raw_artist.get("soundcloud_url")),
         "saved_featured_artist_id": raw_artist.get("saved_featured_artist_id"),
+        "split_percent": split_percent,
     }
 
 
@@ -75,63 +91,66 @@ def create_release():
     if not _require_login():
         return jsonify({"error": "Unauthorized."}), 401
 
-    data = request.get_json(silent=True) or {}
-
-    release_title = _clean_text(data.get("release_title"))
-    release_type = _clean_text(data.get("release_type"))
-    preferred_release_date = _clean_text(data.get("preferred_release_date"))
-    primary_genre = _clean_text(data.get("primary_genre"))
-    other_genres = _clean_text(data.get("other_genres"))
-    release_pitch = _clean_text(data.get("release_pitch"))
-    raw_artists = data.get("artists") or []
-
-    if not release_title:
-        return jsonify({"error": "Release title is required."}), 400
-
-    if release_type not in {"single", "ep", "album"}:
-        return jsonify({"error": "Release type must be single, ep, or album."}), 400
-
-    if not isinstance(raw_artists, list) or not raw_artists:
-        return jsonify({"error": "At least one artist is required."}), 400
-
-    if len(raw_artists) > 5:
-        return jsonify({"error": "A maximum of 5 artists is allowed for now."}), 400
-
     try:
-        artists = [
-            _validate_artist_payload(artist, index + 1)
-            for index, artist in enumerate(raw_artists)
-        ]
-    except ValueError as exc:
-        return jsonify({"error": str(exc)}), 400
+        data = request.get_json(silent=True) or {}
 
-    main_artist = artists[0]
-    main_artist["role_type"] = "main"
+        release_title = _clean_text(data.get("release_title"))
+        release_type = _clean_text(data.get("release_type"))
+        raw_artists = data.get("artists") or []
 
-    artist_profile_id = None
-    if _current_role() == "artist":
-        profile = get_artist_profile_by_user_id(_current_user_id())
-        if not profile:
-            return jsonify({"error": "Artist profile not found."}), 404
-        artist_profile_id = profile["id"]
+        if not release_title:
+            return jsonify({"error": "Release title is required."}), 400
 
-    release = create_release_draft(
-        submitting_user_id=_current_user_id(),
-        artist_profile_id=artist_profile_id,
-        main_artist_name=main_artist["display_name"],
-        release_title=release_title,
-        release_type=release_type,
-        preferred_release_date=preferred_release_date,
-        primary_genre=primary_genre,
-        other_genres=other_genres,
-        release_pitch=release_pitch,
-        artists=artists,
-    )
+        if release_type not in {"single", "ep", "album"}:
+            return jsonify({"error": "Release type must be single, ep, or album."}), 400
 
-    return jsonify({
-        "message": "Release draft created.",
-        "release": release,
-    }), 201
+        if not isinstance(raw_artists, list) or not raw_artists:
+            return jsonify({"error": "At least one artist is required."}), 400
+
+        if len(raw_artists) > 5:
+            return jsonify({"error": "A maximum of 5 artists is allowed for now."}), 400
+
+        try:
+            artists = [
+                _validate_artist_payload(artist, index + 1)
+                for index, artist in enumerate(raw_artists)
+            ]
+        except ValueError as exc:
+            return jsonify({"error": str(exc)}), 400
+
+        artists[0]["role_type"] = "main"
+
+        visible_splits = [a["split_percent"] for a in artists if a["split_percent"] is not None]
+        if len(artists) > 1 and sum(visible_splits) != 100:
+            return jsonify({"error": "Artist splits must add up to 100."}), 400
+
+        artist_profile_id = None
+        if _current_role() == "artist":
+            profile = get_artist_profile_by_user_id(_current_user_id())
+            if not profile:
+                return jsonify({"error": "Artist profile not found."}), 404
+            artist_profile_id = profile["id"]
+
+        release = create_release_draft(
+            created_by_user_id=_current_user_id(),
+            artist_profile_id=artist_profile_id,
+            release_title=release_title,
+            release_type=release_type,
+            artists=artists,
+        )
+
+        return jsonify({
+            "message": "Release draft created.",
+            "release": release,
+        }), 201
+
+    except Exception as exc:
+        print("RELEASE CREATE FAILED:", repr(exc))
+        traceback.print_exc()
+        return jsonify({
+            "error": "Release creation failed.",
+            "details": str(exc),
+        }), 500
 
 
 @release_bp.get("")
@@ -142,7 +161,7 @@ def list_releases():
     if _is_privileged():
         releases = list_all_releases()
     else:
-        releases = list_releases_for_submitter(_current_user_id())
+        releases = list_releases_for_creator(_current_user_id())
 
     return jsonify({"releases": releases}), 200
 
@@ -156,7 +175,7 @@ def get_release(submission_id: int):
     if not release:
         return jsonify({"error": "Release not found."}), 404
 
-    if not _is_privileged() and release["submitting_user_id"] != _current_user_id():
+    if not _is_privileged() and release["created_by_user_id"] != _current_user_id():
         return jsonify({"error": "Forbidden."}), 403
 
     release["artists"] = get_release_artists(submission_id)
