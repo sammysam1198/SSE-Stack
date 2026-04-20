@@ -1,23 +1,27 @@
 import traceback
-import os
 import re
+import zipfile
+import io
 from io import BytesIO
-
+from config.db import execute_write
 from PIL import Image
-from utils.r2_utils import upload_bytes_to_r2
-from flask import Blueprint, jsonify, request, session
+from utils.r2_utils import upload_bytes_to_r2, download_bytes_from_r2
+from flask import Blueprint, jsonify, request, session, send_file
 from repos.artists_repo import get_artist_profile_by_user_id
 from utils.release_pdf_utils import build_release_details_pdf_bytes
-from repos.releases_repo import update_release_pdf_object_key, get_release_package_by_id
+from utils.mail_utils import send_release_approved_email
 from repos.releases_repo import (
     create_release_draft,
     get_release_artists,
     get_release_by_id,
     list_all_releases,
     list_releases_for_creator,
+    update_release_pdf_object_key,
+    get_release_package_by_id
 )
 
 release_bp = Blueprint("releases", __name__)
+
 
 def _sanitize_filename_part(value: str) -> str:
     value = (value or "").strip()
@@ -283,8 +287,11 @@ def list_releases():
     else:
         releases = list_releases_for_creator(_current_user_id())
 
-    return jsonify({"releases": releases}), 200
+    for release in releases:
+        artists = get_release_artists(release["id"])
+        release["artists"] = artists
 
+    return jsonify({"releases": releases}), 200
 
 @release_bp.get("/<int:submission_id>")
 def get_release(submission_id: int):
@@ -423,3 +430,138 @@ def upload_release_audio():
             "bit_depth": None,
         }
     }), 201
+
+@release_bp.post("/<int:submission_id>/approve")
+def approve_release(submission_id):
+    if not _is_privileged():
+        return jsonify({"error": "Forbidden."}), 403
+
+    data = request.get_json(silent=True) or {}
+    release_date = _clean_text(data.get("release_date"))
+
+    if not release_date:
+        return jsonify({"error": "Release date is required."}), 400
+
+    release = get_release_package_by_id(submission_id)
+    if not release:
+        return jsonify({"error": "Release not found."}), 404
+
+    from config.db import execute_write
+
+    execute_write(
+        """
+        UPDATE release_submissions
+        SET status = 'approved',
+            approved_at = NOW(),
+            submitted_at = COALESCE(submitted_at, NOW()),
+            admin_notes = %s
+        WHERE id = %s
+        """,
+        (f"Approved for release on {release_date}", submission_id),
+    )
+
+    main_artist = (release.get("artists") or [{}])[0]
+    if main_artist.get("email"):
+        send_release_approved_email(
+            to_email=main_artist["email"],
+            artist_name=main_artist.get("display_name") or "Artist",
+            release_title=release.get("release_title") or "Untitled Release",
+            label_release_date=release_date,
+        )
+
+    return jsonify({"message": "Release approved."}), 200
+
+@release_bp.post("/<int:submission_id>/reject")
+def reject_release(submission_id):
+    if not _is_privileged():
+        return jsonify({"error": "Forbidden."}), 403
+
+    data = request.get_json(silent=True) or {}
+    reason = _clean_text(data.get("reason"))
+
+    if not reason:
+        return jsonify({"error": "Reason is required."}), 400
+
+    from config.db import execute_write
+
+    execute_write(
+        """
+        UPDATE release_submissions
+        SET status = 'draft',
+            artist_notes = %s,
+            requested_changes_at = NOW()
+        WHERE id = %s
+        """,
+        (reason, submission_id),
+    )
+
+    return jsonify({"message": "Release sent back to drafts."}), 200
+
+@release_bp.get("/<int:submission_id>/package")
+def download_release_package(submission_id):
+    if not _is_privileged():
+        return jsonify({"error": "Forbidden."}), 403
+
+    release = get_release_package_by_id(submission_id)
+    if not release:
+        return jsonify({"error": "Release not found."}), 404
+
+    buffer = io.BytesIO()
+
+    try:
+        with zipfile.ZipFile(buffer, "w", zipfile.ZIP_DEFLATED) as zf:
+            pdf_key = release.get("release_pdf_object_key")
+            if pdf_key:
+                pdf_bytes = download_bytes_from_r2(pdf_key)
+                zf.writestr("release_details.pdf", pdf_bytes)
+
+            artwork_key = release.get("artwork_object_key")
+            if artwork_key:
+                art_bytes = download_bytes_from_r2(artwork_key)
+                art_name = release.get("artwork_original_filename") or "cover_art"
+                zf.writestr(f"artwork/{art_name}", art_bytes)
+
+            for track in release.get("tracks", []):
+                audio_key = track.get("audio_object_key")
+                if not audio_key:
+                    continue
+
+                audio_bytes = download_bytes_from_r2(audio_key)
+                audio_name = track.get("audio_original_filename") or f"track_{track.get('track_number', 'x')}"
+                zf.writestr(f"audio/{audio_name}", audio_bytes)
+
+        buffer.seek(0)
+    except Exception as exc:
+        return jsonify({"error": f"Failed to build ZIP: {exc}"}), 500
+
+    return send_file(
+        buffer,
+        mimetype="application/zip",
+        as_attachment=True,
+        download_name=f"release_{submission_id}_package.zip",
+    )
+
+@release_bp.get("/<int:submission_id>/pdf")
+def download_release_pdf(submission_id):
+    if not _is_privileged():
+        return jsonify({"error": "Forbidden."}), 403
+
+    release = get_release_package_by_id(submission_id)
+    if not release:
+        return jsonify({"error": "Release not found."}), 404
+
+    pdf_key = release.get("release_pdf_object_key")
+    if not pdf_key:
+        return jsonify({"error": "Release PDF not found."}), 404
+
+    try:
+        pdf_bytes = download_bytes_from_r2(pdf_key)
+    except Exception as exc:
+        return jsonify({"error": f"Failed to download PDF: {exc}"}), 500
+
+    return send_file(
+        io.BytesIO(pdf_bytes),
+        mimetype="application/pdf",
+        as_attachment=False,
+        download_name=f"release_{submission_id}.pdf",
+    )

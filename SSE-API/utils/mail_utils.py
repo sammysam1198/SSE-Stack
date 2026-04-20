@@ -224,3 +224,38 @@ def send_application_denied_email(to_email: str, artist_name: str):
     </div>
     """
     return send_email(to_email, subject, html)
+
+def send_release_approved_email(
+    to_email: str,
+    artist_name: str,
+    release_title: str,
+    label_release_date: str,
+):
+    subject = f"Release Approved: {release_title}"
+
+    html = f"""
+    <div style="font-family:Arial,Helvetica,sans-serif; color:#111; line-height:1.65;">
+        <p>Hi {escape(artist_name)},</p>
+
+        <p>
+            This is SpacedOut Studios letting you know that your release
+            <strong>{escape(release_title)}</strong> was approved.
+        </p>
+
+        <p>
+            It will be released on <strong>{escape(label_release_date)}</strong>.
+        </p>
+
+        <p>
+            If you have questions please email chromaglowmusic@gmail.com
+        </p>
+
+        <p style="margin-top:24px;">
+            Thanks,<br><br>
+            Aliem<br>
+            Sammi
+        </p>
+    </div>
+    """
+
+    return send_email(to_email, subject, html)
