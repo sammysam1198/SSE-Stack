@@ -26,6 +26,13 @@ document.addEventListener("DOMContentLoaded", async () => {
         return;
     }
 
+    const currentUser = await getCurrentUser();
+    if (!currentUser) {
+        const returnTo = encodeURIComponent(window.location.pathname + window.location.search);
+        window.location.href = `/signin.html?next=${returnTo}`;
+        return;
+    }
+
     async function loadContract() {
         const data = await apiFetch(`/api/contracts/${contractId}`);
         const contract = data.contract;

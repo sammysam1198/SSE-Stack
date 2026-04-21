@@ -5,20 +5,40 @@ document.addEventListener("DOMContentLoaded", async () => {
     const contractNotes = document.getElementById("contract-notes");
     const contractBody = document.getElementById("contract-body");
     const form = document.getElementById("contract-form");
+    const saveDraftButton = document.getElementById("save-draft-button");
     const saveSendButton = document.getElementById("save-send-button");
     const errorBox = document.getElementById("contract-error");
     const successBox = document.getElementById("contract-success");
+    const formActions = document.getElementById("contract-form-actions");
+    const successActions = document.getElementById("contract-success-actions");
+    const sendAnotherButton = document.getElementById("send-another-contract-button");
+    const backToDashboardButton = document.getElementById("back-to-dashboard-button");
+
     const params = new URLSearchParams(window.location.search);
 
     let artists = [];
+    let currentUser = null;
 
     function clearMessages() {
-        errorBox.textContent = "";
-        successBox.textContent = "";
+        if (errorBox) errorBox.textContent = "";
+        if (successBox) successBox.textContent = "";
+    }
+
+    function resetSuccessState() {
+        if (formActions) formActions.style.display = "flex";
+        if (successActions) successActions.style.display = "none";
+    }
+
+    function showSuccessState(message) {
+        if (successBox) {
+            successBox.textContent = message || "Contract created successfully.";
+        }
+        if (formActions) formActions.style.display = "none";
+        if (successActions) successActions.style.display = "flex";
     }
 
     function getSelectedArtist() {
-        const selectedId = artistSelect.value;
+        const selectedId = artistSelect?.value;
         return artists.find((artist) => String(artist.id) === String(selectedId)) || null;
     }
 
@@ -26,9 +46,11 @@ document.addEventListener("DOMContentLoaded", async () => {
         const data = await apiFetch("/api/contracts/artists");
         artists = data.artists || [];
 
-        artistSelect.innerHTML = artists.map((artist) => {
-            return `<option value="${artist.id}">${artist.artist_name}</option>`;
-        }).join("");
+        if (!artistSelect) return;
+
+        artistSelect.innerHTML = artists
+            .map((artist) => `<option value="${artist.id}">${artist.artist_name}</option>`)
+            .join("");
 
         const prefArtistId = params.get("artist_profile_id");
         const prefType = params.get("type");
@@ -37,23 +59,18 @@ document.addEventListener("DOMContentLoaded", async () => {
             artistSelect.value = prefArtistId;
         }
 
-        if (prefType && ["publishing", "distribution"].includes(prefType)) {
+        if (prefType && ["publishing", "distribution"].includes(prefType) && contractType) {
             contractType.value = prefType;
-        }
-
-        const selected = getSelectedArtist();
-        if (selected) {
-            contractEmails.value = (selected.emails || []).join(", ");
         }
     }
 
     function fillDefaultTemplate() {
         const selectedArtist = getSelectedArtist();
-        const type = contractType.value;
-
         const artistName = selectedArtist?.artist_name || "____________________________";
 
-        if (type === "distribution") {
+        if (!contractBody || !contractType) return;
+
+        if (contractType.value === "distribution") {
             contractBody.value = `SpacedOut Studios Entertainment LLC
 MASTER RECORDING CONTRACT
 
@@ -99,7 +116,7 @@ The Agreement shall commence on the Effective Date and continue for a period of 
 
 Notwithstanding the foregoing, after a period of two (2) years, specifically between April 15, 2028 and May 15, 2028, either the Artist(s) or the Company may terminate this Agreement without penalty by providing written notice.
 
-If neither party elects to terminate the Agreement during such period, the Agreement shall automatically continue for an additional term of three (3) years.
+If neither party elects to terminate the Agreement during such thirty (30) day period, the Agreement shall automatically continue in full force and effect for the remaining term of three (3) years, and neither party shall have any right to terminate this Agreement prior to the expiration of such term, except by mutual written agreement of the parties.
 
 
 B. PRODUCTION OF RECORDINGS
@@ -155,8 +172,8 @@ Company shall collect all royalties generated from the distribution of Recording
 
 After recoupment of agreed costs, the remaining revenue shall be allocated as follows:
 
-80% to Artist(s)  
-20% to Company  
+80% to Artist(s)
+20% to Company
 
 Royalties shall be paid quarterly, within forty-five (45) days following the end of each quarter.
 
@@ -174,15 +191,15 @@ Artist(s) shall not interfere with Company’s distribution efforts or enter int
 
 a. This Agreement shall be binding upon the successors and assigns of the parties.
 
-b. This Agreement shall be governed by and construed in accordance with the laws of the State of New Jersey.
+b. This Agreement shall be governed by and construed in accordance with the laws of the State of New Jersey, without regard to its conflict of law principles.
 
-c. The parties hereby consent to the jurisdiction of the courts of the State of New Jersey.
+c. The parties hereby consent to the exclusive jurisdiction and venue of the state and federal courts located within the State of New Jersey for any disputes arising out of or relating to this Agreement.
 
 d. The prevailing party in any dispute shall be entitled to recover reasonable attorney’s fees.
 
 e. Both parties agree to perform in good faith.
 
-f. Artist(s) shall be deemed an independent contractor.
+f. Artist(s) shall be deemed an independent contractor and not an employee, partner, or agent of Company. Artist(s) shall be solely responsible for all taxes and obligations.
 
 g. Artist(s) may work with other labels provided such activity does not conflict with this Agreement.
 
@@ -209,38 +226,37 @@ Artist(s) agree to indemnify Company against claims arising from breach of this 
 
 16. LIMITATION OF LIABILITY
 
-Company shall not be liable for indirect or consequential damages.
+To the maximum extent permitted by law, Company shall not be liable for any indirect, incidental, or consequential damages arising out of this Agreement.
 
 
 17. ACCEPTANCE
 
-This Agreement may be accepted electronically.
+This Agreement may be accepted and executed electronically.
 
 
 18. ENTIRE AGREEMENT
 
-This Agreement constitutes the entire understanding between the parties.
+This Agreement constitutes the entire understanding between the parties and supersedes all prior agreements.
 
 
 ----------------------------------------
 SIGNATURES
 ----------------------------------------
 
-Company:
+ON BEHALF OF SpacedOut Studios Entertainment LLC:
 
 Name: ________________________________
 Signature: ____________________________
 Date: ____ / ____ / ______
 
-Artist:
+
+ARTIST:
 
 Name: ________________________________
 Signature: ____________________________
 Date: ____ / ____ / ______`;
         } else {
-            contractBody.value = `Publishing Contract
-
-SpacedOut Studios Entertainment LLC
+            contractBody.value = `SpacedOut Studios Entertainment LLC
 PUBLISHING, LICENSE & ROYALTY AGREEMENT
 
 
@@ -252,7 +268,7 @@ and
 
 Licensor Legal Name: ________________________________
 
-Artist Name: _______________________________________
+Artist Name: ${artistName}
 
 Address: ___________________________________________
 ___________________________________________________
@@ -295,10 +311,10 @@ If neither party elects to terminate the Agreement during such thirty (30) day p
 
 Publisher shall have the right, but not the obligation, to administer and exploit Licensor’s interest in the Composition(s), including:
 
-- Mechanical licensing  
-- Performance licensing  
-- Synchronization licensing  
-- Digital distribution and usage  
+- Mechanical licensing
+- Performance licensing
+- Synchronization licensing
+- Digital distribution and usage
 
 Publisher may enter into agreements in Licensor’s name where necessary for the exploitation of the Composition(s).
 
@@ -327,9 +343,9 @@ Any costs incurred in connection with the promotion, licensing, or exploitation 
 
 Licensor represents and warrants that:
 
-a. Licensor owns or controls all rights necessary to enter into this Agreement;  
-b. The Composition(s) do not infringe upon any third-party rights;  
-c. All samples, if any, are properly licensed or cleared.  
+a. Licensor owns or controls all rights necessary to enter into this Agreement;
+b. The Composition(s) do not infringe upon any third-party rights;
+c. All samples, if any, are properly licensed or cleared.
 
 
 7. INDEMNIFICATION
@@ -372,12 +388,12 @@ Any modifications must be made in writing and signed by both parties.
 CONTACT / PRO INFORMATION
 ----------------------------------------
 
-FULL NAME: __________________________________________  
-PRO (BMI/ASCAP/SESAC): ______________________________  
-IPI #: ______________________________________________  
-ADDRESS: ___________________________________________  
-PHONE: _____________________________________________  
-EMAIL: _____________________________________________  
+FULL NAME: __________________________________________
+PRO (BMI/ASCAP/SESAC): ______________________________
+IPI #: ______________________________________________
+ADDRESS: ___________________________________________
+PHONE: _____________________________________________
+EMAIL: _____________________________________________
 
 
 ----------------------------------------
@@ -386,26 +402,115 @@ SIGNATURES
 
 LICENSOR:
 
-Name: ________________________________  
-Signature: ____________________________  
-Date: ____ / ____ / ______  
+Name: ________________________________
+Signature: ____________________________
+Date: ____ / ____ / ______
 
 
 ON BEHALF OF SpacedOut Studios Entertainment LLC:
 
-Name: ________________________________  
-Signature: ____________________________  
+Name: ________________________________
+Signature: ____________________________
 Date: ____ / ____ / ______`;
         }
     }
 
-    artistSelect?.addEventListener("change", () => {
+    function setRecipientEmailsFromSelectedArtist() {
         const selected = getSelectedArtist();
-        contractEmails.value = (selected?.emails || []).join(", ");
+        if (contractEmails) {
+            contractEmails.value = (selected?.emails || []).join(", ");
+        }
+    }
+
+    function resetFormForAnother() {
+        clearMessages();
+        resetSuccessState();
+
+        if (contractNotes) {
+            contractNotes.value = "";
+        }
+
+        setRecipientEmailsFromSelectedArtist();
+        fillDefaultTemplate();
+
+        window.scrollTo({ top: 0, behavior: "smooth" });
+    }
+
+    async function submitContract(sendNow) {
+        clearMessages();
+        resetSuccessState();
+
+        const selectedArtist = getSelectedArtist();
+        if (!selectedArtist) {
+            if (errorBox) errorBox.textContent = "Please choose an artist.";
+            return;
+        }
+
+        if (!contractBody || !contractBody.value.trim()) {
+            if (errorBox) errorBox.textContent = "Contract body is required.";
+            return;
+        }
+
+        if (saveDraftButton) saveDraftButton.disabled = true;
+        if (saveSendButton) saveSendButton.disabled = true;
+
+        const payload = {
+            artist_profile_id: selectedArtist.id,
+            artist_name: selectedArtist.artist_name,
+            contract_type: contractType?.value || "distribution",
+            body_text: contractBody.value.trim(),
+            notes: contractNotes?.value?.trim() || "",
+            send_now: sendNow,
+            recipient_emails: (contractEmails?.value || "")
+                .split(",")
+                .map((value) => value.trim())
+                .filter(Boolean),
+        };
+
+        try {
+            await apiFetch("/api/contracts", {
+                method: "POST",
+                body: payload,
+            });
+
+            if (sendNow) {
+                showSuccessState("Contract created and email sent.");
+            } else {
+                if (successBox) {
+                    successBox.textContent = "Contract draft saved.";
+                }
+            }
+
+            if (backToDashboardButton && currentUser) {
+                if (currentUser.role === "developer") {
+                    backToDashboardButton.href = "/dashboard-developer.html";
+                } else if (currentUser.role === "admin") {
+                    backToDashboardButton.href = "/dashboard-admin.html";
+                } else {
+                    backToDashboardButton.href = "/";
+                }
+            }
+        } catch (error) {
+            if (errorBox) {
+                errorBox.textContent = error.message || "Failed to save contract.";
+            }
+        } finally {
+            if (saveDraftButton) saveDraftButton.disabled = false;
+            if (saveSendButton) saveSendButton.disabled = false;
+        }
+    }
+
+    artistSelect?.addEventListener("change", () => {
+        setRecipientEmailsFromSelectedArtist();
+        fillDefaultTemplate();
+        clearMessages();
+        resetSuccessState();
     });
 
     contractType?.addEventListener("change", () => {
         fillDefaultTemplate();
+        clearMessages();
+        resetSuccessState();
     });
 
     form?.addEventListener("submit", async (event) => {
@@ -417,56 +522,34 @@ Date: ____ / ____ / ______`;
         await submitContract(true);
     });
 
-    async function submitContract(sendNow) {
-        clearMessages();
-
-        const selectedArtist = getSelectedArtist();
-        if (!selectedArtist) {
-            errorBox.textContent = "Please choose an artist.";
-            return;
-        }
-
-        const payload = {
-            artist_profile_id: selectedArtist.id,
-            artist_name: selectedArtist.artist_name,
-            contract_type: contractType.value,
-            body_text: contractBody.value.trim(),
-            notes: contractNotes.value.trim(),
-            send_now: sendNow,
-            recipient_emails: contractEmails.value
-                .split(",")
-                .map((value) => value.trim())
-                .filter(Boolean),
-        };
-
-        try {
-            const data = await apiFetch("/api/contracts", {
-                method: "POST",
-                body: payload,
-            });
-
-            successBox.textContent = sendNow
-                ? "Contract created and sent."
-                : "Contract draft saved.";
-
-            if (data.contract?.id) {
-                window.location.href = `/contracts/view?id=${data.contract.id}`;
-            }
-        } catch (error) {
-            errorBox.textContent = error.message || "Failed to save contract.";
-        }
-    }
+    sendAnotherButton?.addEventListener("click", () => {
+        resetFormForAnother();
+    });
 
     try {
-        const currentUser = await getCurrentUser();
+        currentUser = await getCurrentUser();
         if (!currentUser || !["admin", "developer"].includes(currentUser.role)) {
             window.location.href = "/";
             return;
         }
 
         await loadArtists();
+        setRecipientEmailsFromSelectedArtist();
         fillDefaultTemplate();
+        resetSuccessState();
+
+        if (backToDashboardButton) {
+            if (currentUser.role === "developer") {
+                backToDashboardButton.href = "/dashboard-developer.html";
+            } else if (currentUser.role === "admin") {
+                backToDashboardButton.href = "/dashboard-admin.html";
+            } else {
+                backToDashboardButton.href = "/";
+            }
+        }
     } catch (error) {
-        errorBox.textContent = error.message || "Failed to load contract editor.";
+        if (errorBox) {
+            errorBox.textContent = error.message || "Failed to load contract editor.";
+        }
     }
 });
