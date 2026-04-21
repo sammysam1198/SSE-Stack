@@ -9,9 +9,10 @@ document.addEventListener("DOMContentLoaded", async () => {
     const addTrackButton = document.getElementById("add-track-button");
     const artworkInput = document.getElementById("release-artwork-file");
     const artworkStatus = document.getElementById("release-artwork-status");
+    const addExistingArtistButton = document.getElementById("add-existing-artist-button");
 
     let uploadedArtwork = null;
-
+    let savedArtistLibrary = [];
     let artistCount = 0;
     let trackCount = 0;
     let currentUser = null;
@@ -78,99 +79,180 @@ document.addEventListener("DOMContentLoaded", async () => {
         return total === 100;
     }
 
-    function buildArtistCard(initialData = {}, { isMain = false, collapsed = false } = {}) {
+    function getSavedArtistOptionsHtml(selectedId = "") {
+        const options = [`<option value="">Select saved artist</option>`];
+
+        for (const artist of savedArtistLibrary) {
+            const labelParts = [artist.display_name || "Unnamed Artist"];
+            if (artist.email) {
+                labelParts.push(`(${artist.email})`);
+            }
+
+            options.push(
+                `<option value="${escapeHtml(String(artist.id))}" ${String(selectedId) === String(artist.id) ? "selected" : ""}>
+                ${escapeHtml(labelParts.join(" "))}
+            </option>`
+            );
+        }
+
+        return options.join("");
+    }
+
+    function applySavedArtistToCard(card, artistId) {
+        const selected = savedArtistLibrary.find((artist) => String(artist.id) === String(artistId));
+        if (!selected) return;
+
+        card.querySelector(".artist-display-name").value = selected.display_name || "";
+        card.querySelector(".artist-email").value = selected.email || "";
+        card.querySelector(".artist-first-name").value = selected.first_name || "";
+        card.querySelector(".artist-last-name").value = selected.last_name || "";
+        card.querySelector(".artist-ipi").value = selected.ipi || "";
+        card.querySelector(".artist-pro").value = selected.pro || "";
+        card.querySelector(".artist-publisher").value = selected.publisher || "";
+        card.querySelector(".artist-spotify-url").value = selected.spotify_url || "";
+        card.querySelector(".artist-apple-music-url").value = selected.apple_music_url || "";
+        card.querySelector(".artist-youtube-url").value = selected.youtube_url || "";
+        card.querySelector(".artist-soundcloud-url").value = selected.soundcloud_url || "";
+
+        card.dataset.savedFeaturedArtistId = selected.id || "";
+
+        const summaryName = card.querySelector(".artist-summary-name");
+        if (summaryName) {
+            summaryName.textContent = selected.display_name || "Artist";
+        }
+
+        const check = card.querySelector(".artist-check");
+        if (check) {
+            check.classList.add("is-complete");
+        }
+
+        card.dataset.saved = "true";
+    }
+
+    async function loadSavedArtistLibrary() {
+        try {
+            const data = await apiFetch("/api/releases/artist-library");
+            savedArtistLibrary = data.artists || [];
+        } catch (error) {
+            console.warn("Could not load saved release artists:", error);
+            savedArtistLibrary = [];
+        }
+    }
+
+
+    function buildArtistCard(initialData = {}, { isMain = false, collapsed = false, mode = "new" } = {}) {
         artistCount += 1;
 
         const roleLabel = isMain ? "Main Artist" : `Featured Artist ${artistCount}`;
         const complete = artistLooksComplete(initialData);
+        const selectedSavedId = initialData.saved_featured_artist_id || "";
 
         const card = document.createElement("div");
         card.className = `artist-card${collapsed ? " is-collapsed" : ""}`;
         card.dataset.isMain = isMain ? "true" : "false";
         card.dataset.saved = complete ? "true" : "false";
+        card.dataset.savedFeaturedArtistId = selectedSavedId || "";
 
         card.innerHTML = `
-            <div class="artist-card__header">
-                <div class="artist-card__title-wrap">
-                    <span class="artist-check ${complete ? "is-complete" : ""}">✓</span>
-                    <div>
-                        <div class="artist-summary-name">${escapeHtml(initialData.display_name || roleLabel)}</div>
-                        <div class="artist-summary-role">${roleLabel}</div>
-                    </div>
-                </div>
-
-                <div class="artist-card__actions">
-                    <input class="split-box" type="number" min="0" max="100" step="1" value="${isMain ? "100" : "0"}" title="Split" style="display:none;" />
-                    <button type="button" class="small-action-button artist-edit-button">Edit</button>
-                    <button type="button" class="icon-button artist-delete-button" title="Delete">🗑</button>
+        <div class="artist-card__header">
+            <div class="artist-card__title-wrap">
+                <span class="artist-check ${complete ? "is-complete" : ""}">✓</span>
+                <div>
+                    <div class="artist-summary-name">${escapeHtml(initialData.display_name || roleLabel)}</div>
+                    <div class="artist-summary-role">${roleLabel}</div>
                 </div>
             </div>
 
-            <div class="artist-card__body">
-                <div class="artist-grid">
-                    <label>
-                        Artist Name
-                        <input type="text" class="artist-display-name" value="${escapeHtml(initialData.display_name || "")}" />
-                    </label>
-
-                    <label>
-                        Email
-                        <input type="email" class="artist-email" value="${escapeHtml(initialData.email || "")}" />
-                    </label>
-
-                    <label>
-                        First Name
-                        <input type="text" class="artist-first-name" value="${escapeHtml(initialData.first_name || "")}" />
-                    </label>
-
-                    <label>
-                        Last Name
-                        <input type="text" class="artist-last-name" value="${escapeHtml(initialData.last_name || "")}" />
-                    </label>
-
-                    <label>
-                        IPI
-                        <input type="text" class="artist-ipi" value="${escapeHtml(initialData.ipi || "")}" />
-                    </label>
-
-                    <label>
-                        PRO
-                        <input type="text" class="artist-pro" value="${escapeHtml(initialData.pro || "")}" />
-                    </label>
-
-                    <label>
-                        Publisher
-                        <input type="text" class="artist-publisher" value="${escapeHtml(initialData.publisher || "")}" />
-                    </label>
-
-                    <label>
-                        Spotify Link
-                        <input type="url" class="artist-spotify-url" value="${escapeHtml(initialData.spotify_url || "")}" />
-                    </label>
-
-                    <label>
-                        Apple Music Link
-                        <input type="url" class="artist-apple-music-url" value="${escapeHtml(initialData.apple_music_url || "")}" />
-                    </label>
-
-                    <label>
-                        YouTube Link
-                        <input type="url" class="artist-youtube-url" value="${escapeHtml(initialData.youtube_url || "")}" />
-                    </label>
-
-                    <label>
-                        SoundCloud Link
-                        <input type="url" class="artist-soundcloud-url" value="${escapeHtml(initialData.soundcloud_url || "")}" />
-                    </label>
-                </div>
-
-                <button type="button" class="save-pane-button artist-save-button">Save Changes</button>
+            <div class="artist-card__actions">
+                <input class="split-box" type="number" min="0" max="100" step="1" value="${isMain ? "100" : "0"}" title="Split" style="display:none;" />
+                <button type="button" class="small-action-button artist-edit-button">Edit</button>
+                <button type="button" class="icon-button artist-delete-button" title="Delete">🗑</button>
             </div>
-        `;
+        </div>
+
+        <div class="artist-card__body">
+            <div class="artist-grid">
+                <label>
+                    Artist Source
+                    <select class="artist-source-mode">
+                        <option value="new" ${mode === "new" ? "selected" : ""}>New Artist</option>
+                        <option value="existing" ${mode === "existing" ? "selected" : ""}>Existing Artist</option>
+                    </select>
+                </label>
+
+                <label class="artist-existing-picker" style="${mode === "existing" ? "" : "display:none;"}">
+                    Saved Artists
+                    <select class="artist-existing-select">
+                        ${getSavedArtistOptionsHtml(selectedSavedId)}
+                    </select>
+                </label>
+
+                <label>
+                    Artist Name
+                    <input type="text" class="artist-display-name" value="${escapeHtml(initialData.display_name || "")}" />
+                </label>
+
+                <label>
+                    Email
+                    <input type="email" class="artist-email" value="${escapeHtml(initialData.email || "")}" />
+                </label>
+
+                <label>
+                    First Name
+                    <input type="text" class="artist-first-name" value="${escapeHtml(initialData.first_name || "")}" />
+                </label>
+
+                <label>
+                    Last Name
+                    <input type="text" class="artist-last-name" value="${escapeHtml(initialData.last_name || "")}" />
+                </label>
+
+                <label>
+                    IPI
+                    <input type="text" class="artist-ipi" value="${escapeHtml(initialData.ipi || "")}" />
+                </label>
+
+                <label>
+                    PRO
+                    <input type="text" class="artist-pro" value="${escapeHtml(initialData.pro || "")}" />
+                </label>
+
+                <label>
+                    Publisher
+                    <input type="text" class="artist-publisher" value="${escapeHtml(initialData.publisher || "")}" />
+                </label>
+
+                <label>
+                    Spotify Link
+                    <input type="url" class="artist-spotify-url" value="${escapeHtml(initialData.spotify_url || "")}" />
+                </label>
+
+                <label>
+                    Apple Music Link
+                    <input type="url" class="artist-apple-music-url" value="${escapeHtml(initialData.apple_music_url || "")}" />
+                </label>
+
+                <label>
+                    YouTube Link
+                    <input type="url" class="artist-youtube-url" value="${escapeHtml(initialData.youtube_url || "")}" />
+                </label>
+
+                <label>
+                    SoundCloud Link
+                    <input type="url" class="artist-soundcloud-url" value="${escapeHtml(initialData.soundcloud_url || "")}" />
+                </label>
+            </div>
+
+            <button type="button" class="save-pane-button artist-save-button">Save Changes</button>
+        </div>
+    `;
 
         const editButton = card.querySelector(".artist-edit-button");
         const deleteButton = card.querySelector(".artist-delete-button");
         const saveButton = card.querySelector(".artist-save-button");
+        const sourceModeSelect = card.querySelector(".artist-source-mode");
+        const existingPicker = card.querySelector(".artist-existing-picker");
+        const existingSelect = card.querySelector(".artist-existing-select");
 
         editButton.addEventListener("click", () => {
             card.classList.toggle("is-collapsed");
@@ -180,6 +262,23 @@ document.addEventListener("DOMContentLoaded", async () => {
             if (card.dataset.isMain === "true") return;
             card.remove();
             updateSplitVisibility();
+        });
+
+        sourceModeSelect.addEventListener("change", () => {
+            const modeValue = sourceModeSelect.value;
+            existingPicker.style.display = modeValue === "existing" ? "" : "none";
+
+            if (modeValue === "new") {
+                card.dataset.savedFeaturedArtistId = "";
+                if (existingSelect) {
+                    existingSelect.value = "";
+                }
+            }
+        });
+
+        existingSelect.addEventListener("change", () => {
+            if (!existingSelect.value) return;
+            applySavedArtistToCard(card, existingSelect.value);
         });
 
         saveButton.addEventListener("click", () => {
@@ -197,6 +296,11 @@ document.addEventListener("DOMContentLoaded", async () => {
         });
 
         artistsContainer.appendChild(card);
+
+        if (mode === "existing" && selectedSavedId) {
+            applySavedArtistToCard(card, selectedSavedId);
+        }
+
         updateSplitVisibility();
     }
 
@@ -214,6 +318,7 @@ document.addEventListener("DOMContentLoaded", async () => {
             apple_music_url: card.querySelector(".artist-apple-music-url")?.value?.trim() || "",
             youtube_url: card.querySelector(".artist-youtube-url")?.value?.trim() || "",
             soundcloud_url: card.querySelector(".artist-soundcloud-url")?.value?.trim() || "",
+            saved_featured_artist_id: card.dataset.savedFeaturedArtistId || null,
             split_percent: Number(card.querySelector(".split-box")?.value || 0),
         };
     }
@@ -582,6 +687,14 @@ document.addEventListener("DOMContentLoaded", async () => {
         buildTrackCard();
     });
 
+    addArtistButton?.addEventListener("click", () => {
+        buildArtistCard({}, { isMain: false, collapsed: false, mode: "new" });
+    });
+
+    addExistingArtistButton?.addEventListener("click", () => {
+        buildArtistCard({}, { isMain: false, collapsed: false, mode: "existing" });
+    });
+
     form?.addEventListener("submit", async (event) => {
         event.preventDefault();
         clearMessages();
@@ -631,7 +744,7 @@ document.addEventListener("DOMContentLoaded", async () => {
             successBox.textContent = "Release draft created successfully.";
 
             window.location.href = "/releases/all";
-            
+
         } catch (error) {
             errorBox.textContent = error.message || "Failed to create release draft.";
         }
