@@ -3,14 +3,13 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title> View All Releases | SpacedOut Studios</title>
+    <title>View Contract | SpacedOut Studios</title>
 
     <link rel="stylesheet" href="/static/css/base.css" />
     <link rel="stylesheet" href="/static/css/header.css" />
     <link rel="stylesheet" href="/static/css/auth.css" />
     <link rel="stylesheet" href="/static/css/dashboard.css" />
-    <link rel="stylesheet" href="/static/css/releases/common.css" />
-    <link rel="stylesheet" href="/static/css/releases/view.css" />
+    <link rel="stylesheet" href="/static/css/contracts.css" />
     <link rel="icon" type="image/png" href="/favicon.png">
 </head>
 <body>
@@ -20,7 +19,7 @@
             <a href="/">Home</a>
             <a href="/artists">Artists</a>
             <a href="/submissions">Apply</a>
-            <a href="/coming_soon">Contact</a>
+            <a href="/contact">Contact</a>
             <a href="/dashboard-artist" class="dashboard-site-nav__dashboard-link">Dashboard</a>
         </nav>
 
@@ -65,48 +64,54 @@
     </div>
 </header>
 
-<main class="page-shell">
-    <div class="page-shell__header">
-        <p class="eyebrow">Release Intake</p>
-        <h1 id="release-page-title">Your Releases</h1>
-        <p class="page-description">View your releases, artwork, artists, and audio previews.</p>
-    </div>
 
-    <div id="release-error" role="alert"></div>
-    <section id="release-list" aria-live="polite"></section>
-</main>
+<main class="contracts-shell">
+    <section class="contracts-hero">
+        <p class="contracts-eyebrow">Documents</p>
+        <h1 id="contract-title">Contract</h1>
+        <p class="contracts-subtitle" id="contract-meta">Loading...</p>
+    </section>
 
-<div class="signin-modal" id="signin-modal" aria-hidden="true">
-    <div class="signin-panel">
-        <h2>Sign In</h2>
-        <p>Access your Spaced Out Studios account.</p>
+    <section class="contracts-view-card" style="display:grid; gap:1rem;">
+        <div class="contracts-meta-row" id="contract-status-line"></div>
 
-        <form class="signin-form" id="signin-form">
-            <label>
-                Email
-                <input type="email" name="email" required />
+        <div class="contracts-actions">
+            <a id="download-unsigned-pdf" class="release-btn secondary" href="#">Download PDF</a>
+            <a id="download-signed-pdf" class="release-btn secondary" href="#" style="display:none;">Download Signed</a>
+        </div>
+
+        <div>
+            <h3 style="margin:0 0 .6rem 0;">Recipients</h3>
+            <div id="contract-recipients" class="contracts-recipient-list"></div>
+        </div>
+
+        <div>
+            <h3 style="margin:0 0 .6rem 0;">Contract Body</h3>
+            <div id="contract-body" class="contracts-body-block"></div>
+        </div>
+
+        <div>
+            <h3 style="margin:0 0 .6rem 0;">Upload Signed Contract</h3>
+
+            <label style="display:grid; gap:.45rem;">
+                <span>Signed PDF</span>
+                <input type="file" id="signed-contract-file" accept=".pdf,application/pdf" />
             </label>
 
-            <label>
-                Password
-                <input type="password" name="password" required />
-            </label>
-
-            <div class="signin-error" id="signin-error"></div>
-
-            <div class="signin-actions">
-                <button class="signin-cancel" type="button" data-close-signin>Cancel</button>
-                <button class="signin-submit" type="submit">Sign In</button>
+            <div class="contracts-actions" style="margin-top:.9rem;">
+                <button type="button" id="upload-signed-button" class="release-btn primary">
+                    Upload Signed Contract
+                </button>
             </div>
-        </form>
-    </div>
-</div>
+        </div>
+
+        <div id="contract-error" class="contracts-error"></div>
+        <div id="contract-success" class="contracts-success"></div>
+    </section>
+</main>
 
 <script src="/static/js/api.js"></script>
 <script src="/static/js/auth.js"></script>
-<script src="/static/js/header_auth.js"></script>
-<script src="/static/js/releases/common.js"></script>
-<script src="/static/js/dashboard.js"></script>
-<script src="/static/js/releases/view.js"></script>
+<script src="/static/js/contracts/view.js"></script>
 </body>
 </html>

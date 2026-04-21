@@ -17,96 +17,113 @@ document.addEventListener("DOMContentLoaded", async () => {
     const uploadSignedButton = document.getElementById("upload-signed-button");
 
     function clearMessages() {
-        errorEl.textContent = "";
-        successEl.textContent = "";
+        if (errorEl) errorEl.textContent = "";
+        if (successEl) successEl.textContent = "";
     }
 
     if (!contractId) {
-        errorEl.textContent = "Missing contract id.";
+        if (errorEl) errorEl.textContent = "Missing contract id.";
         return;
     }
-
-    const currentUser = await getCurrentUser();
-    if (!currentUser) {
-        const returnTo = encodeURIComponent(window.location.pathname + window.location.search);
-        window.location.href = `/signin.html?next=${returnTo}`;
-        return;
-    }
-
-    async function loadContract() {
-        const data = await apiFetch(`/api/contracts/${contractId}`);
-        const contract = data.contract;
-        const recipients = data.recipients || [];
-
-        titleEl.textContent = contract.title || "Contract";
-        metaEl.textContent = `${contract.artist_name || "Artist"} • ${contract.contract_type || "contract"}`;
-
-        statusLineEl.innerHTML = `
-            <span class="contracts-pill">Status: ${contract.status || "draft"}</span>
-        `;
-
-        recipientsEl.innerHTML = recipients.length
-            ? recipients.map((recipient) => `<div>${recipient.email}</div>`).join("")
-            : `<div>No recipients saved.</div>`;
-
-        bodyEl.textContent = contract.body_text || "";
-
-        downloadPdf.href = `${API_BASE}/api/contracts/${contractId}/download/unsigned-pdf`;
-
-        if (contract.signed_object_key) {
-            downloadSigned.href = `${API_BASE}/api/contracts/${contractId}/download/signed`;
-            downloadSigned.style.display = "inline-flex";
-        } else {
-            downloadSigned.style.display = "none";
-        }
-    }
-
-    uploadSignedButton?.addEventListener("click", async () => {
-        clearMessages();
-
-        const file = signedFileInput.files?.[0];
-        if (!file) {
-            errorEl.textContent = "Please choose a signed PDF.";
-            return;
-        }
-
-        const formData = new FormData();
-        formData.append("signed_contract", file);
-
-        try {
-            const response = await fetch(`${API_BASE}/api/contracts/${contractId}/upload-signed`, {
-                method: "POST",
-                body: formData,
-                credentials: "include",
-            });
-
-            let data = {};
-            try {
-                data = await response.json();
-            } catch (error) {
-                data = {};
-            }
-
-            if (!response.ok) {
-                throw new Error(data.error || "Failed to upload signed contract.");
-            }
-
-            successEl.textContent = "Signed contract uploaded successfully.";
-            await loadContract();
-        } catch (error) {
-            errorEl.textContent = error.message || "Failed to upload signed contract.";
-        }
-    });
 
     try {
         const currentUser = await getCurrentUser();
+
         if (!currentUser) {
-            window.location.href = "/";
+            // redirect to login WITH return path
+            const returnTo = encodeURIComponent(window.location.pathname + window.location.search);
+            window.location.href = `/signin.html?next=${returnTo}`;
             return;
         }
 
+        async function loadContract() {
+            const data = await apiFetch(`/api/contracts/${contractId}`);
+            const contract = data.contract;
+            const recipients = data.recipients || [];
+
+            if (titleEl) {
+                titleEl.textContent = contract.title || "Contract";
+            }
+
+            if (metaEl) {
+                metaEl.textContent = `${contract.artist_name || "Artist"} • ${contract.contract_type || "contract"}`;
+            }
+
+            if (statusLineEl) {
+                statusLineEl.innerHTML = `
+                    <span class="contracts-pill">Status: ${contract.status || "draft"}</span>
+                `;
+            }
+
+            if (recipientsEl) {
+                recipientsEl.innerHTML = recipients.length
+                    ? recipients.map((recipient) => `<div>${recipient.email}</div>`).join("")
+                    : `<div>No recipients saved.</div>`;
+            }
+
+            if (bodyEl) {
+                bodyEl.textContent = contract.body_text || "";
+            }
+
+            if (downloadPdf) {
+                downloadPdf.href = `${API_BASE}/api/contracts/${contractId}/download/unsigned-pdf`;
+            }
+
+            if (contract.signed_object_key) {
+                if (downloadSigned) {
+                    downloadSigned.href = `${API_BASE}/api/contracts/${contractId}/download/signed`;
+                    downloadSigned.style.display = "inline-flex";
+                }
+            } else if (downloadSigned) {
+                downloadSigned.style.display = "none";
+            }
+        }
+
+        uploadSignedButton?.addEventListener("click", async () => {
+            clearMessages();
+
+            const file = signedFileInput?.files?.[0];
+            if (!file) {
+                if (errorEl) errorEl.textContent = "Please choose a signed PDF.";
+                return;
+            }
+
+            const formData = new FormData();
+            formData.append("signed_contract", file);
+
+            try {
+                const response = await fetch(`${API_BASE}/api/contracts/${contractId}/upload-signed`, {
+                    method: "POST",
+                    body: formData,
+                    credentials: "include",
+                });
+
+                let data = {};
+                try {
+                    data = await response.json();
+                } catch {}
+
+                if (!response.ok) {
+                    throw new Error(data.error || "Failed to upload signed contract.");
+                }
+
+                if (successEl) {
+                    successEl.textContent = "Signed contract uploaded successfully.";
+                }
+
+                await loadContract();
+            } catch (error) {
+                if (errorEl) {
+                    errorEl.textContent = error.message || "Failed to upload signed contract.";
+                }
+            }
+        });
+
         await loadContract();
+
     } catch (error) {
-        errorEl.textContent = error.message || "Failed to load contract.";
+        if (errorEl) {
+            errorEl.textContent = error.message || "Failed to load contract.";
+        }
     }
 });
