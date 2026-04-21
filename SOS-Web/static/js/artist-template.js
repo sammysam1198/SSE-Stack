@@ -1,13 +1,13 @@
-const ARTIST_PAGE_DEFAULTS = {
-    name: "Unknown Artist",
-    tagline: "No tagline yet.",
-    bio: "No bio yet.",
-    location: "Not listed",
-    vibe: "Not listed",
-    primaryGenre: "Not listed",
-    primaryRole: "Not listed",
-    publisher: "Not listed"
-};
+function getArtistSlugFromUrl() {
+    const params = new URLSearchParams(window.location.search);
+    const slugFromQuery = params.get("slug");
+    if (slugFromQuery) return slugFromQuery.trim().toLowerCase();
+
+    const parts = window.location.pathname.split("/").filter(Boolean);
+    const last = parts[parts.length - 1] || "";
+    if (!last || last === "artist" || last === "artist.html") return "";
+    return last.replace(/\.html$/i, "").trim().toLowerCase();
+}
 
 function resolveAssetUrl(value) {
     const raw = (value || "").trim();
@@ -17,189 +17,183 @@ function resolveAssetUrl(value) {
         return raw;
     }
 
-    const base = (window.SSE_ASSET_BASE_URL || "").trim();
-    if (!base) return "";
-
-    return `${base.replace(/\/+$/, "")}/${raw.replace(/^\/+/, "")}`;
-}
-
-function getArtistSlugFromUrl() {
-    const params = new URLSearchParams(window.location.search);
-    const querySlug = params.get("slug");
-    if (querySlug) return querySlug.trim().toLowerCase();
-
-    const parts = window.location.pathname.split("/").filter(Boolean);
-    const last = parts[parts.length - 1] || "";
-
-    if (!last || last === "artist" || last === "artist.html") {
-        return "";
+    if (window.SSE_ASSET_BASE_URL) {
+        return `${window.SSE_ASSET_BASE_URL.replace(/\/+$/, "")}/${raw.replace(/^\/+/, "")}`;
     }
 
-    return last.replace(/\.html$/i, "").trim().toLowerCase();
-}
-
-async function fetchArtistProfileBySlug(slug) {
-    const data = await apiFetch(`/api/artists/slug/${encodeURIComponent(slug)}`);
-    return data.artist_profile;
+    return raw;
 }
 
 function setText(id, value, fallback = "—") {
     const el = document.getElementById(id);
-    if (el) {
-        el.textContent = value || fallback;
-    }
+    if (!el) return;
+    el.textContent = (value || "").trim() || fallback;
 }
 
-function setImage(id, src, fallback = "/static/logos/sse.png", alt = "") {
+function setHtml(id, html, fallbackHtml = '<p class="section-copy">Nothing here yet.</p>') {
+    const el = document.getElementById(id);
+    if (!el) return;
+    el.innerHTML = (html || "").trim() || fallbackHtml;
+}
+
+function setImage(id, src, fallback, altText) {
     const el = document.getElementById(id);
     if (!el) return;
     el.src = src || fallback;
-    if (alt) el.alt = alt;
+    el.alt = altText || "Artist image";
 }
 
-function buildTagPills(profile) {
-    const row = document.getElementById("artistTagRow");
-    if (!row) return;
-
-    row.innerHTML = "";
-
-    const values = [
+function buildGenreLine(profile) {
+    return [
         profile.primary_genre,
         profile.genre2,
-        profile.genre3,
+        profile.genre3
+    ].filter(Boolean).join(", ") || "—";
+}
+
+function buildRoleLine(profile) {
+    return [
         profile.primary_instrument,
         profile.role2,
-        profile.role3,
-        profile.primary_vibe
+        profile.role3
+    ].filter(Boolean).join(", ") || "—";
+}
+
+function buildTagline(profile) {
+    const pieces = [
+        profile.primary_genre,
+        profile.genre2,
+        profile.genre3
     ].filter(Boolean);
 
-    const unique = [...new Set(values.map((value) => value.trim()).filter(Boolean))].slice(0, 6);
+    if (pieces.length) {
+        return pieces.join(" / ");
+    }
 
-    if (!unique.length) return;
-
-    unique.forEach((value) => {
-        const pill = document.createElement("span");
-        pill.className = "artist-pill";
-        pill.textContent = value;
-        row.appendChild(pill);
-    });
+    return profile.tagline || "Artist";
 }
 
-function setEmbed(containerId, rawEmbedHtml) {
-    const wrap = document.getElementById(containerId);
+function setBioParagraphs(profile) {
+    const wrap = document.getElementById("artistBioWrap");
     if (!wrap) return;
 
-    const html = (rawEmbedHtml || "").trim();
-    if (!html) {
-        wrap.classList.add("embed-wrap--empty");
-        wrap.innerHTML = `<p class="embed-empty">Nothing here yet.</p>`;
+    const rawBio = (profile.bio || "").trim();
+    if (!rawBio) {
+        wrap.innerHTML = '<p class="section-copy">No bio yet.</p>';
         return;
     }
 
-    wrap.classList.remove("embed-wrap--empty");
-    wrap.innerHTML = html;
+    const parts = rawBio
+        .split(/\n{2,}/)
+        .map((part) => part.trim())
+        .filter(Boolean);
+
+    if (!parts.length) {
+        wrap.innerHTML = `<p class="section-copy">${rawBio}</p>`;
+        return;
+    }
+
+    wrap.innerHTML = parts
+        .map((part) => `<p class="section-copy">${part}</p>`)
+        .join("");
 }
 
-function buildLinks(profile) {
-    const linksRoot = document.getElementById("artistLinks");
-    if (!linksRoot) return;
+function setLinkTile(id, url) {
+    const el = document.getElementById(id);
+    if (!el) return;
 
-    linksRoot.innerHTML = "";
-
-    const linkDefs = [
-        ["Spotify", profile.spotify_url],
-        ["Apple Music", profile.apple_music_url],
-        ["YouTube Music", profile.youtube_music_url],
-        ["YouTube Channel", profile.youtube_channel_url],
-        ["Instagram", profile.instagram_url],
-        ["Threads", profile.threads_url],
-        ["SoundCloud", profile.soundcloud_url],
-        ["Bandcamp", profile.bandcamp_url],
-        ["Tidal", profile.tidal_url],
-        ["TikTok", profile.tiktok_url],
-        ["Twitter", profile.twitter_url],
-        ["Deezer", profile.deezer_url],
-        ["Beatport", profile.beatport_url],
-        ["Amazon Music", profile.amazon_music_url],
-        ["Facebook", profile.facebook_url]
-    ].filter(([, url]) => !!(url || "").trim());
-
-    if (!linkDefs.length) {
-        linksRoot.innerHTML = `<p class="artist-copy">No links added yet.</p>`;
-        return;
+    if ((url || "").trim()) {
+        el.href = url.trim();
+        el.hidden = false;
+    } else {
+        el.hidden = true;
     }
-
-    linkDefs.forEach(([label, url]) => {
-        const tile = document.createElement("a");
-        tile.className = "artist-link-tile";
-        tile.href = url;
-        tile.target = "_blank";
-        tile.rel = "noopener noreferrer";
-
-        tile.innerHTML = `
-            <span class="artist-link-tile__label">${label}</span>
-            <span class="artist-link-tile__value">${url}</span>
-        `;
-
-        linksRoot.appendChild(tile);
-    });
 }
 
 function applyArtistProfile(profile) {
-    const bannerUrl = resolveAssetUrl(profile.dashboard_banner_key);
+    const artistName = (profile.artist_name || "Artist").trim();
     const portraitUrl = resolveAssetUrl(profile.profile_portrait_key);
     const logoUrl = resolveAssetUrl(profile.artist_logo_key);
 
-    const hero = document.getElementById("artist-hero");
-    if (hero && bannerUrl) {
-        hero.style.setProperty("--artist-banner-image", `url("${bannerUrl}")`);
+    document.title = `${artistName} | SpacedOut Studios`;
+
+    const pageDescription = document.getElementById("pageDescription");
+    if (pageDescription) {
+        pageDescription.content = `${artistName} on SpacedOut Studios. ${buildGenreLine(profile)}. ${profile.tagline || ""}`.trim();
     }
 
-    document.title = `${profile.artist_name || ARTIST_PAGE_DEFAULTS.name} | SpacedOut Studios`;
+    setText("artistName", artistName, "Artist");
+    setText("artistTagline", buildTagline(profile), "Artist");
+    setText("artistShortCopy", profile.tagline, "No tagline yet.");
+    setText("artistLocation", profile.location, "—");
+    setText("artistGenres", buildGenreLine(profile), "—");
+    setText("artistRoles", buildRoleLine(profile), "—");
 
-    setText("artistName", profile.artist_name, ARTIST_PAGE_DEFAULTS.name);
-    setText("artistTagline", profile.tagline, ARTIST_PAGE_DEFAULTS.tagline);
-    setText("artistBio", profile.bio, ARTIST_PAGE_DEFAULTS.bio);
-    setText("artistLocation", profile.location, ARTIST_PAGE_DEFAULTS.location);
-    setText("artistVibe", profile.primary_vibe, ARTIST_PAGE_DEFAULTS.vibe);
-    setText("artistPrimaryGenre", profile.primary_genre, ARTIST_PAGE_DEFAULTS.primaryGenre);
-    setText("artistPrimaryRole", profile.primary_instrument, ARTIST_PAGE_DEFAULTS.primaryRole);
-    setText("artistPublisher", profile.publisher, ARTIST_PAGE_DEFAULTS.publisher);
-    setText("artistSlug", profile.artist_page, "—");
+    setText("aboutEyebrow", `About ${artistName}`, "About");
+    setText("aboutHeading", artistName, artistName);
+    setText("featuredListenHeading", `${artistName} Featured Watch`, "Featured Listen");
+    setText("platformCopy", `Direct access to ${artistName} across platforms.`, "Direct access across platforms.");
+    setText("video2Eyebrow", artistName, artistName);
+    setText("video3Eyebrow", artistName, artistName);
+    setText("video2Title", profile.video2_name, "Visual Feature");
+    setText("video3Title", profile.video3_name, "Second Feature");
 
     setImage(
-        "artistPortrait",
+        "artistBaseArt",
         portraitUrl || logoUrl,
         "/static/logos/sse.png",
-        `${profile.artist_name || "Artist"} portrait`
+        artistName
     );
 
     setImage(
-        "artistLogo",
+        "artistAboutVisual",
         logoUrl || portraitUrl,
         "/static/logos/sse.png",
-        `${profile.artist_name || "Artist"} logo`
+        artistName
     );
 
-    setEmbed("spotifyEmbedWrap", profile.spotify_embed);
-    setEmbed("featuredVideoWrap", profile.featured_video_embed);
-    setEmbed("video2Wrap", profile.video2_embed);
-    setEmbed("video3Wrap", profile.video3_embed);
+    setBioParagraphs(profile);
 
-    setText("video2Title", profile.video2_name || "Video 2", "Video 2");
-    setText("video3Title", profile.video3_name || "Video 3", "Video 3");
+    setHtml(
+        "featuredMediaWrap",
+        profile.featured_video_embed,
+        '<p class="section-copy">No featured media yet.</p>'
+    );
 
-    buildTagPills(profile);
-    buildLinks(profile);
+    setHtml(
+        "spotifyEmbedWrap",
+        profile.spotify_embed,
+        '<p class="section-copy">No Spotify embed yet.</p>'
+    );
+
+    setHtml(
+        "video2EmbedWrap",
+        profile.video2_embed,
+        '<p class="section-copy">No second video yet.</p>'
+    );
+
+    setHtml(
+        "video3EmbedWrap",
+        profile.video3_embed,
+        '<p class="section-copy">No third video yet.</p>'
+    );
+
+    setLinkTile("spotifyTile", profile.spotify_url);
+    setLinkTile("youtubeTile", profile.youtube_channel_url);
+    setLinkTile("instagramTile", profile.instagram_url);
+    setLinkTile("soundcloudTile", profile.soundcloud_url);
+    setLinkTile("bandcampTile", profile.bandcamp_url);
+    setLinkTile("ytmusicTile", profile.youtube_music_url);
+    setLinkTile("threadsTile", profile.threads_url);
+    setLinkTile("tidalTile", profile.tidal_url);
+    setLinkTile("appleTile", profile.apple_music_url);
 }
 
 function showArtistError(message) {
-    const card = document.getElementById("artistErrorCard");
+    const section = document.getElementById("artistErrorSection");
     const text = document.getElementById("artistErrorText");
-    const name = document.getElementById("artistName");
 
-    if (name) name.textContent = "Artist not found";
-    if (card) card.hidden = false;
+    if (section) section.hidden = false;
     if (text) text.textContent = message || "We could not load this artist page.";
 }
 
@@ -212,10 +206,17 @@ document.addEventListener("DOMContentLoaded", async () => {
     }
 
     try {
-        const profile = await fetchArtistProfileBySlug(slug);
+        const data = await apiFetch(`/api/artists/slug/${encodeURIComponent(slug)}`);
+        const profile = data.artist_profile;
+
+        if (!profile) {
+            showArtistError("Artist profile not found.");
+            return;
+        }
+
         applyArtistProfile(profile);
     } catch (error) {
         console.error("Failed to load artist profile:", error);
-        showArtistError(error.message || "Failed to load artist.");
+        showArtistError(error.message || "Failed to load artist page.");
     }
 });

@@ -6,10 +6,11 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>{artist_name} | SpacedOut Studios</title>
+    <title id="pageTitle">Artist | SpacedOut Studios</title>
     <meta
+            id="pageDescription"
             name="description"
-            content="{artist_name} on SpacedOut Studios. {primary_genre}, {genre2}, {genre3}. {tagline}"
+            content="Artist page on SpacedOut Studios."
     />
 
     <link rel="stylesheet" href="/static/css/base.css" />
@@ -17,6 +18,7 @@
     <link rel="stylesheet" href="/static/css/social_grid.css" />
     <link rel="stylesheet" href="/static/css/artist.css" />
     <link rel="stylesheet" href="/static/css/auth.css" />
+    <link rel="icon" type="image/png" href="/favicon.png">
 </head>
 <body>
 <div class="site-wrap">
@@ -32,11 +34,11 @@
 
             <nav class="nav">
                 <a href="/">Home</a>
-                <a href="/about">About</a>
+                <a href="/coming_soon">About</a>
                 <a href="/artists" class="active">Artists</a>
-                <a href="/playlists">Playlists</a>
-                <a href="/submissions">Apply</a>
-                <a href="/contact">Contact</a>
+                <a href="/coming_soon">Playlists</a>
+                <a href="/submissions">Submissions</a>
+                <a href="/coming_soon">Contact</a>
             </nav>
             <div id="auth-slot"></div>
         </div>
@@ -45,70 +47,73 @@
     <main class="page-shell artist-page">
         <section class="artist-hero">
             <article class="artist-image-card motion-card">
-                <img class="artist-base-art" src="{profile_portrait or artist_logo if portrait null}" alt="{artist_name}" />
+                <img
+                        id="artistBaseArt"
+                        class="artist-base-art"
+                        src="/static/logos/sse.png"
+                        alt="Artist"
+                />
 
                 <div class="motion-layer motion-cyan"></div>
                 <div class="motion-layer motion-magenta"></div>
 
                 <div class="artist-image-overlay">
-                    <h1 class="display artist-name">{artist_name}</h1>
-                    <p class="artist-tagline">{primary_genre} / {genre2} / {genre3}</p>
-                    <p class="artist-short-copy">
-                        {tagline}
+                    <h1 id="artistName" class="display artist-name">Loading...</h1>
+                    <p id="artistTagline" class="artist-tagline">Loading artist profile...</p>
+                    <p id="artistShortCopy" class="artist-short-copy">
+                        Please wait while the artist page loads.
                     </p>
                 </div>
             </article>
 
             <aside class="artist-side">
                 <section class="glass artist-side-card">
-                    <h2>Quick Info</h2>
+                    <h2>Signal</h2>
 
                     <div class="stats-list">
                         <div class="stats-row">
                             <span class="stats-label">Location</span>
-                            <span class="stats-value">{location}</span>
+                            <span id="artistLocation" class="stats-value">—</span>
                         </div>
 
                         <div class="stats-row">
                             <span class="stats-label">Genres</span>
-                            <span class="stats-value">{primary_genre}, {genre2}, {genre3}</span>
+                            <span id="artistGenres" class="stats-value">—</span>
                         </div>
 
                         <div class="stats-row">
                             <span class="stats-label">Roles</span>
-                            <span class="stats-value">{primary_instrument}, {role2}, {role3}</span>
+                            <span id="artistRoles" class="stats-value">—</span>
                         </div>
                     </div>
                 </section>
 
                 <section class="glass artist-side-card">
-                    <h2>{artist_name} Featured Watch</h2>
-                    <div class="artist-embed-shell">
-                       {video_feature_embed (HAS TO BE EMBED IT WON'T WORK OTHERWISE THIS NEEDS TO BE CLEAR TO ARTIST)
+                    <h2 id="featuredListenHeading">Featured Listen</h2>
+                    <div id="featuredMediaWrap" class="artist-embed-shell">
+                        <p class="section-copy">No featured media yet.</p>
                     </div>
                 </section>
             </aside>
         </section>
 
-        <section class="glass artist-about sheen-card">
+        <section class="glass artist-about">
             <div class="section-head">
-                <p class="eyebrow">About</p>
-                <h2 class="section-title">{artist_name}</h2>
+                <p class="eyebrow" id="aboutEyebrow">About</p>
+                <h2 id="aboutHeading" class="section-title">Loading...</h2>
             </div>
 
             <div class="artist-about-layout">
-                <div class="artist-about-copy">
-                    <p class="section-copy">
-                        {bio paragraph 1 (formatting must be preserved from the original bio entry in the form on the artist dash)}
-                    </p>
-
-                    <p class="section-copy">
-                        {bio paragraph 2 (make an additional tag pair with class section copy for each other paragraph)}
-                    </p>
+                <div id="artistBioWrap" class="artist-about-copy">
+                    <p class="section-copy">No bio yet.</p>
                 </div>
 
                 <div class="artist-about-visual">
-                    <img src="{artist_logo} (ONLY IF profile portrait exists. else: /static/logos/sse.png" alt="loading...">
+                    <img
+                            id="artistAboutVisual"
+                            src="/static/logos/sse.png"
+                            alt="Artist visual"
+                    >
                 </div>
             </div>
         </section>
@@ -116,27 +121,33 @@
         <section class="artist-media">
             <article class="glass spotify-wide">
                 <div class="section-head">
-                    <p class="eyebrow">Spotify</p>
-                    <h2 class="section-title">Stream Now</h2>
+                    <p class="eyebrow">Featured Stream</p>
+                    <h2 class="section-title">Listen In Full</h2>
                 </div>
-                {spotify_embed} (HAS TO BE EMBED IT WON'T WORK OTHERWISE THIS NEEDS TO BE CLEAR TO ARTIST)}
+                <div id="spotifyEmbedWrap">
+                    <p class="section-copy">No Spotify embed yet.</p>
+                </div>
             </article>
 
             <div class="video-grid">
                 <article class="glass video-card">
                     <div class="section-head">
-                        <p class="eyebrow">{artist_name}</p>
-                        <h2 class="section-title">{video2_name}</h2>
+                        <p class="eyebrow" id="video2Eyebrow">Video One</p>
+                        <h2 id="video2Title" class="section-title">Visual Feature</h2>
                     </div>
-                    {video2_embed}(HAS TO BE EMBED IT WON'T WORK OTHERWISE THIS NEEDS TO BE CLEAR TO ARTIST)
+                    <div id="video2EmbedWrap">
+                        <p class="section-copy">No second video yet.</p>
+                    </div>
                 </article>
 
                 <article class="glass video-card">
                     <div class="section-head">
-                        <p class="eyebrow">{artist_name}</p>
-                        <h2 class="section-title">{video3_name}</h2>
+                        <p class="eyebrow" id="video3Eyebrow">Video Two</p>
+                        <h2 id="video3Title" class="section-title">Second Feature</h2>
                     </div>
-                    {video3_embed} (HAS TO BE EMBED IT WON'T WORK OTHERWISE THIS NEEDS TO BE CLEAR TO ARTIST)
+                    <div id="video3EmbedWrap">
+                        <p class="section-copy">No third video yet.</p>
+                    </div>
                 </article>
             </div>
         </section>
@@ -145,62 +156,75 @@
             <div class="section-head">
                 <div>
                     <p class="eyebrow">Streaming & Socials</p>
-                    <h2 class="section-title">Follow the Creators</h2>
-                    <p class="section-copy">
-                        Find and follow {artist_name}.
+                    <h2 class="section-title">Follow The Sound</h2>
+                    <p id="platformCopy" class="section-copy">
+                        Direct access across platforms.
                     </p>
                 </div>
             </div>
 
             <div class="music-platform-grid">
-                <a class="music-tile tile-top spotify-tile" href="{spotify_url}" target="_blank" rel="noopener noreferrer">
+                <a id="spotifyTile" class="music-tile tile-top spotify-tile" href="#" target="_blank" rel="noopener noreferrer" hidden>
                     <img src="/static/socials/spotify.png" alt="Spotify" class="music-logo">
                 </a>
 
-                <a class="music-tile tile-top youtube-tile" href="{youtube_channel_url}" target="_blank" rel="noopener noreferrer">
+                <a id="youtubeTile" class="music-tile tile-top youtube-tile" href="#" target="_blank" rel="noopener noreferrer" hidden>
                     <img src="/static/socials/youtube%20full.png" alt="YouTube" class="music-logo">
                 </a>
 
-                <a class="music-tile tile-top instagram-tile" href="{instagram_url}" target="_blank" rel="noopener noreferrer">
+                <a id="instagramTile" class="music-tile tile-top instagram-tile" href="#" target="_blank" rel="noopener noreferrer" hidden>
                     <img src="/static/socials/instagram.png" alt="Instagram" class="music-logo">
                 </a>
 
-                <a class="music-tile-small tile-small soundcloud-tile" href="{soundcloud_url}" target="_blank" rel="noopener noreferrer">
+                <a id="soundcloudTile" class="music-tile-small tile-small soundcloud-tile" href="#" target="_blank" rel="noopener noreferrer" hidden>
                     <img src="/static/socials/soundcloud.png" alt="SoundCloud" class="music-logo">
                 </a>
 
-                <a class="music-tile-small tile-small bandcamp-tile" href="{bandcamp_url}" target="_blank" rel="noopener noreferrer">
+                <a id="bandcampTile" class="music-tile-small tile-small bandcamp-tile" href="#" target="_blank" rel="noopener noreferrer" hidden>
                     <img src="/static/socials/bandcamp.png" alt="Bandcamp" class="music-logo">
                 </a>
 
-                <a class="music-tile-small tile-small ytmusic-tile" href="{youtube_music_url}" target="_blank" rel="noopener noreferrer">
+                <a id="ytmusicTile" class="music-tile-small tile-small ytmusic-tile" href="#" target="_blank" rel="noopener noreferrer" hidden>
                     <img src="/static/socials/ytmusic.png" alt="YouTube Music" class="music-logo">
                 </a>
 
-                <a class="music-tile-small tile-small threads-tile" href="{threads_url}" target="_blank" rel="noopener noreferrer">
+                <a id="threadsTile" class="music-tile-small tile-small threads-tile" href="#" target="_blank" rel="noopener noreferrer" hidden>
                     <img src="/static/socials/threads.png" alt="Threads" class="music-logo">
                 </a>
 
-                <a class="music-tile-small tile-small tidal-tile" href="{tidal_url}" target="_blank" rel="noopener noreferrer">
+                <a id="tidalTile" class="music-tile-small tile-small tidal-tile" href="#" target="_blank" rel="noopener noreferrer" hidden>
                     <img src="/static/socials/tidal.png" alt="TIDAL" class="music-logo">
                 </a>
 
-                <a class="music-tile-small tile-small apple-tile" href="{apple_music_url}" target="_blank" rel="noopener noreferrer">
+                <a id="appleTile" class="music-tile-small tile-small apple-tile" href="#" target="_blank" rel="noopener noreferrer" hidden>
                     <img src="/static/socials/apple.png" alt="Apple Music" class="music-logo">
                 </a>
             </div>
         </section>
+
+        <section id="artistErrorSection" class="glass artist-about" hidden>
+            <div class="section-head">
+                <p class="eyebrow">Artist Page</p>
+                <h2 class="section-title">Artist Not Found</h2>
+            </div>
+            <p id="artistErrorText" class="section-copy">
+                We could not load this artist page.
+            </p>
+        </section>
     </main>
 </div>
+
 <div id="signin-modal-container"></div>
 <script src="/static/js/partials.js"></script>
 <script>
     loadPartial("signin-modal-container", "/static/partials/signin_modal.html");
 </script>
+
 <script src="/static/js/api.js"></script>
 <script src="/static/js/auth.js"></script>
 <script src="/static/js/header_auth.js"></script>
 <script src="/static/js/artist.js"></script>
 <script src="/static/js/artist_motion.js"></script>
+<script src="/static/js/artist-template.js"></script>
 </body>
 </html>
