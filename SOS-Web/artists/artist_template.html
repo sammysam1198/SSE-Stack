@@ -17,8 +17,6 @@
     <link rel="stylesheet" href="/static/css/header.css" />
     <link rel="stylesheet" href="/static/css/social_grid.css" />
     <link rel="stylesheet" href="/static/css/artist.css" />
-    <link rel="stylesheet" href="/static/css/auth.css" />
-    <link rel="icon" type="image/png" href="/favicon.png">
 </head>
 <body>
 <div class="site-wrap">
@@ -46,17 +44,10 @@
 
     <main class="page-shell artist-page">
         <section class="artist-hero">
-            <article class="artist-image-card motion-card">
-                <img
-                        id="artistBaseArt"
-                        class="artist-base-art"
-                        src="/static/logos/sse.png"
-                        alt="Artist"
-                />
-
+            <article class="artist-image-card">
+                <img id="artistBaseArt" class="artist-base-art" src="/static/logos/sse.png" alt="Artist" />
                 <div class="motion-layer motion-cyan"></div>
                 <div class="motion-layer motion-magenta"></div>
-
                 <div class="artist-image-overlay">
                     <h1 id="artistName" class="display artist-name">Loading...</h1>
                     <p id="artistTagline" class="artist-tagline">Loading artist profile...</p>
@@ -68,7 +59,7 @@
 
             <aside class="artist-side">
                 <section class="glass artist-side-card">
-                    <h2>Signal</h2>
+                    <h2 id="signalHeading">Signal</h2>
 
                     <div class="stats-list">
                         <div class="stats-row">
@@ -86,10 +77,14 @@
                             <span id="artistRoles" class="stats-value">—</span>
                         </div>
                     </div>
+
+                    <a id="officialWebsiteButton" class="button primary" href="#" target="_blank" rel="noopener noreferrer" hidden>
+                        Official Website
+                    </a>
                 </section>
 
                 <section class="glass artist-side-card">
-                    <h2 id="featuredListenHeading">Featured Listen</h2>
+                    <h2 id="featuredHeading">Featured Listen</h2>
                     <div id="featuredMediaWrap" class="artist-embed-shell">
                         <p class="section-copy">No featured media yet.</p>
                     </div>
@@ -99,30 +94,20 @@
 
         <section class="glass artist-about">
             <div class="section-head">
-                <p class="eyebrow" id="aboutEyebrow">About</p>
-                <h2 id="aboutHeading" class="section-title">Loading...</h2>
+                <p id="aboutEyebrow" class="eyebrow">About</p>
+                <h2 id="aboutHeading" class="section-title">Artist</h2>
             </div>
 
-            <div class="artist-about-layout">
-                <div id="artistBioWrap" class="artist-about-copy">
-                    <p class="section-copy">No bio yet.</p>
-                </div>
-
-                <div class="artist-about-visual">
-                    <img
-                            id="artistAboutVisual"
-                            src="/static/logos/sse.png"
-                            alt="Artist visual"
-                    >
-                </div>
+            <div id="artistBioWrap">
+                <p class="section-copy">No bio yet.</p>
             </div>
         </section>
 
         <section class="artist-media">
             <article class="glass spotify-wide">
                 <div class="section-head">
-                    <p class="eyebrow">Featured Stream</p>
-                    <h2 class="section-title">Listen In Full</h2>
+                    <p id="spotifyEyebrow" class="eyebrow">Featured Stream</p>
+                    <h2 id="spotifyHeading" class="section-title">Listen In Full</h2>
                 </div>
                 <div id="spotifyEmbedWrap">
                     <p class="section-copy">No Spotify embed yet.</p>
@@ -132,7 +117,7 @@
             <div class="video-grid">
                 <article class="glass video-card">
                     <div class="section-head">
-                        <p class="eyebrow" id="video2Eyebrow">Video One</p>
+                        <p id="video2Eyebrow" class="eyebrow">Video One</p>
                         <h2 id="video2Title" class="section-title">Visual Feature</h2>
                     </div>
                     <div id="video2EmbedWrap">
@@ -142,7 +127,7 @@
 
                 <article class="glass video-card">
                     <div class="section-head">
-                        <p class="eyebrow" id="video3Eyebrow">Video Two</p>
+                        <p id="video3Eyebrow" class="eyebrow">Video Two</p>
                         <h2 id="video3Title" class="section-title">Second Feature</h2>
                     </div>
                     <div id="video3EmbedWrap">
@@ -214,6 +199,7 @@
     </main>
 </div>
 
+<link rel="stylesheet" href="/static/css/auth.css" />
 <div id="signin-modal-container"></div>
 <script src="/static/js/partials.js"></script>
 <script>

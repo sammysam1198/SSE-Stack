@@ -43,6 +43,31 @@ function setImage(id, src, fallback, altText) {
     el.alt = altText || "Artist image";
 }
 
+function setLinkTile(id, url) {
+    const el = document.getElementById(id);
+    if (!el) return;
+
+    if ((url || "").trim()) {
+        el.href = url.trim();
+        el.hidden = false;
+    } else {
+        el.hidden = true;
+    }
+}
+
+function setOfficialWebsite(profile) {
+    const button = document.getElementById("officialWebsiteButton");
+    if (!button) return;
+
+    const url = (profile.website_url || "").trim();
+    if (url) {
+        button.href = url;
+        button.hidden = false;
+    } else {
+        button.hidden = true;
+    }
+}
+
 function buildGenreLine(profile) {
     return [
         profile.primary_genre,
@@ -98,28 +123,17 @@ function setBioParagraphs(profile) {
         .join("");
 }
 
-function setLinkTile(id, url) {
-    const el = document.getElementById(id);
-    if (!el) return;
-
-    if ((url || "").trim()) {
-        el.href = url.trim();
-        el.hidden = false;
-    } else {
-        el.hidden = true;
-    }
-}
-
 function applyArtistProfile(profile) {
     const artistName = (profile.artist_name || "Artist").trim();
     const portraitUrl = resolveAssetUrl(profile.profile_portrait_key);
     const logoUrl = resolveAssetUrl(profile.artist_logo_key);
+    const displayImage = portraitUrl || logoUrl || "/static/logos/sse.png";
 
     document.title = `${artistName} | SpacedOut Studios`;
 
     const pageDescription = document.getElementById("pageDescription");
     if (pageDescription) {
-        pageDescription.content = `${artistName} on SpacedOut Studios. ${buildGenreLine(profile)}. ${profile.tagline || ""}`.trim();
+        pageDescription.content = `${artistName} on SpacedOut Studios. ${buildGenreLine(profile)}.`.trim();
     }
 
     setText("artistName", artistName, "Artist");
@@ -131,26 +145,9 @@ function applyArtistProfile(profile) {
 
     setText("aboutEyebrow", `About ${artistName}`, "About");
     setText("aboutHeading", artistName, artistName);
-    setText("featuredListenHeading", `${artistName} Featured Watch`, "Featured Listen");
     setText("platformCopy", `Direct access to ${artistName} across platforms.`, "Direct access across platforms.");
-    setText("video2Eyebrow", artistName, artistName);
-    setText("video3Eyebrow", artistName, artistName);
-    setText("video2Title", profile.video2_name, "Visual Feature");
-    setText("video3Title", profile.video3_name, "Second Feature");
 
-    setImage(
-        "artistBaseArt",
-        portraitUrl || logoUrl,
-        "/static/logos/sse.png",
-        artistName
-    );
-
-    setImage(
-        "artistAboutVisual",
-        logoUrl || portraitUrl,
-        "/static/logos/sse.png",
-        artistName
-    );
+    setImage("artistBaseArt", displayImage, "/static/logos/sse.png", artistName);
 
     setBioParagraphs(profile);
 
@@ -177,6 +174,12 @@ function applyArtistProfile(profile) {
         profile.video3_embed,
         '<p class="section-copy">No third video yet.</p>'
     );
+
+    setText("featuredHeading", profile.featured_video_name || "Featured Listen", "Featured Listen");
+    setText("video2Title", profile.video2_name, "Visual Feature");
+    setText("video3Title", profile.video3_name, "Second Feature");
+
+    setOfficialWebsite(profile);
 
     setLinkTile("spotifyTile", profile.spotify_url);
     setLinkTile("youtubeTile", profile.youtube_channel_url);
