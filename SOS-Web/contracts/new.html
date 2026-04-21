@@ -9,6 +9,7 @@
     <link rel="stylesheet" href="/static/css/header.css" />
     <link rel="stylesheet" href="/static/css/auth.css" />
     <link rel="stylesheet" href="/static/css/dashboard.css" />
+    <link rel="stylesheet" href="/static/css/contracts.css" />
     <link rel="icon" type="image/png" href="/favicon.png">
 </head>
 <body>
@@ -16,97 +17,68 @@
     <div class="dashboard-site-header__inner">
         <nav class="dashboard-site-nav">
             <a href="/">Home</a>
-            <a href="/artists">Artists</a>
-            <a href="/submissions">Apply</a>
-            <a href="/contact">Contact</a>
-            <a href="/dashboard-artist" class="dashboard-site-nav__dashboard-link">Dashboard</a>
+            <a href="/dashboard-admin">Admin</a>
+            <a href="/dashboard-developer">Developer</a>
+            <a href="/contracts/list" class="dashboard-site-nav__dashboard-link">Documents</a>
         </nav>
-
-        <div class="dashboard-site-header__actions">
-            <div class="artist-profile-menu" id="artist-profile-menu">
-                <button
-                        class="artist-profile-menu__trigger"
-                        id="artist-profile-trigger"
-                        type="button"
-                        aria-haspopup="true"
-                        aria-expanded="false"
-                >
-                    <img
-                            src="/static/logos/sse.png"
-                            alt="Profile picture"
-                            class="artist-profile-menu__avatar"
-                            id="artist-profile-avatar"
-                    />
-                </button>
-
-                <div class="artist-profile-menu__dropdown" id="artist-profile-dropdown">
-                    <div class="artist-profile-menu__section">
-                        <p class="artist-profile-menu__label">Account</p>
-                        <button type="button" class="artist-profile-menu__item">Edit Profile Picture</button>
-                        <button type="button" class="artist-profile-menu__item">Edit Artist Page</button>
-                        <button type="button" class="artist-profile-menu__item">Account Settings</button>
-                    </div>
-
-                    <div class="artist-profile-menu__section">
-                        <p class="artist-profile-menu__label">Security</p>
-                        <button type="button" class="artist-profile-menu__item">Change Password</button>
-                        <button type="button" class="artist-profile-menu__item">Change Email</button>
-                        <button type="button" class="artist-profile-menu__item">Change Username</button>
-                    </div>
-                </div>
-            </div>
-
-            <button class="artist-signout-button" id="artist-signout-button" type="button">
-                Sign Out
-            </button>
-        </div>
     </div>
 </header>
 
-<main class="page-shell">
-    <div class="page-shell__header">
-        <p class="eyebrow">Documents</p>
+<main class="contracts-shell">
+    <section class="contracts-hero">
+        <p class="contracts-eyebrow">Documents</p>
         <h1>New Contract</h1>
-        <p class="page-description">Create, edit, save, and send a contract.</p>
-    </div>
+        <p class="contracts-subtitle">
+            Create, edit, save, and send publishing or distribution contracts.
+        </p>
+    </section>
 
-    <form id="contract-form" class="glass-card" style="padding: 1.25rem; display:grid; gap:1rem;">
-        <label>
-            Artist
-            <select id="contract-artist" required></select>
-        </label>
+    <section class="contracts-editor-card">
+        <form id="contract-form" class="contracts-form">
+            <div class="contracts-grid">
+                <label>
+                    <span>Artist</span>
+                    <select id="contract-artist" required></select>
+                </label>
 
-        <label>
-            Contract Type
-            <select id="contract-type" required>
-                <option value="publishing">Publishing</option>
-                <option value="distribution">Distribution</option>
-            </select>
-        </label>
+                <label>
+                    <span>Contract Type</span>
+                    <select id="contract-type" required>
+                        <option value="publishing">Publishing</option>
+                        <option value="distribution">Distribution</option>
+                    </select>
+                </label>
 
-        <label>
-            Recipient Emails
-            <input id="contract-emails" type="text" placeholder="comma,separated@example.com" />
-        </label>
+                <label class="contracts-grid__full">
+                    <span>Recipient Emails</span>
+                    <input id="contract-emails" type="text" placeholder="comma,separated@example.com" />
+                </label>
 
-        <label>
-            Notes
-            <input id="contract-notes" type="text" />
-        </label>
+                <label class="contracts-grid__full">
+                    <span>Notes</span>
+                    <input id="contract-notes" type="text" placeholder="Optional internal notes" />
+                </label>
 
-        <label>
-            Contract Body
-            <textarea id="contract-body" rows="22" required></textarea>
-        </label>
+                <label class="contracts-grid__full">
+                    <span>Contract Body</span>
+                    <textarea id="contract-body" rows="24" required></textarea>
+                </label>
+            </div>
 
-        <div style="display:flex; gap:.75rem; flex-wrap:wrap;">
-            <button type="submit" id="save-draft-button" class="release-btn secondary">Save Draft</button>
-            <button type="button" id="save-send-button" class="release-btn primary">Save and Send</button>
-        </div>
+            <div class="contracts-actions">
+                <button type="submit" id="save-draft-button" class="release-btn secondary">
+                    Save Draft
+                </button>
 
-        <div id="contract-error" style="color:#ff9fb7;"></div>
-        <div id="contract-success" style="color:#9fffc8;"></div>
-    </form>
+                <button type="button" id="save-send-button" class="release-btn primary">
+                    Save and Send
+                </button>
+            </div>
+
+            <div id="contract-error" class="contracts-error"></div>
+            <div id="contract-success" class="contracts-success"></div>
+        </form>
+    </section>
 </main>
 
 <script src="/static/js/api.js"></script>
