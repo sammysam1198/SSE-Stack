@@ -670,18 +670,6 @@ document.addEventListener("DOMContentLoaded", async () => {
         }
     });
 
-    addArtistButton?.addEventListener("click", () => {
-        clearMessages();
-
-        const currentCards = document.querySelectorAll(".artist-card").length;
-        if (currentCards >= 5) {
-            errorBox.textContent = "You can add up to 5 artists for now.";
-            return;
-        }
-
-        buildArtistCard({}, { isMain: false, collapsed: false });
-    });
-
     addTrackButton?.addEventListener("click", () => {
         clearMessages();
         buildTrackCard();
@@ -751,6 +739,8 @@ document.addEventListener("DOMContentLoaded", async () => {
     });
 
     try {
+        await loadSavedArtistLibrary();
+
         await loadMainArtist();
         buildTrackCard();
     } catch (error) {
