@@ -10,7 +10,6 @@ document.addEventListener("DOMContentLoaded", async () => {
     const errorEl = document.getElementById("contract-error");
     const successEl = document.getElementById("contract-success");
 
-    const downloadDocx = document.getElementById("download-unsigned-docx");
     const downloadPdf = document.getElementById("download-unsigned-pdf");
     const downloadSigned = document.getElementById("download-signed-pdf");
 
@@ -34,7 +33,10 @@ document.addEventListener("DOMContentLoaded", async () => {
 
         titleEl.textContent = contract.title || "Contract";
         metaEl.textContent = `${contract.artist_name || "Artist"} • ${contract.contract_type || "contract"}`;
-        statusLineEl.textContent = `Status: ${contract.status || "draft"}`;
+
+        statusLineEl.innerHTML = `
+            <span class="contracts-pill">Status: ${contract.status || "draft"}</span>
+        `;
 
         recipientsEl.innerHTML = recipients.length
             ? recipients.map((recipient) => `<div>${recipient.email}</div>`).join("")
@@ -42,7 +44,6 @@ document.addEventListener("DOMContentLoaded", async () => {
 
         bodyEl.textContent = contract.body_text || "";
 
-        downloadDocx.href = `${API_BASE}/api/contracts/${contractId}/download/unsigned-docx`;
         downloadPdf.href = `${API_BASE}/api/contracts/${contractId}/download/unsigned-pdf`;
 
         if (contract.signed_object_key) {
