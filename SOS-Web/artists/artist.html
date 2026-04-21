@@ -1,198 +1,216 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Artist | SpacedOut Studios</title>
+    <title id="pageTitle">Artist | SpacedOut Studios</title>
+    <meta
+            id="pageDescription"
+            name="description"
+            content="Artist page on SpacedOut Studios."
+    />
 
     <link rel="stylesheet" href="/static/css/base.css" />
     <link rel="stylesheet" href="/static/css/header.css" />
     <link rel="stylesheet" href="/static/css/social_grid.css" />
-    <link rel="stylesheet" href="/static/css/auth.css" />
-    <link rel="stylesheet" href="/static/css/artist-template.css" />
+    <link rel="stylesheet" href="/static/css/artist.css" />
 </head>
 <body>
-<header class="site-header">
-    <div class="header-shell">
-        <a class="brand" href="/">
-            <span class="brand-orb" aria-hidden="true"></span>
-            <div class="brand-copy">
-                <p class="brand-title">SpacedOut Studios</p>
-                <p class="brand-subtitle">Independent Record Label</p>
+<div class="site-wrap">
+    <header class="site-header">
+        <div class="container">
+            <a class="brand" href="/">
+                <span class="brand-orb" aria-hidden="true"></span>
+                <div class="brand-copy">
+                    <p class="display brand-title">SpacedOut Studios</p>
+                    <p class="brand-subtitle">Independent Record Label</p>
+                </div>
+            </a>
+
+            <nav class="nav">
+                <a href="/">Home</a>
+                <a href="/coming_soon">About</a>
+                <a href="/artists" class="active">Artists</a>
+                <a href="/coming_soon">Playlists</a>
+                <a href="/submissions">Submissions</a>
+                <a href="/coming_soon">Contact</a>
+            </nav>
+            <div id="auth-slot"></div>
+        </div>
+    </header>
+
+    <main class="page-shell artist-page">
+        <section class="artist-hero">
+            <article class="artist-image-card">
+                <img id="artistBaseArt" class="artist-base-art" src="/static/logos/sse.png" alt="Artist" />
+                <div class="motion-layer motion-cyan"></div>
+                <div class="motion-layer motion-magenta"></div>
+                <div class="artist-image-overlay">
+                    <h1 id="artistName" class="display artist-name">Loading...</h1>
+                    <p id="artistTagline" class="artist-tagline">Loading artist profile...</p>
+                    <p id="artistShortCopy" class="artist-short-copy">
+                        Please wait while the artist page loads.
+                    </p>
+                </div>
+            </article>
+
+            <aside class="artist-side">
+                <section class="glass artist-side-card">
+                    <h2 id="signalHeading">Signal</h2>
+
+                    <div class="stats-list">
+                        <div class="stats-row">
+                            <span class="stats-label">Location</span>
+                            <span id="artistLocation" class="stats-value">—</span>
+                        </div>
+
+                        <div class="stats-row">
+                            <span class="stats-label">Genres</span>
+                            <span id="artistGenres" class="stats-value">—</span>
+                        </div>
+
+                        <div class="stats-row">
+                            <span class="stats-label">Roles</span>
+                            <span id="artistRoles" class="stats-value">—</span>
+                        </div>
+                    </div>
+
+                    <a id="officialWebsiteButton" class="button primary" href="#" target="_blank" rel="noopener noreferrer" hidden>
+                        Official Website
+                    </a>
+                </section>
+
+                <section class="glass artist-side-card">
+                    <h2 id="featuredHeading">Featured Listen</h2>
+                    <div id="featuredMediaWrap" class="artist-embed-shell">
+                        <p class="section-copy">No featured media yet.</p>
+                    </div>
+                </section>
+            </aside>
+        </section>
+
+        <section class="glass artist-about">
+            <div class="section-head">
+                <p id="aboutEyebrow" class="eyebrow">About</p>
+                <h2 id="aboutHeading" class="section-title">Artist</h2>
             </div>
-        </a>
 
-        <nav class="nav" aria-label="Main navigation">
-            <a href="/">Home</a>
-            <a href="/artists" class="active">Artists</a>
-            <a href="/coming_soon">About</a>
-            <a href="/submissions">Apply</a>
-            <a href="/coming_soon">Contact</a>
-        </nav>
+            <div id="artistBioWrap">
+                <p class="section-copy">No bio yet.</p>
+            </div>
+        </section>
 
-        <div id="auth-slot"></div>
-    </div>
-</header>
+        <section class="artist-media">
+            <article class="glass spotify-wide">
+                <div class="section-head">
+                    <p id="spotifyEyebrow" class="eyebrow">Featured Stream</p>
+                    <h2 id="spotifyHeading" class="section-title">Listen In Full</h2>
+                </div>
+                <div id="spotifyEmbedWrap">
+                    <p class="section-copy">No Spotify embed yet.</p>
+                </div>
+            </article>
 
-<main class="artist-page-shell">
-    <section class="artist-hero" id="artist-hero">
-        <div class="artist-hero__overlay"></div>
+            <div class="video-grid">
+                <article class="glass video-card">
+                    <div class="section-head">
+                        <p id="video2Eyebrow" class="eyebrow">Video One</p>
+                        <h2 id="video2Title" class="section-title">Visual Feature</h2>
+                    </div>
+                    <div id="video2EmbedWrap">
+                        <p class="section-copy">No second video yet.</p>
+                    </div>
+                </article>
 
-        <div class="artist-hero__content">
-            <div class="artist-hero__media glass-card">
-                <img
-                        id="artistPortrait"
-                        class="artist-hero__portrait"
-                        src="/static/logos/sse.png"
-                        alt="Artist portrait"
-                />
+                <article class="glass video-card">
+                    <div class="section-head">
+                        <p id="video3Eyebrow" class="eyebrow">Video Two</p>
+                        <h2 id="video3Title" class="section-title">Second Feature</h2>
+                    </div>
+                    <div id="video3EmbedWrap">
+                        <p class="section-copy">No third video yet.</p>
+                    </div>
+                </article>
+            </div>
+        </section>
+
+        <section class="artist-platforms" id="platforms">
+            <div class="section-head">
+                <div>
+                    <p class="eyebrow">Streaming & Socials</p>
+                    <h2 class="section-title">Follow The Sound</h2>
+                    <p id="platformCopy" class="section-copy">
+                        Direct access across platforms.
+                    </p>
+                </div>
             </div>
 
-            <div class="artist-hero__info glass-card">
-                <div class="artist-hero__logo-wrap">
-                    <img
-                            id="artistLogo"
-                            class="artist-hero__logo"
-                            src="/static/logos/sse.png"
-                            alt="Artist logo"
-                    />
-                </div>
+            <div class="music-platform-grid">
+                <a id="spotifyTile" class="music-tile tile-top spotify-tile" href="#" target="_blank" rel="noopener noreferrer" hidden>
+                    <img src="/static/socials/spotify.png" alt="Spotify" class="music-logo">
+                </a>
 
-                <p class="artist-eyebrow">Artist</p>
-                <h1 id="artistName" class="artist-title">Loading artist...</h1>
-                <p id="artistTagline" class="artist-tagline">Please wait...</p>
+                <a id="youtubeTile" class="music-tile tile-top youtube-tile" href="#" target="_blank" rel="noopener noreferrer" hidden>
+                    <img src="/static/socials/youtube%20full.png" alt="YouTube" class="music-logo">
+                </a>
 
-                <div class="artist-meta">
-                    <div class="artist-meta__item">
-                        <span class="artist-meta__label">Location</span>
-                        <span id="artistLocation" class="artist-meta__value">—</span>
-                    </div>
-                    <div class="artist-meta__item">
-                        <span class="artist-meta__label">Vibe</span>
-                        <span id="artistVibe" class="artist-meta__value">—</span>
-                    </div>
-                </div>
+                <a id="instagramTile" class="music-tile tile-top instagram-tile" href="#" target="_blank" rel="noopener noreferrer" hidden>
+                    <img src="/static/socials/instagram.png" alt="Instagram" class="music-logo">
+                </a>
 
-                <div id="artistTagRow" class="artist-tag-row"></div>
+                <a id="soundcloudTile" class="music-tile-small tile-small soundcloud-tile" href="#" target="_blank" rel="noopener noreferrer" hidden>
+                    <img src="/static/socials/soundcloud.png" alt="SoundCloud" class="music-logo">
+                </a>
+
+                <a id="bandcampTile" class="music-tile-small tile-small bandcamp-tile" href="#" target="_blank" rel="noopener noreferrer" hidden>
+                    <img src="/static/socials/bandcamp.png" alt="Bandcamp" class="music-logo">
+                </a>
+
+                <a id="ytmusicTile" class="music-tile-small tile-small ytmusic-tile" href="#" target="_blank" rel="noopener noreferrer" hidden>
+                    <img src="/static/socials/ytmusic.png" alt="YouTube Music" class="music-logo">
+                </a>
+
+                <a id="threadsTile" class="music-tile-small tile-small threads-tile" href="#" target="_blank" rel="noopener noreferrer" hidden>
+                    <img src="/static/socials/threads.png" alt="Threads" class="music-logo">
+                </a>
+
+                <a id="tidalTile" class="music-tile-small tile-small tidal-tile" href="#" target="_blank" rel="noopener noreferrer" hidden>
+                    <img src="/static/socials/tidal.png" alt="TIDAL" class="music-logo">
+                </a>
+
+                <a id="appleTile" class="music-tile-small tile-small apple-tile" href="#" target="_blank" rel="noopener noreferrer" hidden>
+                    <img src="/static/socials/apple.png" alt="Apple Music" class="music-logo">
+                </a>
             </div>
-        </div>
-    </section>
+        </section>
 
-    <section class="artist-section">
-        <div class="artist-grid artist-grid--two">
-            <article class="glass-card artist-card">
-                <h2>About</h2>
-                <p id="artistBio" class="artist-copy">
-                    Loading bio...
-                </p>
-            </article>
-
-            <article class="glass-card artist-card">
-                <h2>Quick Info</h2>
-                <div class="quick-info-list">
-                    <div class="quick-info-row">
-                        <span>Primary Genre</span>
-                        <span id="artistPrimaryGenre">—</span>
-                    </div>
-                    <div class="quick-info-row">
-                        <span>Primary Role</span>
-                        <span id="artistPrimaryRole">—</span>
-                    </div>
-                    <div class="quick-info-row">
-                        <span>Publisher</span>
-                        <span id="artistPublisher">—</span>
-                    </div>
-                    <div class="quick-info-row">
-                        <span>Artist Page</span>
-                        <span id="artistSlug">—</span>
-                    </div>
-                </div>
-            </article>
-        </div>
-    </section>
-
-    <section class="artist-section">
-        <div class="artist-grid artist-grid--two">
-            <article class="glass-card artist-card">
-                <h2>Featured Music</h2>
-                <div id="spotifyEmbedWrap" class="embed-wrap embed-wrap--empty">
-                    <p class="embed-empty">No Spotify embed yet.</p>
-                </div>
-            </article>
-
-            <article class="glass-card artist-card">
-                <h2>Featured Video</h2>
-                <div id="featuredVideoWrap" class="embed-wrap embed-wrap--empty">
-                    <p class="embed-empty">No featured video yet.</p>
-                </div>
-            </article>
-        </div>
-    </section>
-
-    <section class="artist-section">
-        <div class="artist-grid artist-grid--two">
-            <article class="glass-card artist-card">
-                <h2 id="video2Title">Video 2</h2>
-                <div id="video2Wrap" class="embed-wrap embed-wrap--empty">
-                    <p class="embed-empty">No second video yet.</p>
-                </div>
-            </article>
-
-            <article class="glass-card artist-card">
-                <h2 id="video3Title">Video 3</h2>
-                <div id="video3Wrap" class="embed-wrap embed-wrap--empty">
-                    <p class="embed-empty">No third video yet.</p>
-                </div>
-            </article>
-        </div>
-    </section>
-
-    <section class="artist-section">
-        <article class="glass-card artist-card">
-            <h2>Links</h2>
-            <div id="artistLinks" class="artist-links-grid"></div>
-        </article>
-    </section>
-
-    <section class="artist-section">
-        <article class="glass-card artist-card" id="artistErrorCard" hidden>
-            <h2>Artist Not Found</h2>
-            <p id="artistErrorText" class="artist-copy">
+        <section id="artistErrorSection" class="glass artist-about" hidden>
+            <div class="section-head">
+                <p class="eyebrow">Artist Page</p>
+                <h2 class="section-title">Artist Not Found</h2>
+            </div>
+            <p id="artistErrorText" class="section-copy">
                 We could not load this artist page.
             </p>
-        </article>
-    </section>
-</main>
-
-<div class="signin-modal" id="signin-modal" aria-hidden="true">
-    <div class="signin-panel">
-        <h2>Sign In</h2>
-        <p>Access your SpacedOut Studios account.</p>
-
-        <form class="signin-form" id="signin-form">
-            <label>
-                Email
-                <input type="email" name="email" required />
-            </label>
-
-            <label>
-                Password
-                <input type="password" name="password" required />
-            </label>
-
-            <div class="signin-error" id="signin-error"></div>
-
-            <div class="signin-actions">
-                <button class="signin-cancel" type="button" data-close-signin>Cancel</button>
-                <button class="signin-submit" type="submit">Sign In</button>
-            </div>
-        </form>
-    </div>
+        </section>
+    </main>
 </div>
+
+<link rel="stylesheet" href="/static/css/auth.css" />
+<div id="signin-modal-container"></div>
+<script src="/static/js/partials.js"></script>
+<script>
+    loadPartial("signin-modal-container", "/static/partials/signin_modal.html");
+</script>
 
 <script src="/static/js/api.js"></script>
 <script src="/static/js/auth.js"></script>
 <script src="/static/js/header_auth.js"></script>
+<script src="/static/js/artist.js"></script>
+<script src="/static/js/artist_motion.js"></script>
 <script src="/static/js/artist-template.js"></script>
 </body>
 </html>
