@@ -1,4 +1,4 @@
-from db import fetch_all, fetch_one, execute_write
+from config.db import fetch_all, fetch_one, execute_write
 
 
 def list_contract_artists():
