@@ -7,14 +7,14 @@ def list_contract_artists():
             ap.id,
             ap.artist_name,
             ap.artist_page,
-            ARRAY_REMOVE(ARRAY_AGG(DISTINCT u.email), NULL) AS emails
+            CASE
+                WHEN u.email IS NOT NULL THEN ARRAY[u.email]
+                ELSE ARRAY[]::TEXT[]
+            END AS emails
         FROM artist_profiles ap
-        LEFT JOIN artist_profile_assignments apa
-            ON apa.artist_profile_id = ap.id
-           AND apa.is_active = TRUE
         LEFT JOIN users u
-            ON u.id = apa.user_id
-        GROUP BY ap.id, ap.artist_name, ap.artist_page
+            ON u.id = ap.user_id
+        WHERE COALESCE(TRIM(ap.artist_name), '') <> ''
         ORDER BY LOWER(ap.artist_name) ASC
     """
     return fetch_all(query)

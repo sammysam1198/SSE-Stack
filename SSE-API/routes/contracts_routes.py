@@ -1,6 +1,8 @@
 from io import BytesIO
+import os
+import traceback
 from flask import Blueprint, jsonify, request, send_file
-from utils.mail_utils import send_contract_email
+from utils.mail_utils import send_contract_ready_email
 from repos.contracts_repo import (
     add_contract_recipient,
     create_contract,
@@ -22,6 +24,7 @@ from utils.r2_utils import (
 )
 
 contracts_bp = Blueprint("contracts", __name__)
+FRONTEND_ORIGIN = os.getenv("FRONTEND_ORIGIN", "https://www.spacedoutstudiosent.com")
 
 
 def _require_logged_in_user():
@@ -48,9 +51,13 @@ def get_contract_artists():
     if error:
         return error
 
-    artists = list_contract_artists()
-    return jsonify({"artists": artists}), 200
-
+    try:
+        artists = list_contract_artists()
+        return jsonify({"artists": artists}), 200
+    except Exception as exc:
+        print("[contracts/artists] failed:", repr(exc))
+        traceback.print_exc()
+        return jsonify({"error": f"Failed to load contract artists: {exc}"}), 500
 
 @contracts_bp.get("")
 def get_contracts():
@@ -163,13 +170,15 @@ def create_new_contract():
             if str(email or "").strip()
         ]
 
-        send_contract_email(
-            recipient_emails=cleaned_recipient_emails,
-            artist_name=artist_name,
-            contract_type=contract_type,
-            pdf_bytes=pdf_bytes,
-            filename=object_keys["pdf"].split("/")[-1],
-        )
+        contract_view_url = f"{FRONTEND_ORIGIN}/contracts/view?id={contract['id']}"
+
+        for email in cleaned_recipient_emails:
+            send_contract_ready_email(
+                to_email=email,
+                artist_name=artist_name,
+                contract_type=contract_type,
+                contract_view_url=contract_view_url,
+            )
 
     return jsonify({
         "message": "Contract created successfully.",
