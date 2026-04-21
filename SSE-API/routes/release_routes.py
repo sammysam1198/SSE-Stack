@@ -13,6 +13,7 @@ from utils.mail_utils import send_release_approved_email
 from repos.releases_repo import (
     create_release_draft,
     get_release_artists,
+    get_release_tracks,
     get_release_by_id,
     list_all_releases,
     list_releases_for_creator,
@@ -288,8 +289,8 @@ def list_releases():
         releases = list_releases_for_creator(_current_user_id())
 
     for release in releases:
-        artists = get_release_artists(release["id"])
-        release["artists"] = artists
+        release["artists"] = get_release_artists(release["id"])
+        release["tracks"] = get_release_tracks(release["id"])
 
     return jsonify({"releases": releases}), 200
 
