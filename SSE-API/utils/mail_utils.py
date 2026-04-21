@@ -304,4 +304,5 @@ def send_contract_ready_email(
     </div>
     """
 
+    print("[mail] send_contract_ready_email ->", to_email, subject)
     return send_email(to_email, subject, html)

@@ -95,93 +95,112 @@ def create_new_contract():
     if error:
         return error
 
-    data = request.get_json(silent=True) or {}
+    try:
+        data = request.get_json(silent=True) or {}
 
-    artist_profile_id = data.get("artist_profile_id")
-    contract_type = (data.get("contract_type") or "").strip().lower()
-    artist_name = (data.get("artist_name") or "").strip()
-    body_text = (data.get("body_text") or "").strip()
-    notes = (data.get("notes") or "").strip()
-    send_now = bool(data.get("send_now"))
-    recipient_emails = data.get("recipient_emails") or []
+        artist_profile_id = data.get("artist_profile_id")
+        contract_type = (data.get("contract_type") or "").strip().lower()
+        artist_name = (data.get("artist_name") or "").strip()
+        body_text = (data.get("body_text") or "").strip()
+        notes = (data.get("notes") or "").strip()
+        send_now = bool(data.get("send_now"))
+        recipient_emails = data.get("recipient_emails") or []
 
-    if not artist_profile_id:
-        return jsonify({"error": "artist_profile_id is required."}), 400
+        if not artist_profile_id:
+            return jsonify({"error": "artist_profile_id is required."}), 400
 
-    if contract_type not in {"publishing", "distribution"}:
-        return jsonify({"error": "contract_type must be publishing or distribution."}), 400
+        if contract_type not in {"publishing", "distribution"}:
+            return jsonify({"error": "contract_type must be publishing or distribution."}), 400
 
-    if not artist_name:
-        return jsonify({"error": "artist_name is required."}), 400
+        if not artist_name:
+            return jsonify({"error": "artist_name is required."}), 400
 
-    if not body_text:
-        return jsonify({"error": "Contract body is required."}), 400
+        if not body_text:
+            return jsonify({"error": "Contract body is required."}), 400
 
-    title = f"{artist_name} {contract_type.title()} Contract"
+        title = f"{artist_name} {contract_type.title()} Contract"
 
-    object_keys = build_contract_object_keys(artist_name, contract_type)
+        print("[contracts] building object keys")
+        object_keys = build_contract_object_keys(artist_name, contract_type)
 
-    docx_bytes = build_docx_bytes(title, body_text)
-    pdf_bytes = build_pdf_bytes(title, body_text)
+        print("[contracts] building docx bytes")
+        docx_bytes = build_docx_bytes(title, body_text)
 
-    upload_bytes_to_r2(
-        data=docx_bytes,
-        object_key=object_keys["docx"],
-        content_type="application/vnd.openxmlformats-officedocument.wordprocessingml.document",
-        content_disposition=f'attachment; filename="{object_keys["docx"].split("/")[-1]}"',
-    )
+        print("[contracts] building pdf bytes")
+        pdf_bytes = build_pdf_bytes(title, body_text)
 
-    upload_bytes_to_r2(
-        data=pdf_bytes,
-        object_key=object_keys["pdf"],
-        content_type="application/pdf",
-        content_disposition=f'attachment; filename="{object_keys["pdf"].split("/")[-1]}"',
-    )
-
-    contract = create_contract(
-        artist_profile_id=artist_profile_id,
-        contract_type=contract_type,
-        title=title,
-        status="sent" if send_now else "draft",
-        template_object_key=None,
-        unsigned_docx_object_key=object_keys["docx"],
-        unsigned_pdf_object_key=object_keys["pdf"],
-        signed_object_key=object_keys["signed"],
-        body_text=body_text,
-        notes=notes or None,
-        created_by_user_id=user["user_id"],
-    )
-
-    cleaned_recipient_emails = []
-    for email in recipient_emails:
-        cleaned = str(email or "").strip()
-        if cleaned:
-            cleaned_recipient_emails.append(cleaned)
-            add_contract_recipient(contract["id"], cleaned)
-
-    if send_now:
-        update_contract_status_and_files(
-            contract_id=contract["id"],
-            status="sent",
-            sent=True,
+        print("[contracts] uploading docx to r2:", object_keys["docx"])
+        upload_bytes_to_r2(
+            data=docx_bytes,
+            object_key=object_keys["docx"],
+            content_type="application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+            content_disposition=f'attachment; filename="{object_keys["docx"].split("/")[-1]}"',
         )
 
-        contract_view_url = f"{FRONTEND_BASE_URL}/contracts/view.html?id={contract['id']}"
+        print("[contracts] uploading pdf to r2:", object_keys["pdf"])
+        upload_bytes_to_r2(
+            data=pdf_bytes,
+            object_key=object_keys["pdf"],
+            content_type="application/pdf",
+            content_disposition=f'attachment; filename="{object_keys["pdf"].split("/")[-1]}"',
+        )
 
-        for email in cleaned_recipient_emails:
-            send_contract_ready_email(
-                to_email=email,
-                artist_name=artist_name,
-                contract_type=contract_type,
-                contract_view_url=contract_view_url,
+        print("[contracts] creating contract row")
+        contract = create_contract(
+            artist_profile_id=artist_profile_id,
+            contract_type=contract_type,
+            title=title,
+            status="sent" if send_now else "draft",
+            template_object_key=None,
+            unsigned_docx_object_key=object_keys["docx"],
+            unsigned_pdf_object_key=object_keys["pdf"],
+            signed_object_key=object_keys["signed"],
+            body_text=body_text,
+            notes=notes or None,
+            created_by_user_id=user["user_id"],
+        )
+
+        cleaned_recipient_emails = []
+        for email in recipient_emails:
+            cleaned = str(email or "").strip()
+            if cleaned:
+                cleaned_recipient_emails.append(cleaned)
+                add_contract_recipient(contract["id"], cleaned)
+
+        if send_now:
+            print("[contracts] marking sent")
+            update_contract_status_and_files(
+                contract_id=contract["id"],
+                status="sent",
+                sent=True,
             )
 
-    return jsonify({
-        "message": "Contract created successfully.",
-        "contract": contract,
-        "object_keys": object_keys,
-    }), 201
+            contract_view_url = f"{FRONTEND_ORIGIN}/contracts/view?id={contract['id']}"
+            print("[contracts] contract_view_url:", contract_view_url)
+            print("[contracts] recipients:", cleaned_recipient_emails)
 
+            for email in cleaned_recipient_emails:
+                print("[contracts] sending email to:", email)
+                send_contract_ready_email(
+                    to_email=email,
+                    artist_name=artist_name,
+                    contract_type=contract_type,
+                    contract_view_url=contract_view_url,
+                )
+
+        return jsonify({
+            "message": "Contract created successfully.",
+            "contract": contract,
+            "object_keys": object_keys,
+        }), 201
+
+    except Exception as exc:
+        print("[contracts] create_new_contract failed:", repr(exc))
+        traceback.print_exc()
+        return jsonify({
+            "error": "Failed to create/send contract.",
+            "details": str(exc),
+        }), 500
 
 @contracts_bp.post("/<int:contract_id>/upload-signed")
 def upload_signed_contract(contract_id: int):
