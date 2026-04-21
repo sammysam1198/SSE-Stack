@@ -8,3 +8,4 @@ resend
 reportlab
 boto3
 pillow
+python-docx
