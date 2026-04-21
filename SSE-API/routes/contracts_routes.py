@@ -1,7 +1,6 @@
 from io import BytesIO
-
 from flask import Blueprint, jsonify, request, send_file
-
+from utils.mail_utils import send_contract_email
 from repos.contracts_repo import (
     add_contract_recipient,
     create_contract,
@@ -72,6 +71,9 @@ def get_contract(contract_id: int):
     contract = get_contract_by_id(contract_id)
     if not contract:
         return jsonify({"error": "Contract not found."}), 404
+
+    if user["role"] not in {"admin", "developer"}:
+        return jsonify({"error": "Forbidden."}), 403
 
     recipients = list_contract_recipients(contract_id)
     return jsonify({
@@ -154,8 +156,20 @@ def create_new_contract():
             status="sent",
             sent=True,
         )
-        # hook your actual mail utility here
-        # send_contract_email(...)
+
+        cleaned_recipient_emails = [
+            str(email or "").strip()
+            for email in recipient_emails
+            if str(email or "").strip()
+        ]
+
+        send_contract_email(
+            recipient_emails=cleaned_recipient_emails,
+            artist_name=artist_name,
+            contract_type=contract_type,
+            pdf_bytes=pdf_bytes,
+            filename=object_keys["pdf"].split("/")[-1],
+        )
 
     return jsonify({
         "message": "Contract created successfully.",
@@ -271,3 +285,4 @@ def download_signed_pdf(contract_id: int):
         download_name=filename,
         mimetype="application/pdf",
     )
+
