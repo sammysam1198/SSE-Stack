@@ -262,13 +262,11 @@ def send_release_approved_email(
     return send_email(to_email, subject, html)
 
 
-def send_contract_email(
-    *,
+def send_contract_ready_email(
     to_email: str,
     artist_name: str,
     contract_type: str,
-    pdf_bytes: bytes,
-    filename: str,
+    contract_view_url: str,
 ):
     subject = f"{contract_type.title()} Contract for {artist_name}"
 
@@ -277,8 +275,17 @@ def send_contract_email(
         <p>Hi {escape(artist_name)},</p>
 
         <p>
-            This is SpacedOut Studios. Attached is your
-            <strong>{escape(contract_type.title())} Contract</strong>.
+            This is SpacedOut Studios. Your
+            <strong>{escape(contract_type.title())} Contract</strong>
+            is ready for review.
+        </p>
+
+        <p>
+            You can view and download it here:
+        </p>
+
+        <p>
+            <a href="{escape(contract_view_url)}">{escape(contract_view_url)}</a>
         </p>
 
         <p>
@@ -297,15 +304,4 @@ def send_contract_email(
     </div>
     """
 
-    return send_email(
-        to_email,
-        subject,
-        html,
-        attachments=[
-            {
-            "filename": filename,
-                "content": pdf_bytes,
-                "content_type": "application/pdf",
-            }
-        ],
-    )
+    return send_email(to_email, subject, html)

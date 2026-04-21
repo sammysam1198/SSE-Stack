@@ -171,7 +171,7 @@ def create_artist_user():
         expires_at=expires_at,
     )
 
-    frontend_base = os.getenv("FRONTEND_ORIGIN")
+    frontend_base = os.getenv("FRONTEND_ORIGIN", "https://www.spacedoutstudiosent.com")
     if not frontend_base:
         return jsonify({"error": "FRONTEND_ORIGIN is not set."}), 500
 

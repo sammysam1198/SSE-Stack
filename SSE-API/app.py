@@ -25,7 +25,7 @@ def create_app() -> Flask:
     app.config["SESSION_COOKIE_SECURE"] = os.getenv("SESSION_COOKIE_SECURE", "false").lower() == "true"
     app.config["MAX_CONTENT_LENGTH"] = int(os.getenv("MAX_CONTENT_LENGTH", 1024 * 1024 * 500))  # 500 MB
 
-    frontend_origin = os.getenv("FRONTEND_ORIGIN", "http://127.0.0.1:5500")
+    frontend_origin = os.getenv("FRONTEND_ORIGIN", "https://www.spacedoutstudiosent.com")
 
     CORS(
         app,
