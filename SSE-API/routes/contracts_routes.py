@@ -1,5 +1,6 @@
 from io import BytesIO
 import os
+import traceback
 from flask import Blueprint, jsonify, request, send_file
 from utils.mail_utils import send_contract_ready_email
 from repos.contracts_repo import (
@@ -50,9 +51,13 @@ def get_contract_artists():
     if error:
         return error
 
-    artists = list_contract_artists()
-    return jsonify({"artists": artists}), 200
-
+    try:
+        artists = list_contract_artists()
+        return jsonify({"artists": artists}), 200
+    except Exception as exc:
+        print("[contracts/artists] failed:", repr(exc))
+        traceback.print_exc()
+        return jsonify({"error": f"Failed to load contract artists: {exc}"}), 500
 
 @contracts_bp.get("")
 def get_contracts():
