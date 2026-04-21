@@ -8,6 +8,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     const saveSendButton = document.getElementById("save-send-button");
     const errorBox = document.getElementById("contract-error");
     const successBox = document.getElementById("contract-success");
+    const params = new URLSearchParams(window.location.search);
 
     let artists = [];
 
@@ -28,6 +29,17 @@ document.addEventListener("DOMContentLoaded", async () => {
         artistSelect.innerHTML = artists.map((artist) => {
             return `<option value="${artist.id}">${artist.artist_name}</option>`;
         }).join("");
+
+        const prefArtistId = params.get("artist_profile_id");
+        const prefType = params.get("type");
+
+        if (prefArtistId) {
+            artistSelect.value = prefArtistId;
+        }
+
+        if (prefType && ["publishing", "distribution"].includes(prefType)) {
+            contractType.value = prefType;
+        }
 
         const selected = getSelectedArtist();
         if (selected) {

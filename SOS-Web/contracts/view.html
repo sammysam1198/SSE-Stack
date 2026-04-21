@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>View Contract | SpacedOut Studios</title>
+
+    <link rel="stylesheet" href="/static/css/base.css" />
+    <link rel="stylesheet" href="/static/css/header.css" />
+    <link rel="stylesheet" href="/static/css/auth.css" />
+    <link rel="stylesheet" href="/static/css/dashboard.css" />
+    <link rel="icon" type="image/png" href="/favicon.png">
+</head>
+<body>
+<header class="dashboard-site-header">
+    <div class="dashboard-site-header__inner">
+        <nav class="dashboard-site-nav">
+            <a href="/">Home</a>
+            <a href="/contracts/list">Documents</a>
+            <a href="/dashboard-admin">Admin</a>
+            <a href="/dashboard-developer">Developer</a>
+            <a href="/dashboard-artist">Artist Dashboard</a>
+        </nav>
+    </div>
+</header>
+
+<main class="page-shell">
+    <div class="page-shell__header">
+        <p class="eyebrow">Documents</p>
+        <h1 id="contract-title">Contract</h1>
+        <p class="page-description" id="contract-meta">Loading...</p>
+    </div>
+
+    <section class="glass-card" style="padding:1.25rem; display:grid; gap:1rem;">
+        <div id="contract-status-line" style="opacity:.8;"></div>
+
+        <div style="display:flex; gap:.75rem; flex-wrap:wrap;">
+            <a id="download-unsigned-docx" class="release-btn secondary" href="#">Download DOCX</a>
+            <a id="download-unsigned-pdf" class="release-btn secondary" href="#">Download PDF</a>
+            <a id="download-signed-pdf" class="release-btn secondary" href="#" style="display:none;">Download Signed</a>
+        </div>
+
+        <div>
+            <h3 style="margin:0 0 .5rem 0;">Recipients</h3>
+            <div id="contract-recipients"></div>
+        </div>
+
+        <div>
+            <h3 style="margin:0 0 .5rem 0;">Contract Body</h3>
+            <pre id="contract-body" style="white-space:pre-wrap; line-height:1.5; background:rgba(255,255,255,0.04); padding:1rem; border-radius:18px; overflow:auto;"></pre>
+        </div>
+
+        <div>
+            <h3 style="margin:0 0 .5rem 0;">Upload Signed Contract</h3>
+            <label>
+                Signed PDF
+                <input type="file" id="signed-contract-file" accept=".pdf,application/pdf" />
+            </label>
+
+            <div style="margin-top:.75rem;">
+                <button type="button" id="upload-signed-button" class="release-btn primary">Upload Signed Contract</button>
+            </div>
+        </div>
+
+        <div id="contract-error" style="color:#ff9fb7;"></div>
+        <div id="contract-success" style="color:#9fffc8;"></div>
+    </section>
+</main>
+
+<script src="/static/js/api.js"></script>
+<script src="/static/js/auth.js"></script>
+<script src="/static/js/contracts/view.js"></script>
+</body>
+</html>

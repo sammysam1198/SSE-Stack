@@ -116,8 +116,18 @@
 
         <section class="dashboard-grid">
             <article class="dashboard-card">
-                <h3>Applications</h3>
-                <p>Pending artist applications and approval actions will live here.</p>
+                <h3>Contracts</h3>
+                <p>Create and manage publishing and distribution contracts.</p>
+
+                <div class="dashboard-card__actions">
+                    <button type="button" class="release-btn primary" id="open-contract-modal-admin">
+                        New Contract
+                    </button>
+
+                    <a href="/contracts/list" class="release-btn secondary">
+                        View Documents
+                    </a>
+                </div>
             </article>
 
             <article class="dashboard-card">
@@ -362,12 +372,43 @@
         </form>
     </div>
 </div>
+
+<div class="signin-modal" id="contract-create-modal" aria-hidden="true">
+    <div class="signin-panel">
+        <h2>New Contract</h2>
+        <p>Select an artist and contract type.</p>
+
+        <div style="display:grid; gap:1rem;">
+            <label>
+                Artist
+                <select id="contract-modal-artist"></select>
+            </label>
+
+            <label>
+                Contract Type
+                <select id="contract-modal-type">
+                    <option value="publishing">Publishing</option>
+                    <option value="distribution">Distribution</option>
+                </select>
+            </label>
+
+            <div id="contract-modal-error" style="color:#ff9fb7;"></div>
+
+            <div class="signin-actions">
+                <button class="signin-cancel" type="button" id="close-contract-modal-admin">Cancel</button>
+                <button class="signin-submit" type="button" id="continue-contract-modal-admin">Continue</button>
+            </div>
+        </div>
+    </div>
+</div>
+
 <script src="/static/js/api.js"></script>
 <script src="/static/js/auth.js"></script>
 <script src="/static/js/header_auth.js"></script>
 <script src="/static/js/dashboard.js"></script>
 <script src="/static/js/application_review.js"></script>
 <script src="/static/js/invite_artist.js"></script>
+<script src="/static/js/contracts/modal.js"></script>
 
 <script>
     document.addEventListener("DOMContentLoaded", async () => {
