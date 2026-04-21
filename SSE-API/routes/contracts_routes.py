@@ -1,6 +1,7 @@
-from io import BytesIO
 import os
 import traceback
+from io import BytesIO
+from utils.auth_utils import get_current_user
 from flask import Blueprint, jsonify, request, send_file
 from utils.mail_utils import send_contract_ready_email
 from repos.contracts_repo import (
@@ -12,7 +13,6 @@ from repos.contracts_repo import (
     list_contracts,
     update_contract_status_and_files,
 )
-from utils.auth_utils import get_current_user
 from utils.contract_utils import (
     build_contract_object_keys,
     build_docx_bytes,
@@ -146,15 +146,17 @@ def create_new_contract():
         template_object_key=None,
         unsigned_docx_object_key=object_keys["docx"],
         unsigned_pdf_object_key=object_keys["pdf"],
-        signed_object_key=None,
+        signed_object_key=object_keys["signed"],
         body_text=body_text,
         notes=notes or None,
         created_by_user_id=user["user_id"],
     )
 
+    cleaned_recipient_emails = []
     for email in recipient_emails:
         cleaned = str(email or "").strip()
         if cleaned:
+            cleaned_recipient_emails.append(cleaned)
             add_contract_recipient(contract["id"], cleaned)
 
     if send_now:
@@ -164,13 +166,7 @@ def create_new_contract():
             sent=True,
         )
 
-        cleaned_recipient_emails = [
-            str(email or "").strip()
-            for email in recipient_emails
-            if str(email or "").strip()
-        ]
-
-        contract_view_url = f"{FRONTEND_ORIGIN}/contracts/view?id={contract['id']}"
+        contract_view_url = f"{FRONTEND_BASE_URL}/contracts/view.html?id={contract['id']}"
 
         for email in cleaned_recipient_emails:
             send_contract_ready_email(
