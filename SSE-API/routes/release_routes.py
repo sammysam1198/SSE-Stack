@@ -17,6 +17,7 @@ from repos.releases_repo import (
     get_release_by_id,
     list_all_releases,
     list_releases_for_creator,
+    list_saved_release_artists_for_creator,
     update_release_pdf_object_key,
     get_release_package_by_id
 )
@@ -309,6 +310,15 @@ def get_release(submission_id: int):
     release["artists"] = get_release_artists(submission_id)
 
     return jsonify({"release": release}), 200
+
+
+@release_bp.get("/artist-library")
+def get_release_artist_library():
+    if not _require_login():
+        return jsonify({"error": "Unauthorized."}), 401
+
+    artists = list_saved_release_artists_for_creator(_current_user_id())
+    return jsonify({"artists": artists}), 200
 
 
 

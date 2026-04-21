@@ -305,3 +305,34 @@ def get_release_package_by_id(release_id: int):
     release["track_credits"] = get_track_credits_for_release(release_id)
 
     return release
+
+
+def list_saved_release_artists_for_creator(created_by_user_id: int):
+    query = """
+        SELECT DISTINCT ON (
+            LOWER(COALESCE(rsa.email, '')),
+            LOWER(COALESCE(rsa.display_name, ''))
+        )
+            rsa.id,
+            rsa.display_name,
+            rsa.email,
+            rsa.first_name,
+            rsa.last_name,
+            rsa.ipi,
+            rsa.pro,
+            rsa.publisher,
+            rsa.spotify_url,
+            rsa.apple_music_url,
+            rsa.youtube_url,
+            rsa.soundcloud_url
+        FROM release_submission_artists rsa
+        JOIN release_submissions rs
+            ON rs.id = rsa.release_submission_id
+        WHERE rs.created_by_user_id = %s
+          AND COALESCE(TRIM(rsa.display_name), '') <> ''
+        ORDER BY
+            LOWER(COALESCE(rsa.email, '')),
+            LOWER(COALESCE(rsa.display_name, '')),
+            rsa.id DESC
+    """
+    return fetch_all(query, (created_by_user_id,))

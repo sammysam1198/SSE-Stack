@@ -2,6 +2,7 @@ import os
 import resend
 from html import escape
 
+
 resend.api_key = os.getenv("RESEND_API_KEY")
 
 FROM_EMAIL = os.getenv("MAIL_FROM", "SpacedOut Studios <noreply@spacedoutstudiosent.com>")
@@ -259,3 +260,52 @@ def send_release_approved_email(
     """
 
     return send_email(to_email, subject, html)
+
+
+def send_contract_email(
+    *,
+    to_email: str,
+    artist_name: str,
+    contract_type: str,
+    pdf_bytes: bytes,
+    filename: str,
+):
+    subject = f"{contract_type.title()} Contract for {artist_name}"
+
+    html = f"""
+    <div style="font-family:Arial,Helvetica,sans-serif; color:#111; line-height:1.65;">
+        <p>Hi {escape(artist_name)},</p>
+
+        <p>
+            This is SpacedOut Studios. Attached is your
+            <strong>{escape(contract_type.title())} Contract</strong>.
+        </p>
+
+        <p>
+            Please review, sign, and upload the signed version back through your dashboard.
+        </p>
+
+        <p>
+            If you have questions please email chromaglowmusic@gmail.com
+        </p>
+
+        <p style="margin-top:24px;">
+            Thanks,<br><br>
+            Aliem<br>
+            Sammi
+        </p>
+    </div>
+    """
+
+    return send_email(
+        to_email,
+        subject,
+        html,
+        attachments=[
+            {
+            "filename": filename,
+                "content": pdf_bytes,
+                "content_type": "application/pdf",
+            }
+        ],
+    )

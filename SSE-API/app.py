@@ -11,6 +11,7 @@ from routes.request_routes import requests_bp
 from routes.news_routes import news_bp
 from routes.admin_routes import admin_bp
 from routes.dev_routes import dev_bp
+from routes.contracts_routes import contracts_bp
 
 load_dotenv()
 
@@ -48,6 +49,7 @@ def create_app() -> Flask:
     app.register_blueprint(news_bp, url_prefix="/api/news")
     app.register_blueprint(admin_bp, url_prefix="/api/admin")
     app.register_blueprint(dev_bp, url_prefix="/api/dev")
+    app.register_blueprint(contracts_bp,url_prefix="/api/contracts")
 
     @app.get("/")
     def root():
