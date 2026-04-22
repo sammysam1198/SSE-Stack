@@ -3,6 +3,7 @@ import re
 import zipfile
 import io
 from io import BytesIO
+from config.db import execute_write
 from PIL import Image
 from utils.r2_utils import upload_bytes_to_r2, download_bytes_from_r2
 from flask import Blueprint, jsonify, request, session, send_file
@@ -352,7 +353,7 @@ def get_release_artist_library():
     normalized_profiles = []
     for profile in profile_artists:
         normalized_profiles.append({
-            "id": f"profile-{profile['id']}",
+            "id": profile["id"],
             "display_name": profile.get("artist_name"),
             "email": "",
             "first_name": profile.get("first_name"),
@@ -774,25 +775,33 @@ def submit_release(submission_id: int):
     if release.get("status") != "draft":
         return jsonify({"error": "Only draft releases can be submitted."}), 400
 
-    from config.db import execute_write
+    try:
+        execute_write(
+            """
+            UPDATE release_submissions
+            SET
+                status = 'submitted',
+                submitted_at = NOW(),
+                updated_at = NOW()
+            WHERE id = %s
+            """,
+            (submission_id,),
+        )
 
-    execute_write(
-        """
-        UPDATE release_submissions
-        SET status = 'submitted',
-            submitted_at = NOW(),
-            updated_at = NOW()
-        WHERE id = %s
-        """,
-        (submission_id,),
-    )
+        updated = get_release_package_by_id(submission_id)
+        if updated:
+            updated["artists"] = get_release_artists(submission_id)
+            updated["tracks"] = get_release_tracks(submission_id)
 
-    updated = get_release_package_by_id(submission_id)
-    if updated:
-        updated["artists"] = get_release_artists(submission_id)
-        updated["tracks"] = get_release_tracks(submission_id)
+        return jsonify({
+            "message": "Release submitted for review.",
+            "release": updated,
+        }), 200
 
-    return jsonify({
-        "message": "Release submitted for review.",
-        "release": updated,
-    }), 200
+    except Exception as exc:
+        print("SUBMIT RELEASE FAILED:", repr(exc))
+        traceback.print_exc()
+        return jsonify({
+            "error": "Release submit failed.",
+            "details": str(exc),
+        }), 500
