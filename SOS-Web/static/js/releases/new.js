@@ -120,7 +120,11 @@ document.addEventListener("DOMContentLoaded", async () => {
         card.querySelector(".artist-youtube-url").value = selected.youtube_url || "";
         card.querySelector(".artist-soundcloud-url").value = selected.soundcloud_url || "";
 
-        card.dataset.savedFeaturedArtistId = selected.id || "";
+        if (selected.source === "artist_profile") {
+            card.dataset.savedFeaturedArtistId = "";
+        } else {
+            card.dataset.savedFeaturedArtistId = selected.id || "";
+        }
 
         const summaryName = card.querySelector(".artist-summary-name");
         if (summaryName) {
