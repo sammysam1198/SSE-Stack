@@ -1,3 +1,6 @@
+
+window.SSE_ASSET_BASE_URL = "https://pub-4d4f2d565e844d6fb3e84f51d1093198.r2.dev";
+
 function getArtistSlugFromUrl() {
     const params = new URLSearchParams(window.location.search);
     const slugFromQuery = params.get("slug");
@@ -13,15 +16,14 @@ function resolveAssetUrl(value) {
     const raw = (value || "").trim();
     if (!raw) return "";
 
-    if (/^https?:\/\//i.test(raw) || raw.startsWith("/")) {
-        return raw;
-    }
+    // already full URL
+    if (raw.startsWith("http")) return raw;
 
-    if (window.SSE_ASSET_BASE_URL) {
-        return `${window.SSE_ASSET_BASE_URL.replace(/\/+$/, "")}/${raw.replace(/^\/+/, "")}`;
-    }
+    // local fallback
+    if (raw.startsWith("/static")) return raw;
 
-    return raw;
+    // R2 object key
+    return `${window.SSE_ASSET_BASE_URL}/${raw}`;
 }
 
 function setText(id, value, fallback = "—") {
@@ -136,6 +138,15 @@ function applyArtistProfile(profile) {
         pageDescription.content = `${artistName} on SpacedOut Studios. ${buildGenreLine(profile)}.`.trim();
     }
 
+    const aboutVisual = logoUrl || portraitUrl || "/static/logos/sse.png";
+
+    setImage(
+        "artistLogoImage",
+        aboutVisual,
+        "/static/logos/sse.png",
+        `${artistName} logo`
+    );
+
     setText("artistName", artistName, "Artist");
     setText("artistTagline", buildTagline(profile), "Artist");
     setText("artistShortCopy", profile.tagline, "No tagline yet.");
@@ -190,7 +201,11 @@ function applyArtistProfile(profile) {
     setLinkTile("threadsTile", profile.threads_url);
     setLinkTile("tidalTile", profile.tidal_url);
     setLinkTile("appleTile", profile.apple_music_url);
+
+
 }
+
+
 
 function showArtistError(message) {
     const section = document.getElementById("artistErrorSection");
