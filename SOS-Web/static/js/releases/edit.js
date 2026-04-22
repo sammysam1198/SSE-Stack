@@ -3,6 +3,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     const errorBox = document.getElementById("release-error");
     const successBox = document.getElementById("release-success");
     const pageTitle = document.getElementById("release-page-title");
+    const reviewNote = document.getElementById("release-review-note");
 
     if (!form) return;
 
@@ -23,17 +24,26 @@ document.addEventListener("DOMContentLoaded", async () => {
         const data = await apiFetch(`/api/releases/${submission}`);
         const release = data.release;
 
+        if (String(release.status || "").toLowerCase() !== "draft") {
+            errorBox.textContent = "Only draft releases can be edited.";
+            form.style.display = "none";
+            return;
+        }
+
         if (pageTitle) {
             pageTitle.textContent = `Edit Release: ${release.release_title || "Untitled"}`;
         }
 
+        if (reviewNote) {
+            reviewNote.textContent = release.artist_notes || "No label notes attached.";
+        }
+
         form.elements["release_title"].value = release.release_title || "";
         form.elements["release_type"].value = release.release_type || "";
-        form.elements["language"].value = release.language || "";
         form.elements["preferred_release_date"].value = release.preferred_release_date || "";
-        form.elements["pitch"].value = release.pitch || "";
-        form.elements["lyrics"].value = release.lyrics || "";
-        form.elements["genre_notes"].value = release.genre_notes || "";
+        form.elements["primary_genre"].value = release.primary_genre || "";
+        form.elements["other_genres"].value = release.other_genres || "";
+        form.elements["release_pitch"].value = release.release_pitch || "";
 
         form.addEventListener("submit", async (event) => {
             event.preventDefault();
@@ -43,13 +53,12 @@ document.addEventListener("DOMContentLoaded", async () => {
             const formData = new FormData(form);
 
             const payload = {
-                release_title: formData.get("release_title")?.trim(),
-                release_type: formData.get("release_type")?.trim(),
-                language: formData.get("language")?.trim(),
-                preferred_release_date: formData.get("preferred_release_date")?.trim(),
-                pitch: formData.get("pitch")?.trim(),
-                lyrics: formData.get("lyrics")?.trim(),
-                genre_notes: formData.get("genre_notes")?.trim(),
+                release_title: formData.get("release_title")?.trim() || "",
+                release_type: formData.get("release_type")?.trim() || "",
+                preferred_release_date: formData.get("preferred_release_date")?.trim() || "",
+                primary_genre: formData.get("primary_genre")?.trim() || "",
+                other_genres: formData.get("other_genres")?.trim() || "",
+                release_pitch: formData.get("release_pitch")?.trim() || "",
             };
 
             try {

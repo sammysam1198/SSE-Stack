@@ -10,7 +10,7 @@
     <link rel="stylesheet" href="/static/css/auth.css" />
     <link rel="stylesheet" href="/static/css/dashboard.css" />
     <link rel="stylesheet" href="/static/css/releases/common.css" />
-    <link rel="stylesheet" href="/static/css/releases/view.css" />
+    <link rel="stylesheet" href="/static/css/releases/new.css" />
     <link rel="icon" type="image/png" href="/favicon.png">
 </head>
 <body>
@@ -68,20 +68,63 @@
 <main class="page-shell">
     <div class="page-shell__header">
         <p class="eyebrow">Release Intake</p>
-        <h1>Edit Release</h1>
-        <p class="page-description">Editing release drafts is not wired yet. For now, create a new release and manage existing ones from the releases list.</p>
+        <h1 id="release-page-title">Edit Release Draft</h1>
+        <p class="page-description">Update the release details that were sent back for changes.</p>
     </div>
 
-    <section class="release-empty-state">
-        <h2>Coming Soon</h2>
-        <p>This page is parked until the backend PATCH flow exists.</p>
+    <div id="release-error" role="alert"></div>
+    <div id="release-success" role="status"></div>
 
-        <div class="release-card-actions">
-            <a href="/releases/new" class="release-btn primary">New Release</a>
-            <a href="/releases/all" class="release-btn secondary">View Releases</a>
-            <a href="/dashboard-artist" class="release-btn secondary">Back to Dashboard</a>
-        </div>
+    <section class="release-section">
+        <h2>Label Notes</h2>
+        <div id="release-review-note" class="release-empty-state-copy">No label notes attached.</div>
     </section>
+
+    <form id="release-form" novalidate>
+        <section class="release-section">
+            <h2>Basic Info</h2>
+
+            <label>
+                Release Title
+                <input type="text" name="release_title" required />
+            </label>
+
+            <label>
+                Release Type
+                <select name="release_type" required>
+                    <option value="">Select one</option>
+                    <option value="single">Single</option>
+                    <option value="ep">EP</option>
+                    <option value="album">Album</option>
+                </select>
+            </label>
+
+            <label>
+                Preferred Release Date
+                <input type="date" name="preferred_release_date" />
+            </label>
+
+            <label>
+                Primary Genre
+                <input type="text" name="primary_genre" />
+            </label>
+
+            <label>
+                Other Genres
+                <textarea name="other_genres"></textarea>
+            </label>
+
+            <label>
+                Release Pitch
+                <textarea name="release_pitch"></textarea>
+            </label>
+        </section>
+
+        <div class="form-actions">
+            <button type="submit">Save Draft Changes</button>
+            <a href="/releases/all" class="release-btn secondary">Back to Releases</a>
+        </div>
+    </form>
 </main>
 
 <div class="signin-modal" id="signin-modal" aria-hidden="true">
@@ -113,6 +156,8 @@
 <script src="/static/js/api.js"></script>
 <script src="/static/js/auth.js"></script>
 <script src="/static/js/header_auth.js"></script>
+<script src="/static/js/releases/common.js"></script>
+<script src="/static/js/releases/edit.js"></script>
 <script src="/static/js/dashboard.js"></script>
 </body>
 </html>

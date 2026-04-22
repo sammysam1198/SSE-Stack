@@ -368,15 +368,18 @@ async function loadReleaseReview() {
 
     try {
         const res = await apiFetch("/api/releases");
-        const releases = res.releases || [];
+        const releases = (res.releases || []).filter((release) => {
+            const status = String(release.status || "").toLowerCase();
+            return status !== "draft" && status !== "approved";
+        });
 
         if (!releases.length) {
-            tbody.innerHTML = `<tr><td colspan="5">No releases found.</td></tr>`;
+            tbody.innerHTML = `<tr><td colspan="5">No releases are awaiting review.</td></tr>`;
             return;
         }
 
         tbody.innerHTML = releases.map(r => `
-            <tr>
+            <tr data-release-id="${r.id}">
                 <td>${r.release_title}</td>
                 <td>${r.artists?.[0]?.display_name || "—"}</td>
                 <td>${new Date(r.created_at).toLocaleDateString()}</td>

@@ -85,13 +85,27 @@ document.addEventListener("DOMContentLoaded", async () => {
                         <span>Tracks: ${escapeHtml(String((release.tracks || []).length || 0))}</span>
                         <span>Artists: ${escapeHtml(String((release.artists || []).length || 0))}</span>
                     </div>
+                    
+                            ${
+            release.artist_notes
+                ? `<div class="release-review-note">
+                     <strong>Label Notes:</strong>
+                        <p>${escapeHtml(release.artist_notes)}</p>
+                   </div>`
+                : ""
+        }
+
 
                     ${buildAudioPlayer(release)}
-
+                    
                     <div class="release-card-actions">
-                        <a href="/releases/edit?submission=${release.id}" class="release-btn secondary is-disabled" aria-disabled="true" tabindex="-1">
-                            Edit Coming Soon
-                        </a>
+                    
+                    
+    ${
+            String(release.status || "").toLowerCase() === "draft"
+                ? `<a href="/releases/edit?submission=${release.id}" class="release-btn secondary">Edit Draft</a>`
+                : `<span class="release-btn secondary is-disabled" aria-disabled="true">Locked</span>`
+        }
                     </div>
                 </div>
             </article>

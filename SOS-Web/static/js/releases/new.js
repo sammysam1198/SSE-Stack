@@ -129,6 +129,21 @@ document.addEventListener("DOMContentLoaded", async () => {
         card.dataset.saved = "true";
     }
 
+    function refreshExistingArtistButtonState() {
+        if (!addExistingArtistButton) return;
+
+        if (!savedArtistLibrary.length) {
+            addExistingArtistButton.textContent = "+ Existing Artist";
+            addExistingArtistButton.disabled = true;
+            addExistingArtistButton.title = "No saved artists yet";
+            return;
+        }
+
+        addExistingArtistButton.textContent = `+ Existing Artist (${savedArtistLibrary.length})`;
+        addExistingArtistButton.disabled = false;
+        addExistingArtistButton.title = "";
+    }
+
     async function loadSavedArtistLibrary() {
         try {
             const data = await apiFetch("/api/releases/artist-library");
@@ -137,6 +152,7 @@ document.addEventListener("DOMContentLoaded", async () => {
             console.warn("Could not load saved release artists:", error);
             savedArtistLibrary = [];
         }
+        refreshExistingArtistButtonState();
     }
 
 
@@ -146,6 +162,7 @@ document.addEventListener("DOMContentLoaded", async () => {
         const roleLabel = isMain ? "Main Artist" : `Featured Artist ${artistCount}`;
         const complete = artistLooksComplete(initialData);
         const selectedSavedId = initialData.saved_featured_artist_id || "";
+        const shouldShowExistingPicker = mode === "existing";
 
         const card = document.createElement("div");
         card.className = `artist-card${collapsed ? " is-collapsed" : ""}`;
@@ -180,7 +197,7 @@ document.addEventListener("DOMContentLoaded", async () => {
                     </select>
                 </label>
 
-                <label class="artist-existing-picker" style="${mode === "existing" ? "" : "display:none;"}">
+                <label class="artist-existing-picker" style="${shouldShowExistingPicker ? "" : "display:none;"}">
                     Saved Artists
                     <select class="artist-existing-select">
                         ${getSavedArtistOptionsHtml(selectedSavedId)}
@@ -277,8 +294,21 @@ document.addEventListener("DOMContentLoaded", async () => {
         });
 
         existingSelect.addEventListener("change", () => {
-            if (!existingSelect.value) return;
+            if (!existingSelect.value) {
+                card.dataset.savedFeaturedArtistId = "";
+                return;
+            }
+
             applySavedArtistToCard(card, existingSelect.value);
+
+            const summaryName = card.querySelector(".artist-summary-name");
+            const selectedArtist = savedArtistLibrary.find(
+                (artist) => String(artist.id) === String(existingSelect.value)
+            );
+
+            if (summaryName && selectedArtist) {
+                summaryName.textContent = selectedArtist.display_name || roleLabel;
+            }
         });
 
         saveButton.addEventListener("click", () => {
@@ -680,6 +710,15 @@ document.addEventListener("DOMContentLoaded", async () => {
     });
 
     addExistingArtistButton?.addEventListener("click", () => {
+        clearMessages();
+
+        if (!savedArtistLibrary.length) {
+            if (errorBox) {
+                errorBox.textContent = "No saved artists found yet. Add artists to a previous release first, then they will appear here.";
+            }
+            return;
+        }
+
         buildArtistCard({}, { isMain: false, collapsed: false, mode: "existing" });
     });
 
