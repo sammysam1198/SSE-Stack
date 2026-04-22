@@ -15,6 +15,7 @@ from repos.releases_repo import (
     get_release_tracks,
     get_release_by_id,
     list_all_releases,
+    update_release_draft_by_id,
     list_releases_for_creator,
     list_saved_release_artists_for_creator,
     update_release_pdf_object_key,

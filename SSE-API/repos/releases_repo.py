@@ -3,7 +3,51 @@ from typing import Any
 from config.db import fetch_all, fetch_one, execute_write, get_db_conn
 
 
+from config.db import execute_write, fetch_one
 
+
+def update_release_draft_by_id(
+    release_id: int,
+    created_by_user_id: int,
+    *,
+    release_title=None,
+    release_type=None,
+    preferred_release_date=None,
+    primary_genre=None,
+    other_genres=None,
+    release_pitch=None,
+):
+    execute_write(
+        """
+        UPDATE release_submissions
+        SET
+            release_title = %s,
+            release_type = %s,
+            preferred_release_date = %s,
+            primary_genre = %s,
+            other_genres = %s,
+            release_pitch = %s,
+            updated_at = NOW()
+        WHERE id = %s
+          AND created_by_user_id = %s
+          AND status = 'draft'
+        """,
+        (
+            release_title,
+            release_type,
+            preferred_release_date,
+            primary_genre,
+            other_genres,
+            release_pitch,
+            release_id,
+            created_by_user_id,
+        ),
+    )
+
+    return fetch_one(
+        "SELECT * FROM release_submissions WHERE id = %s",
+        (release_id,)
+    )
 
 def create_release_draft(
     *,
