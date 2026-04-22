@@ -353,7 +353,7 @@ def get_release_artist_library():
     normalized_profiles = []
     for profile in profile_artists:
         normalized_profiles.append({
-            "id": f"profile-{profile['id']}",
+            "id": profile["id"],
             "display_name": profile.get("artist_name"),
             "email": "",
             "first_name": profile.get("first_name"),
