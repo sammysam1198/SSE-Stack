@@ -10,6 +10,11 @@ document.addEventListener("DOMContentLoaded", async () => {
     const artworkInput = document.getElementById("release-artwork-file");
     const artworkStatus = document.getElementById("release-artwork-status");
     const addExistingArtistButton = document.getElementById("add-existing-artist-button");
+    const saveDraftButton = document.getElementById("save-draft-button");
+    const submitReviewButton = document.getElementById("submit-review-button");
+
+    const submission = new URLSearchParams(window.location.search).get("submission");
+    const isEditMode = Boolean(submission);
 
     let uploadedArtwork = null;
     let savedArtistLibrary = [];
@@ -17,6 +22,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     let trackCount = 0;
     let currentUser = null;
     let mainArtistProfile = null;
+    let pendingSubmitMode = "draft";
 
     function clearMessages() {
         if (errorBox) errorBox.textContent = "";
@@ -67,7 +73,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
     function validateSplitTotals() {
         const visibleSplits = Array.from(document.querySelectorAll(".split-box"))
-            .filter(input => input.style.display !== "none");
+            .filter((input) => input.style.display !== "none");
 
         if (visibleSplits.length === 0) return true;
 
@@ -90,8 +96,8 @@ document.addEventListener("DOMContentLoaded", async () => {
 
             options.push(
                 `<option value="${escapeHtml(String(artist.id))}" ${String(selectedId) === String(artist.id) ? "selected" : ""}>
-                ${escapeHtml(labelParts.join(" "))}
-            </option>`
+                    ${escapeHtml(labelParts.join(" "))}
+                </option>`
             );
         }
 
@@ -152,9 +158,9 @@ document.addEventListener("DOMContentLoaded", async () => {
             console.warn("Could not load saved release artists:", error);
             savedArtistLibrary = [];
         }
+
         refreshExistingArtistButtonState();
     }
-
 
     function buildArtistCard(initialData = {}, { isMain = false, collapsed = false, mode = "new" } = {}) {
         artistCount += 1;
@@ -171,98 +177,98 @@ document.addEventListener("DOMContentLoaded", async () => {
         card.dataset.savedFeaturedArtistId = selectedSavedId || "";
 
         card.innerHTML = `
-        <div class="artist-card__header">
-            <div class="artist-card__title-wrap">
-                <span class="artist-check ${complete ? "is-complete" : ""}">✓</span>
-                <div>
-                    <div class="artist-summary-name">${escapeHtml(initialData.display_name || roleLabel)}</div>
-                    <div class="artist-summary-role">${roleLabel}</div>
+            <div class="artist-card__header">
+                <div class="artist-card__title-wrap">
+                    <span class="artist-check ${complete ? "is-complete" : ""}">✓</span>
+                    <div>
+                        <div class="artist-summary-name">${escapeHtml(initialData.display_name || roleLabel)}</div>
+                        <div class="artist-summary-role">${roleLabel}</div>
+                    </div>
+                </div>
+
+                <div class="artist-card__actions">
+                    <input class="split-box" type="number" min="0" max="100" step="1" value="${initialData.split_percent ?? (isMain ? "100" : "0")}" title="Split" style="display:none;" />
+                    <button type="button" class="small-action-button artist-edit-button">Edit</button>
+                    <button type="button" class="icon-button artist-delete-button" title="Delete">🗑</button>
                 </div>
             </div>
 
-            <div class="artist-card__actions">
-                <input class="split-box" type="number" min="0" max="100" step="1" value="${isMain ? "100" : "0"}" title="Split" style="display:none;" />
-                <button type="button" class="small-action-button artist-edit-button">Edit</button>
-                <button type="button" class="icon-button artist-delete-button" title="Delete">🗑</button>
+            <div class="artist-card__body">
+                <div class="artist-grid">
+                    <label>
+                        Artist Source
+                        <select class="artist-source-mode">
+                            <option value="new" ${mode === "new" ? "selected" : ""}>New Artist</option>
+                            <option value="existing" ${mode === "existing" ? "selected" : ""}>Existing Artist</option>
+                        </select>
+                    </label>
+
+                    <label class="artist-existing-picker" style="${shouldShowExistingPicker ? "" : "display:none;"}">
+                        Saved Artists
+                        <select class="artist-existing-select">
+                            ${getSavedArtistOptionsHtml(selectedSavedId)}
+                        </select>
+                    </label>
+
+                    <label>
+                        Artist Name
+                        <input type="text" class="artist-display-name" value="${escapeHtml(initialData.display_name || "")}" />
+                    </label>
+
+                    <label>
+                        Email
+                        <input type="email" class="artist-email" value="${escapeHtml(initialData.email || "")}" />
+                    </label>
+
+                    <label>
+                        First Name
+                        <input type="text" class="artist-first-name" value="${escapeHtml(initialData.first_name || "")}" />
+                    </label>
+
+                    <label>
+                        Last Name
+                        <input type="text" class="artist-last-name" value="${escapeHtml(initialData.last_name || "")}" />
+                    </label>
+
+                    <label>
+                        IPI
+                        <input type="text" class="artist-ipi" value="${escapeHtml(initialData.ipi || "")}" />
+                    </label>
+
+                    <label>
+                        PRO
+                        <input type="text" class="artist-pro" value="${escapeHtml(initialData.pro || "")}" />
+                    </label>
+
+                    <label>
+                        Publisher
+                        <input type="text" class="artist-publisher" value="${escapeHtml(initialData.publisher || "")}" />
+                    </label>
+
+                    <label>
+                        Spotify Link
+                        <input type="url" class="artist-spotify-url" value="${escapeHtml(initialData.spotify_url || "")}" />
+                    </label>
+
+                    <label>
+                        Apple Music Link
+                        <input type="url" class="artist-apple-music-url" value="${escapeHtml(initialData.apple_music_url || "")}" />
+                    </label>
+
+                    <label>
+                        YouTube Link
+                        <input type="url" class="artist-youtube-url" value="${escapeHtml(initialData.youtube_url || "")}" />
+                    </label>
+
+                    <label>
+                        SoundCloud Link
+                        <input type="url" class="artist-soundcloud-url" value="${escapeHtml(initialData.soundcloud_url || "")}" />
+                    </label>
+                </div>
+
+                <button type="button" class="save-pane-button artist-save-button">Save Changes</button>
             </div>
-        </div>
-
-        <div class="artist-card__body">
-            <div class="artist-grid">
-                <label>
-                    Artist Source
-                    <select class="artist-source-mode">
-                        <option value="new" ${mode === "new" ? "selected" : ""}>New Artist</option>
-                        <option value="existing" ${mode === "existing" ? "selected" : ""}>Existing Artist</option>
-                    </select>
-                </label>
-
-                <label class="artist-existing-picker" style="${shouldShowExistingPicker ? "" : "display:none;"}">
-                    Saved Artists
-                    <select class="artist-existing-select">
-                        ${getSavedArtistOptionsHtml(selectedSavedId)}
-                    </select>
-                </label>
-
-                <label>
-                    Artist Name
-                    <input type="text" class="artist-display-name" value="${escapeHtml(initialData.display_name || "")}" />
-                </label>
-
-                <label>
-                    Email
-                    <input type="email" class="artist-email" value="${escapeHtml(initialData.email || "")}" />
-                </label>
-
-                <label>
-                    First Name
-                    <input type="text" class="artist-first-name" value="${escapeHtml(initialData.first_name || "")}" />
-                </label>
-
-                <label>
-                    Last Name
-                    <input type="text" class="artist-last-name" value="${escapeHtml(initialData.last_name || "")}" />
-                </label>
-
-                <label>
-                    IPI
-                    <input type="text" class="artist-ipi" value="${escapeHtml(initialData.ipi || "")}" />
-                </label>
-
-                <label>
-                    PRO
-                    <input type="text" class="artist-pro" value="${escapeHtml(initialData.pro || "")}" />
-                </label>
-
-                <label>
-                    Publisher
-                    <input type="text" class="artist-publisher" value="${escapeHtml(initialData.publisher || "")}" />
-                </label>
-
-                <label>
-                    Spotify Link
-                    <input type="url" class="artist-spotify-url" value="${escapeHtml(initialData.spotify_url || "")}" />
-                </label>
-
-                <label>
-                    Apple Music Link
-                    <input type="url" class="artist-apple-music-url" value="${escapeHtml(initialData.apple_music_url || "")}" />
-                </label>
-
-                <label>
-                    YouTube Link
-                    <input type="url" class="artist-youtube-url" value="${escapeHtml(initialData.youtube_url || "")}" />
-                </label>
-
-                <label>
-                    SoundCloud Link
-                    <input type="url" class="artist-soundcloud-url" value="${escapeHtml(initialData.soundcloud_url || "")}" />
-                </label>
-            </div>
-
-            <button type="button" class="save-pane-button artist-save-button">Save Changes</button>
-        </div>
-    `;
+        `;
 
         const editButton = card.querySelector(".artist-edit-button");
         const deleteButton = card.querySelector(".artist-delete-button");
@@ -353,7 +359,7 @@ document.addEventListener("DOMContentLoaded", async () => {
         };
     }
 
-    function addCreditCard(container, type) {
+    function addCreditCard(container, type, initialData = {}) {
         const card = document.createElement("div");
         card.className = "credit-card";
 
@@ -361,31 +367,31 @@ document.addEventListener("DOMContentLoaded", async () => {
             <div class="credit-grid">
                 <label>
                     Artist Name
-                    <input type="text" class="credit-artist-name" />
+                    <input type="text" class="credit-artist-name" value="${escapeHtml(initialData.artist_name || "")}" />
                 </label>
                 <label>
                     Email
-                    <input type="email" class="credit-email" />
+                    <input type="email" class="credit-email" value="${escapeHtml(initialData.email || "")}" />
                 </label>
                 <label>
                     First Name
-                    <input type="text" class="credit-first-name" />
+                    <input type="text" class="credit-first-name" value="${escapeHtml(initialData.first_name || "")}" />
                 </label>
                 <label>
                     Last Name
-                    <input type="text" class="credit-last-name" />
+                    <input type="text" class="credit-last-name" value="${escapeHtml(initialData.last_name || "")}" />
                 </label>
                 <label>
                     IPI
-                    <input type="text" class="credit-ipi" />
+                    <input type="text" class="credit-ipi" value="${escapeHtml(initialData.ipi || "")}" />
                 </label>
                 <label>
                     PRO
-                    <input type="text" class="credit-pro" />
+                    <input type="text" class="credit-pro" value="${escapeHtml(initialData.pro || "")}" />
                 </label>
                 <label class="full-span">
                     Publisher
-                    <input type="text" class="credit-publisher" />
+                    <input type="text" class="credit-publisher" value="${escapeHtml(initialData.publisher || "")}" />
                 </label>
             </div>
 
@@ -394,7 +400,7 @@ document.addEventListener("DOMContentLoaded", async () => {
             </div>
         `;
 
-        card.dataset.creditType = type.toLowerCase();
+        card.dataset.creditType = (initialData.credit_type || type).toLowerCase();
 
         card.querySelector(".remove-credit-button").addEventListener("click", () => {
             card.remove();
@@ -403,17 +409,26 @@ document.addEventListener("DOMContentLoaded", async () => {
         container.appendChild(card);
     }
 
-    function buildTrackCard() {
+    function buildTrackCard(initialData = {}) {
         trackCount += 1;
 
         const card = document.createElement("div");
         card.className = "track-card";
 
+        const initialTrackNumber = initialData.track_number || trackCount;
+        const initialTrackTitle = initialData.track_title || "";
+        const initialTrackArtistsText = initialData.track_artists_text || "";
+        const initialTrackLength = initialData.track_length || "";
+        const initialLanguage = initialData.language || "";
+        const initialInstrumental = Boolean(initialData.is_instrumental);
+        const initialLyrics = initialData.lyrics || "";
+        const initialTrackPitch = initialData.track_pitch || "";
+
         card.innerHTML = `
             <div class="track-card__header">
                 <div class="track-card__title-wrap">
                     <div>
-                        <div class="track-summary-name">Track ${trackCount}</div>
+                        <div class="track-summary-name">${escapeHtml(initialTrackTitle || `Track ${trackCount}`)}</div>
                     </div>
                 </div>
 
@@ -427,42 +442,42 @@ document.addEventListener("DOMContentLoaded", async () => {
                 <div class="track-grid">
                     <label>
                         Track Number
-                        <input type="number" class="track-number" min="1" value="${trackCount}" />
+                        <input type="number" class="track-number" min="1" value="${initialTrackNumber}" />
                     </label>
 
                     <label>
                         Track Name
-                        <input type="text" class="track-title" />
+                        <input type="text" class="track-title" value="${escapeHtml(initialTrackTitle)}" />
                     </label>
 
                     <label>
                         Track Artist(s)
-                        <input type="text" class="track-artists-text" />
+                        <input type="text" class="track-artists-text" value="${escapeHtml(initialTrackArtistsText)}" />
                     </label>
 
                     <label>
                         Track Length
-                        <input type="text" class="track-length" placeholder="03:42" />
+                        <input type="text" class="track-length" placeholder="03:42" value="${escapeHtml(initialTrackLength)}" />
                     </label>
 
                     <label>
                         Language
-                        <input type="text" class="track-language" placeholder="English or Instrumental" />
+                        <input type="text" class="track-language" placeholder="English or Instrumental" value="${escapeHtml(initialLanguage)}" />
                     </label>
 
                     <label>
                         Instrumental
-                        <input type="checkbox" class="track-is-instrumental" />
+                        <input type="checkbox" class="track-is-instrumental" ${initialInstrumental ? "checked" : ""} />
                     </label>
 
                     <label class="full-span">
                         Lyrics
-                        <textarea class="track-lyrics" rows="5"></textarea>
+                        <textarea class="track-lyrics" rows="5">${escapeHtml(initialLyrics)}</textarea>
                     </label>
 
                     <label class="full-span">
                         Track Pitch
-                        <textarea class="track-pitch" rows="4"></textarea>
+                        <textarea class="track-pitch" rows="4">${escapeHtml(initialTrackPitch)}</textarea>
                     </label>
 
                     <div class="upload-box full-span">
@@ -487,7 +502,6 @@ document.addEventListener("DOMContentLoaded", async () => {
         const toggleButton = card.querySelector(".track-toggle-button");
         const deleteButton = card.querySelector(".track-delete-button");
         const creditList = card.querySelector(".credit-list");
-
         const audioInput = card.querySelector(".track-audio-file");
 
         const audioStatus = document.createElement("div");
@@ -498,6 +512,18 @@ document.addEventListener("DOMContentLoaded", async () => {
         const uploadBox = card.querySelector(".upload-box");
         if (uploadBox) {
             uploadBox.appendChild(audioStatus);
+        }
+
+        if (initialData.audio_object_key) {
+            card._uploadedAudio = {
+                object_key: initialData.audio_object_key,
+                original_filename: initialData.audio_original_filename,
+                mime_type: initialData.audio_mime_type,
+                size_bytes: initialData.audio_size_bytes,
+                sample_rate_hz: initialData.sample_rate_hz,
+                bit_depth: initialData.bit_depth,
+            };
+            audioStatus.textContent = `Existing audio: ${initialData.audio_original_filename || "Attached"}`;
         }
 
         toggleButton.addEventListener("click", () => {
@@ -519,8 +545,9 @@ document.addEventListener("DOMContentLoaded", async () => {
 
             const file = audioInput.files?.[0];
             if (!file) {
-                card._uploadedAudio = null;
-                audioStatus.textContent = "";
+                audioStatus.textContent = card._uploadedAudio?.original_filename
+                    ? `Existing audio: ${card._uploadedAudio.original_filename}`
+                    : "";
                 return;
             }
 
@@ -536,10 +563,14 @@ document.addEventListener("DOMContentLoaded", async () => {
                 card._uploadedAudio = uploadedAudio;
                 audioStatus.textContent = `Audio uploaded: ${uploadedAudio.original_filename}`;
             } catch (error) {
-                card._uploadedAudio = null;
                 audioStatus.textContent = "";
                 errorBox.textContent = error.message || "Audio upload failed.";
             }
+        });
+
+        const existingCredits = Array.isArray(initialData.credits) ? initialData.credits : [];
+        existingCredits.forEach((credit) => {
+            addCreditCard(creditList, credit.credit_type || "Credit", credit);
         });
 
         tracksContainer.appendChild(card);
@@ -645,6 +676,13 @@ document.addEventListener("DOMContentLoaded", async () => {
         return data.audio;
     }
 
+    async function submitReleaseForReview(submissionId) {
+        return await apiFetch(`/api/releases/${submissionId}/submit`, {
+            method: "POST",
+            body: {}
+        });
+    }
+
     async function loadMainArtist() {
         currentUser = await getCurrentUser();
         if (!currentUser) {
@@ -654,7 +692,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
         if (currentUser.role === "artist") {
             const profileResponse = await apiFetch("/api/artists/me");
-            const profile = profileResponse.artist || profileResponse.profile || profileResponse;
+            const profile = profileResponse.artist_profile || profileResponse.artist || profileResponse.profile || profileResponse;
             mainArtistProfile = profile;
 
             const mainArtistData = {
@@ -669,6 +707,7 @@ document.addEventListener("DOMContentLoaded", async () => {
                 apple_music_url: profile.apple_music_url || "",
                 youtube_url: profile.youtube_channel_url || "",
                 soundcloud_url: profile.soundcloud_url || "",
+                split_percent: 100,
             };
 
             buildArtistCard(mainArtistData, { isMain: true, collapsed: true });
@@ -683,6 +722,79 @@ document.addEventListener("DOMContentLoaded", async () => {
                 artistContext.textContent = "Creating new release";
             }
         }
+    }
+
+    async function loadReleaseIntoForm() {
+        const data = await apiFetch(`/api/releases/${submission}`);
+        const release = data.release;
+
+        if (!release) {
+            throw new Error("Release not found.");
+        }
+
+        if (String(release.status || "").toLowerCase() !== "draft") {
+            throw new Error("Only draft releases can be edited.");
+        }
+
+        const titleEl = document.getElementById("release-page-title");
+        if (titleEl) {
+            titleEl.textContent = `Edit Release: ${release.release_title || "Untitled"}`;
+        }
+
+        if (artistContext) {
+            artistContext.textContent = `Editing release draft: ${release.release_title || "Untitled"}`;
+        }
+
+        const reviewNote = document.getElementById("release-review-note");
+        if (reviewNote) {
+            reviewNote.textContent = release.artist_notes || "No label notes attached.";
+        }
+
+        form.elements["release_title"].value = release.release_title || "";
+        form.elements["release_type"].value = release.release_type || "";
+        form.elements["preferred_release_date"].value = release.preferred_release_date || "";
+        form.elements["primary_genre"].value = release.primary_genre || "";
+        form.elements["other_genres"].value = release.other_genres || "";
+        form.elements["release_pitch"].value = release.release_pitch || "";
+
+        if (release.artwork_object_key) {
+            uploadedArtwork = {
+                object_key: release.artwork_object_key,
+                original_filename: release.artwork_original_filename,
+                mime_type: release.artwork_mime_type,
+                size_bytes: release.artwork_size_bytes,
+                width: release.artwork_width,
+                height: release.artwork_height,
+            };
+
+            if (artworkStatus) {
+                artworkStatus.textContent = `Existing artwork: ${release.artwork_original_filename || "Attached"}`;
+            }
+        }
+
+        artistsContainer.innerHTML = "";
+        tracksContainer.innerHTML = "";
+        artistCount = 0;
+        trackCount = 0;
+
+        (release.artists || []).forEach((artist, index) => {
+            buildArtistCard(artist, {
+                isMain: index === 0,
+                collapsed: true,
+                mode: artist.saved_featured_artist_id ? "existing" : "new",
+            });
+        });
+
+        (release.tracks || []).forEach((track) => {
+            const trackCredits = (release.track_credits || []).filter(
+                (credit) => Number(credit.track_number) === Number(track.track_number)
+            );
+
+            buildTrackCard({
+                ...track,
+                credits: trackCredits,
+            });
+        });
     }
 
     artworkInput?.addEventListener("change", async () => {
@@ -714,12 +826,21 @@ document.addEventListener("DOMContentLoaded", async () => {
 
         if (!savedArtistLibrary.length) {
             if (errorBox) {
-                errorBox.textContent = "No saved artists found yet. Add artists to a previous release first, then they will appear here.";
+                errorBox.textContent = "No saved artists found yet.";
             }
             return;
         }
 
         buildArtistCard({}, { isMain: false, collapsed: false, mode: "existing" });
+    });
+
+    saveDraftButton?.addEventListener("click", () => {
+        pendingSubmitMode = "draft";
+    });
+
+    submitReviewButton?.addEventListener("click", () => {
+        pendingSubmitMode = "submitted";
+        form?.requestSubmit();
     });
 
     form?.addEventListener("submit", async (event) => {
@@ -729,9 +850,7 @@ document.addEventListener("DOMContentLoaded", async () => {
         const formData = new FormData(form);
         const artists = Array.from(document.querySelectorAll(".artist-card")).map(collectArtistCard);
         const tracks = collectTracks();
-        const missingTrackAudio = tracks.find(
-            (track) => !track.audio?.object_key
-        );
+        const missingTrackAudio = tracks.find((track) => !track.audio?.object_key);
 
         if (missingTrackAudio) {
             errorBox.textContent = "Every track must have an uploaded audio file.";
@@ -741,7 +860,6 @@ document.addEventListener("DOMContentLoaded", async () => {
         if (!validateSplitTotals()) {
             errorBox.textContent = "Artist splits must add up to 100.";
             return;
-
         }
 
         if (!uploadedArtwork?.object_key) {
@@ -761,27 +879,49 @@ document.addEventListener("DOMContentLoaded", async () => {
             tracks,
         };
 
-
         try {
-            const data = await apiFetch("/api/releases", {
-                method: "POST",
-                body: payload,
-            });
+            let releaseId = submission;
 
-            successBox.textContent = "Release draft created successfully.";
+            if (isEditMode) {
+                const data = await apiFetch(`/api/releases/${submission}`, {
+                    method: "PATCH",
+                    body: payload,
+                });
+                releaseId = data.release?.id || submission;
+                successBox.textContent = "Release draft updated successfully.";
+            } else {
+                const data = await apiFetch("/api/releases", {
+                    method: "POST",
+                    body: payload,
+                });
+                releaseId = data.release?.id;
+                successBox.textContent = "Release draft created successfully.";
+            }
+
+            if (pendingSubmitMode === "submitted" && releaseId) {
+                await submitReleaseForReview(releaseId);
+                successBox.textContent = isEditMode
+                    ? "Release updated and resubmitted for review."
+                    : "Release submitted for review.";
+            }
 
             window.location.href = "/releases/all";
-
         } catch (error) {
-            errorBox.textContent = error.message || "Failed to create release draft.";
+            errorBox.textContent = error.message || "Failed to save release draft.";
+        } finally {
+            pendingSubmitMode = "draft";
         }
     });
 
     try {
         await loadSavedArtistLibrary();
 
-        await loadMainArtist();
-        buildTrackCard();
+        if (isEditMode) {
+            await loadReleaseIntoForm();
+        } else {
+            await loadMainArtist();
+            buildTrackCard();
+        }
     } catch (error) {
         if (errorBox) {
             errorBox.textContent = error.message || "Failed to load release form.";

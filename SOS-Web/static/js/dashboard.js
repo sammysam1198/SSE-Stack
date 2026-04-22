@@ -368,10 +368,13 @@ async function loadReleaseReview() {
 
     try {
         const res = await apiFetch("/api/releases");
-        const releases = res.releases || [];
+        const releases = (res.releases || []).filter((release) => {
+            const status = String(release.status || "").toLowerCase();
+            return status === "submitted" || status === "in_review" || status === "approved";
+        });
 
         if (!releases.length) {
-            tbody.innerHTML = `<tr><td colspan="5">No releases found.</td></tr>`;
+            tbody.innerHTML = `<tr><td colspan="5">No releases awaiting review.</td></tr>`;
             return;
         }
 
