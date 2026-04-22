@@ -1,4 +1,6 @@
 document.addEventListener("DOMContentLoaded", async () => {
+
+    const API_BASE = "https://api-server-jh.onrender.com";
     const params = new URLSearchParams(window.location.search);
     const contractId = params.get("id");
 
@@ -70,6 +72,14 @@ document.addEventListener("DOMContentLoaded", async () => {
             return;
         }
 
+        if (file.type && file.type !== "application/pdf") {
+            errorEl.textContent = "Signed contract must be a PDF.";
+            return;
+        }
+
+        uploadSignedButton.disabled = true;
+        uploadSignedButton.textContent = "Uploading...";
+
         const formData = new FormData();
         formData.append("signed_contract", file);
 
@@ -91,22 +101,24 @@ document.addEventListener("DOMContentLoaded", async () => {
                 throw new Error(data.error || "Failed to upload signed contract.");
             }
 
-            successEl.textContent = "Signed contract uploaded successfully.";
+            const returnedKey =
+                data.signed_object_key ||
+                data.object_key ||
+                data.contract?.signed_object_key ||
+                "";
+
+            if (!returnedKey) {
+                throw new Error("Backend returned success but no signed_object_key. Upload may not have reached R2.");
+            }
+
             await loadContract();
+
+            successEl.textContent = "Signed contract uploaded successfully.";
         } catch (error) {
             errorEl.textContent = error.message || "Failed to upload signed contract.";
+        } finally {
+            uploadSignedButton.disabled = false;
+            uploadSignedButton.textContent = "Upload Signed PDF";
         }
     });
-
-    try {
-        const currentUser = await getCurrentUser();
-        if (!currentUser) {
-            window.location.href = "/";
-            return;
-        }
-
-        await loadContract();
-    } catch (error) {
-        errorEl.textContent = error.message || "Failed to load contract.";
-    }
 });
