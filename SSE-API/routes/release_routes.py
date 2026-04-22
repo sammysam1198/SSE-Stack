@@ -6,15 +6,17 @@ from io import BytesIO
 from PIL import Image
 from utils.r2_utils import upload_bytes_to_r2, download_bytes_from_r2
 from flask import Blueprint, jsonify, request, session, send_file
-from repos.artists_repo import get_artist_profile_by_user_id
+from repos.artists_repo import get_artist_profile_by_user_id, list_artist_profiles
 from utils.release_pdf_utils import build_release_details_pdf_bytes
-from utils.mail_utils import send_release_approved_email
+from utils.mail_utils import send_release_approved_email, send_release_rejected_email
 from repos.releases_repo import (
     create_release_draft,
     get_release_artists,
     get_release_tracks,
     get_release_by_id,
     list_all_releases,
+    list_saved_release_artists_global,
+    replace_release_draft_by_id,
     update_release_draft_by_id,
     list_releases_for_creator,
     list_saved_release_artists_for_creator,
@@ -24,6 +26,20 @@ from repos.releases_repo import (
 
 release_bp = Blueprint("releases", __name__)
 
+
+def _mark_release_in_review_if_needed(submission_id: int):
+    from config.db import execute_write
+
+    execute_write(
+        """
+        UPDATE release_submissions
+        SET status = 'in_review',
+            updated_at = NOW()
+        WHERE id = %s
+          AND status = 'submitted'
+        """,
+        (submission_id,),
+    )
 
 def _sanitize_filename_part(value: str) -> str:
     value = (value or "").strip()
@@ -317,8 +333,54 @@ def get_release_artist_library():
     if not _require_login():
         return jsonify({"error": "Unauthorized."}), 401
 
-    artists = list_saved_release_artists_for_creator(_current_user_id())
-    return jsonify({"artists": artists}), 200
+    q = _clean_text(request.args.get("q")) or ""
+
+    release_artists = list_saved_release_artists_global(q)
+    profile_artists = list_artist_profiles()
+
+    if q:
+        q_lower = q.lower()
+        profile_artists = [
+            profile for profile in profile_artists
+            if q_lower in (profile.get("artist_name") or "").lower()
+            or q_lower in (profile.get("first_name") or "").lower()
+            or q_lower in (profile.get("last_name") or "").lower()
+            or q_lower in (profile.get("spotify_url") or "").lower()
+            or q_lower in (profile.get("youtube_channel_url") or "").lower()
+        ]
+
+    normalized_profiles = []
+    for profile in profile_artists:
+        normalized_profiles.append({
+            "id": f"profile-{profile['id']}",
+            "display_name": profile.get("artist_name"),
+            "email": "",
+            "first_name": profile.get("first_name"),
+            "last_name": profile.get("last_name"),
+            "ipi": profile.get("ipi"),
+            "pro": profile.get("pro"),
+            "publisher": profile.get("publisher"),
+            "spotify_url": profile.get("spotify_url"),
+            "apple_music_url": profile.get("apple_music_url"),
+            "youtube_url": profile.get("youtube_channel_url"),
+            "soundcloud_url": profile.get("soundcloud_url"),
+            "source": "artist_profile",
+        })
+
+    merged = []
+    seen = set()
+
+    for artist in [*normalized_profiles, *release_artists]:
+        key = (
+            (artist.get("display_name") or "").strip().lower(),
+            (artist.get("email") or "").strip().lower(),
+        )
+        if key in seen:
+            continue
+        seen.add(key)
+        merged.append(artist)
+
+    return jsonify({"artists": merged}), 200
 
 @release_bp.patch("/<int:submission_id>")
 def patch_release(submission_id: int):
@@ -335,42 +397,89 @@ def patch_release(submission_id: int):
     if release.get("status") != "draft":
         return jsonify({"error": "Only draft releases can be edited."}), 400
 
-    data = request.get_json(silent=True) or {}
+    try:
+        data = request.get_json(silent=True) or {}
 
-    release_title = _clean_text(data.get("release_title"))
-    release_type = _clean_text(data.get("release_type"))
-    preferred_release_date = _clean_text(data.get("preferred_release_date"))
-    primary_genre = _clean_text(data.get("primary_genre"))
-    other_genres = _clean_text(data.get("other_genres"))
-    release_pitch = _clean_text(data.get("release_pitch"))
+        release_title = _clean_text(data.get("release_title"))
+        release_type = _clean_text(data.get("release_type"))
+        raw_artists = data.get("artists") or []
+        artwork = data.get("artwork") or {}
+        raw_tracks = data.get("tracks") or []
 
-    if not release_title:
-        return jsonify({"error": "Release title is required."}), 400
+        if not release_title:
+            return jsonify({"error": "Release title is required."}), 400
 
-    if release_type not in {"single", "ep", "album"}:
-        return jsonify({"error": "Release type must be single, ep, or album."}), 400
+        if release_type not in {"single", "ep", "album"}:
+            return jsonify({"error": "Release type must be single, ep, or album."}), 400
 
-    updated = update_release_draft_by_id(
-        submission_id,
-        _current_user_id(),
-        release_title=release_title,
-        release_type=release_type,
-        preferred_release_date=preferred_release_date,
-        primary_genre=primary_genre,
-        other_genres=other_genres,
-        release_pitch=release_pitch,
-    )
+        if not isinstance(raw_artists, list) or not raw_artists:
+            return jsonify({"error": "At least one artist is required."}), 400
 
-    if not updated:
-        return jsonify({"error": "Release draft could not be updated."}), 400
+        if not isinstance(raw_tracks, list) or not raw_tracks:
+            return jsonify({"error": "At least one track is required."}), 400
 
-    updated["artists"] = get_release_artists(submission_id)
-    updated["tracks"] = get_release_tracks(submission_id)
+        if not artwork.get("object_key"):
+            return jsonify({"error": "Release artwork is required."}), 400
 
-    return jsonify({
-        "message": "Release draft updated successfully.",
-        "release": updated,
-    }), 200
+        if len(raw_artists) > 5:
+            return jsonify({"error": "A maximum of 5 artists is allowed for now."}), 400
+
+        try:
+            artists = [
+                _validate_artist_payload(artist, index + 1)
+                for index, artist in enumerate(raw_artists)
+            ]
+        except ValueError as exc:
+            return jsonify({"error": str(exc)}), 400
+
+        try:
+            tracks = [
+                _validate_track_payload(track, index + 1)
+                for index, track in enumerate(raw_tracks)
+            ]
+        except ValueError as exc:
+            return jsonify({"error": str(exc)}), 400
+
+        artists[0]["role_type"] = "main"
+
+        visible_splits = [a["split_percent"] for a in artists if a["split_percent"] is not None]
+        if len(artists) > 1 and sum(visible_splits) != 100:
+            return jsonify({"error": "Artist splits must add up to 100."}), 400
+
+        updated = replace_release_draft_by_id(
+            release_id=submission_id,
+            created_by_user_id=_current_user_id(),
+            release_title=release_title,
+            release_type=release_type,
+            preferred_release_date=_clean_text(data.get("preferred_release_date")),
+            primary_genre=_clean_text(data.get("primary_genre")),
+            other_genres=_clean_text(data.get("other_genres")),
+            release_pitch=_clean_text(data.get("release_pitch")),
+            artwork_object_key=artwork.get("object_key"),
+            artwork_original_filename=artwork.get("original_filename"),
+            artwork_mime_type=artwork.get("mime_type"),
+            artwork_size_bytes=artwork.get("size_bytes"),
+            artwork_width=artwork.get("width"),
+            artwork_height=artwork.get("height"),
+            artists=artists,
+            tracks=tracks,
+        )
+
+        if not updated:
+            return jsonify({"error": "Release draft could not be updated."}), 400
+
+        return jsonify({
+            "message": "Release draft updated successfully.",
+            "release": updated,
+        }), 200
+
+    except Exception as exc:
+        print("RELEASE PATCH FAILED:", repr(exc))
+        traceback.print_exc()
+        return jsonify({
+            "error": "Release update failed.",
+            "details": str(exc),
+        }), 500
 
 @release_bp.post("/upload-artwork")
 def upload_release_artwork():
@@ -543,6 +652,10 @@ def reject_release(submission_id):
     if not reason:
         return jsonify({"error": "Reason is required."}), 400
 
+    release = get_release_package_by_id(submission_id)
+    if not release:
+        return jsonify({"error": "Release not found."}), 404
+
     from config.db import execute_write
 
     execute_write(
@@ -550,11 +663,25 @@ def reject_release(submission_id):
         UPDATE release_submissions
         SET status = 'draft',
             artist_notes = %s,
-            requested_changes_at = NOW()
+            requested_changes_at = NOW(),
+            updated_at = NOW()
         WHERE id = %s
         """,
         (reason, submission_id),
     )
+
+    main_artist = (release.get("artists") or [{}])[0]
+    if main_artist.get("email"):
+        try:
+            send_release_rejected_email(
+                to_email=main_artist["email"],
+                artist_name=main_artist.get("display_name") or "Artist",
+                release_title=release.get("release_title") or "Untitled Release",
+                reason=reason,
+            )
+        except Exception as exc:
+            print("RELEASE REJECTION EMAIL FAILED:", repr(exc))
+            traceback.print_exc()
 
     return jsonify({"message": "Release sent back to drafts."}), 200
 
@@ -566,6 +693,8 @@ def download_release_package(submission_id):
     release = get_release_package_by_id(submission_id)
     if not release:
         return jsonify({"error": "Release not found."}), 404
+
+    _mark_release_in_review_if_needed(submission_id)
 
     buffer = io.BytesIO()
 
@@ -611,6 +740,8 @@ def download_release_pdf(submission_id):
     if not release:
         return jsonify({"error": "Release not found."}), 404
 
+    _mark_release_in_review_if_needed(submission_id)
+
     pdf_key = release.get("release_pdf_object_key")
     if not pdf_key:
         return jsonify({"error": "Release PDF not found."}), 404
@@ -626,3 +757,42 @@ def download_release_pdf(submission_id):
         as_attachment=False,
         download_name=f"release_{submission_id}.pdf",
     )
+
+
+@release_bp.post("/<int:submission_id>/submit")
+def submit_release(submission_id: int):
+    if not _require_login():
+        return jsonify({"error": "Unauthorized."}), 401
+
+    release = get_release_by_id(submission_id)
+    if not release:
+        return jsonify({"error": "Release not found."}), 404
+
+    if not _is_privileged() and release["created_by_user_id"] != _current_user_id():
+        return jsonify({"error": "Forbidden."}), 403
+
+    if release.get("status") != "draft":
+        return jsonify({"error": "Only draft releases can be submitted."}), 400
+
+    from config.db import execute_write
+
+    execute_write(
+        """
+        UPDATE release_submissions
+        SET status = 'submitted',
+            submitted_at = NOW(),
+            updated_at = NOW()
+        WHERE id = %s
+        """,
+        (submission_id,),
+    )
+
+    updated = get_release_package_by_id(submission_id)
+    if updated:
+        updated["artists"] = get_release_artists(submission_id)
+        updated["tracks"] = get_release_tracks(submission_id)
+
+    return jsonify({
+        "message": "Release submitted for review.",
+        "release": updated,
+    }), 200
