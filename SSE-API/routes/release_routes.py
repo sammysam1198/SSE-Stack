@@ -3,7 +3,6 @@ import re
 import zipfile
 import io
 from io import BytesIO
-from config.db import execute_write
 from PIL import Image
 from utils.r2_utils import upload_bytes_to_r2, download_bytes_from_r2
 from flask import Blueprint, jsonify, request, session, send_file
@@ -320,7 +319,57 @@ def get_release_artist_library():
     artists = list_saved_release_artists_for_creator(_current_user_id())
     return jsonify({"artists": artists}), 200
 
+@release_bp.patch("/<int:submission_id>")
+def patch_release(submission_id: int):
+    if not _require_login():
+        return jsonify({"error": "Unauthorized."}), 401
 
+    release = get_release_by_id(submission_id)
+    if not release:
+        return jsonify({"error": "Release not found."}), 404
+
+    if not _is_privileged() and release["created_by_user_id"] != _current_user_id():
+        return jsonify({"error": "Forbidden."}), 403
+
+    if release.get("status") != "draft":
+        return jsonify({"error": "Only draft releases can be edited."}), 400
+
+    data = request.get_json(silent=True) or {}
+
+    release_title = _clean_text(data.get("release_title"))
+    release_type = _clean_text(data.get("release_type"))
+    preferred_release_date = _clean_text(data.get("preferred_release_date"))
+    primary_genre = _clean_text(data.get("primary_genre"))
+    other_genres = _clean_text(data.get("other_genres"))
+    release_pitch = _clean_text(data.get("release_pitch"))
+
+    if not release_title:
+        return jsonify({"error": "Release title is required."}), 400
+
+    if release_type not in {"single", "ep", "album"}:
+        return jsonify({"error": "Release type must be single, ep, or album."}), 400
+
+    updated = update_release_draft_by_id(
+        submission_id,
+        _current_user_id(),
+        release_title=release_title,
+        release_type=release_type,
+        preferred_release_date=preferred_release_date,
+        primary_genre=primary_genre,
+        other_genres=other_genres,
+        release_pitch=release_pitch,
+    )
+
+    if not updated:
+        return jsonify({"error": "Release draft could not be updated."}), 400
+
+    updated["artists"] = get_release_artists(submission_id)
+    updated["tracks"] = get_release_tracks(submission_id)
+
+    return jsonify({
+        "message": "Release draft updated successfully.",
+        "release": updated,
+    }), 200
 
 @release_bp.post("/upload-artwork")
 def upload_release_artwork():
