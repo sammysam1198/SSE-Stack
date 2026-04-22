@@ -1,9 +1,8 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-
-<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-2411712829601384"
-     crossorigin="anonymous"></script>
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-2411712829601384"
+            crossorigin="anonymous"></script>
 
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -12,6 +11,7 @@
     <link rel="stylesheet" href="/static/css/base.css">
     <link rel="stylesheet" href="/static/css/header.css">
     <link rel="stylesheet" href="/static/css/artist_directory.css">
+    <link rel="stylesheet" href="/static/css/auth.css">
     <link rel="icon" type="image/png" href="/favicon.png">
 </head>
 <body>
@@ -33,6 +33,7 @@
                 <a href="/submissions">Apply</a>
                 <a href="/coming_soon">Contact</a>
             </nav>
+
             <div id="auth-slot"></div>
         </div>
     </header>
@@ -43,7 +44,7 @@
                 <p class="eyebrow">Roster</p>
                 <h1 class="display section-title">Artists</h1>
                 <p class="section-copy">
-                    A curated roster of artists representing the genres of vaporwave, EDM, R&B, Rap, Hip-Hop and more.
+                    A curated roster of artists representing the genres of vaporwave, EDM, R&amp;B, Rap, Hip-Hop and more.
                 </p>
             </div>
 
@@ -54,7 +55,6 @@
                 <button class="filter-chip" data-filter="producer" type="button">Producers</button>
                 <button class="filter-chip" data-filter="hip-hop" type="button">Hip-Hop</button>
             </div>
-
 
             <div class="artist-directory-grid" id="artistDirectory">
                 <article class="artist-directory-card glass" data-tags="electronic producer synthwave">
@@ -72,7 +72,7 @@
                         </div>
 
                         <div class="artist-card-actions">
-                            <a class="button primary" href="/artists/4nzek">Read More</a>
+                            <a class="button primary artist-read-more" href="/artists/artist?slug=4nzek" data-artist-slug="4nzek">Read More</a>
                         </div>
                     </div>
                 </article>
@@ -92,14 +92,14 @@
                         </div>
 
                         <div class="artist-card-actions">
-                            <a class="button primary" href="/artists/chroma">Read More</a>
+                            <a class="button primary artist-read-more" href="/artists/artist?slug=chromaglow" data-artist-slug="chromaglow">Read More</a>
                         </div>
                     </div>
                 </article>
 
                 <article class="artist-directory-card glass" data-tags="vocals producer electronic">
                     <div class="artist-card-image">
-                        <img src="/static/artists/lmnvl_face.jpg" alt="lmnl artist portrait">
+                        <img src="/static/artists/lmnvl_face.jpg" alt="LMNL FM artist portrait">
                     </div>
                     <div class="artist-card-body">
                         <h2 class="artist-card-title">LMNL FM</h2>
@@ -112,7 +112,7 @@
                         </div>
 
                         <div class="artist-card-actions">
-                            <a class="button primary" href="/artists/LMNLFM">Read More</a>
+                            <a class="button primary artist-read-more" href="/artists/artist?slug=lmnvlfm" data-artist-slug="lmnvlfm">Read More</a>
                         </div>
                     </div>
                 </article>
@@ -123,7 +123,7 @@
                     </div>
                     <div class="artist-card-body">
                         <h2 class="artist-card-title">Rumour</h2>
-                        <p class="artist-card-tagline">A self-made artist blending pop, R&B, and EDM with atmospheric vocals and a focus on originality.</p>
+                        <p class="artist-card-tagline">A self-made artist blending pop, R&amp;B, and EDM with atmospheric vocals and a focus on originality.</p>
 
                         <div class="tag-row">
                             <span class="tag">Vocals</span>
@@ -131,7 +131,7 @@
                         </div>
 
                         <div class="artist-card-actions">
-                            <a class="button primary" href="/artists/rumor">Read More</a>
+                            <a class="button primary artist-read-more" href="/artists/artist?slug=rumour" data-artist-slug="rumour">Read More</a>
                         </div>
                     </div>
                 </article>
@@ -147,22 +147,22 @@
                         <div class="tag-row">
                             <span class="tag">Hip Hop</span>
                             <span class="tag">Vocals</span>
-                            <span class="tag">ddddd</span>
+                            <span class="tag">Experimental</span>
                         </div>
 
                         <div class="artist-card-actions">
-                            <a class="button primary" href="/artists/dorzi">Read More</a>
+                            <a class="button primary artist-read-more" href="/artists/artist?slug=dorzi" data-artist-slug="dorzi">Read More</a>
                         </div>
                     </div>
                 </article>
 
                 <article class="artist-directory-card glass" data-tags="vocals electronic international">
                     <div class="artist-card-image">
-                        <img src="/static/logos/ikatrin.png" alt="ikatrin">
+                        <img src="/static/logos/ikatrin.png" alt="iKatrin artist logo">
                     </div>
                     <div class="artist-card-body">
                         <h2 class="artist-card-title">iKatrin</h2>
-                        <p class="artist-card-tagline">Polished electronic presence</p>
+                        <p class="artist-card-tagline">Polished electronic presence.</p>
 
                         <div class="tag-row">
                             <span class="tag">Producer</span>
@@ -171,7 +171,7 @@
                         </div>
 
                         <div class="artist-card-actions">
-                            <a class="button primary" href="/artists/ikatrin">Read More</a>
+                            <a class="button primary artist-read-more" href="/artists/artist?slug=ikatrin" data-artist-slug="ikatrin">Read More</a>
                         </div>
                     </div>
                 </article>
@@ -191,7 +191,7 @@
                         </div>
 
                         <div class="artist-card-actions">
-                            <a class="button primary" href="/artists/madgas">Read More</a>
+                            <a class="button primary artist-read-more" href="/artists/artist?slug=madgas" data-artist-slug="madgas">Read More</a>
                         </div>
                     </div>
                 </article>
@@ -211,7 +211,7 @@
                         </div>
 
                         <div class="artist-card-actions">
-                            <a class="button primary" href="/artists/erikih">Read More</a>
+                            <a class="button primary artist-read-more" href="/artists/artist?slug=erikiih" data-artist-slug="erikiih">Read More</a>
                         </div>
                     </div>
                 </article>
@@ -222,16 +222,16 @@
                     </div>
                     <div class="artist-card-body">
                         <h2 class="artist-card-title">Kayla Jay</h2>
-                        <p class="artist-card-tagline">A genre-blending pop and R&B artist shaped by a global upbringing and driven by undeniable passion.</p>
+                        <p class="artist-card-tagline">A genre-blending pop and R&amp;B artist shaped by a global upbringing and driven by undeniable passion.</p>
 
                         <div class="tag-row">
                             <span class="tag">Vocals</span>
                             <span class="tag">Pop</span>
-                            <span class="tag">R&B</span>
+                            <span class="tag">R&amp;B</span>
                         </div>
 
                         <div class="artist-card-actions">
-                            <a class="button primary" href="/artists/kayla">Read More</a>
+                            <a class="button primary artist-read-more" href="/artists/artist?slug=kaylajay" data-artist-slug="kaylajay">Read More</a>
                         </div>
                     </div>
                 </article>
@@ -242,7 +242,7 @@
                     </div>
                     <div class="artist-card-body">
                         <h2 class="artist-card-title">2Confections</h2>
-                        <p class="artist-card-tagline">desc</p>
+                        <p class="artist-card-tagline">A stylized act with a playful identity and alt-pop edge.</p>
 
                         <div class="tag-row">
                             <span class="tag">Vocals</span>
@@ -251,7 +251,7 @@
                         </div>
 
                         <div class="artist-card-actions">
-                            <a class="button primary" href="/coming_soon">Read More</a>
+                            <a class="button primary artist-read-more" href="/artists/artist?slug=2confections" data-artist-slug="2confections">Read More</a>
                         </div>
                     </div>
                 </article>
@@ -271,41 +271,17 @@
                         </div>
 
                         <div class="artist-card-actions">
-                            <a class="button primary" href="/coming_soon">Read More</a>
+                            <a class="button primary artist-read-more" href="/artists/artist?slug=sammistarlight" data-artist-slug="sammistarlight">Read More</a>
                         </div>
                     </div>
                 </article>
             </div>
         </section>
-        <div class="signin-modal" id="signin-modal" aria-hidden="true">
-            <div class="signin-panel">
-                <h2>Sign In</h2>
-                <p>Access your SpacedOut Studios account.</p>
-
-                <form class="signin-form" id="signin-form" method="post" action="javascript:void(0);">
-                    <label>
-                        Email
-                        <input type="email" name="email" required />
-                    </label>
-
-                    <label>
-                        Password
-                        <input type="password" name="password" required />
-                    </label>
-
-                    <div class="signin-error" id="signin-error"></div>
-
-                    <div class="signin-actions">
-                        <button class="signin-cancel" type="button" data-close-signin>Cancel</button>
-                        <button class="signin-submit" type="submit">Sign In</button>
-                    </div>
-                </form>
-            </div>
-        </div>
     </main>
 </div>
-<link rel="stylesheet" href="/static/css/auth.css" />
+
 <div id="signin-modal-container"></div>
+
 <script src="/static/js/partials.js"></script>
 <script>
     loadPartial("signin-modal-container", "/static/partials/signin_modal.html");
@@ -314,7 +290,6 @@
 <script src="/static/js/api.js"></script>
 <script src="/static/js/auth.js"></script>
 <script src="/static/js/header_auth.js"></script>
-
 <script src="/static/js/artist_directory.js"></script>
 </body>
 </html>

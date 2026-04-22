@@ -4,6 +4,7 @@ from io import BytesIO
 from utils.auth_utils import get_current_user
 from flask import Blueprint, jsonify, request, send_file
 from utils.mail_utils import send_contract_ready_email
+from repos.artists_repo import get_artist_profile_by_user_id
 from repos.contracts_repo import (
     add_contract_recipient,
     create_contract,
@@ -79,15 +80,28 @@ def get_contract(contract_id: int):
     if not contract:
         return jsonify({"error": "Contract not found."}), 404
 
-    if user["role"] not in {"admin", "developer"}:
-        return jsonify({"error": "Forbidden."}), 403
+    if user["role"] in {"admin", "developer"}:
+        recipients = list_contract_recipients(contract_id)
+        return jsonify({
+            "contract": contract,
+            "recipients": recipients,
+        }), 200
 
-    recipients = list_contract_recipients(contract_id)
-    return jsonify({
-        "contract": contract,
-        "recipients": recipients,
-    }), 200
+    if user["role"] == "artist":
+        artist_profile = get_artist_profile_by_user_id(user["user_id"])
+        if not artist_profile:
+            return jsonify({"error": "Artist profile not found."}), 404
 
+        if int(contract["artist_profile_id"]) != int(artist_profile["id"]):
+            return jsonify({"error": "Forbidden."}), 403
+
+        recipients = list_contract_recipients(contract_id)
+        return jsonify({
+            "contract": contract,
+            "recipients": recipients,
+        }), 200
+
+    return jsonify({"error": "Forbidden."}), 403
 
 @contracts_bp.post("")
 def create_new_contract():
@@ -278,6 +292,17 @@ def download_unsigned_pdf(contract_id: int):
     contract = get_contract_by_id(contract_id)
     if not contract or not contract.get("unsigned_pdf_object_key"):
         return jsonify({"error": "Unsigned PDF not found."}), 404
+
+    if user["role"] not in {"admin", "developer"}:
+        if user["role"] != "artist":
+            return jsonify({"error": "Forbidden."}), 403
+
+        artist_profile = get_artist_profile_by_user_id(user["user_id"])
+        if not artist_profile:
+            return jsonify({"error": "Artist profile not found."}), 404
+
+        if int(contract["artist_profile_id"]) != int(artist_profile["id"]):
+            return jsonify({"error": "Forbidden."}), 403
 
     file_bytes = download_bytes_from_r2(contract["unsigned_pdf_object_key"])
     filename = contract["unsigned_pdf_object_key"].split("/")[-1]
