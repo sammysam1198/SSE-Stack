@@ -368,13 +368,10 @@ async function loadReleaseReview() {
 
     try {
         const res = await apiFetch("/api/releases");
-        const releases = (res.releases || []).filter((release) => {
-            const status = String(release.status || "").toLowerCase();
-            return status !== "draft" && status !== "approved";
-        });
+        const releases = res.releases || [];
 
         if (!releases.length) {
-            tbody.innerHTML = `<tr><td colspan="5">No releases are awaiting review.</td></tr>`;
+            tbody.innerHTML = `<tr><td colspan="5">No releases found.</td></tr>`;
             return;
         }
 
@@ -422,7 +419,15 @@ async function rejectRelease(id) {
         body: { reason }
     });
 
-    loadReleaseReview();
+    const row = document.querySelector(`tr[data-release-id="${id}"]`);
+    if (row) {
+        row.remove();
+    }
+
+    const tbody = document.getElementById("release-review-body");
+    if (tbody && !tbody.querySelector("tr")) {
+        tbody.innerHTML = `<tr><td colspan="5">No releases found.</td></tr>`;
+    }
 }
 
 function downloadZip(id) {
