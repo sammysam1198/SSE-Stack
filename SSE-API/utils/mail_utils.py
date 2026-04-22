@@ -298,11 +298,53 @@ def send_contract_ready_email(
 
         <p style="margin-top:24px;">
             Thanks,<br><br>
-            Aliem<br>
-            Sammi
+            Aliem Jumpp<br>
+            Owner<br>
+            SpacedOut Studios Entertainment<br><br>
+            
+            Sammi Fishbein<br>
+            IT & Operations<br>
+            SpacedOut Studios Entertainment<br>
+            Chroma Glow<br>
         </p>
     </div>
     """
 
     print("[mail] send_contract_ready_email ->", to_email, subject)
+    return send_email(to_email, subject, html)
+
+
+def send_release_rejected_email(
+    to_email: str,
+    artist_name: str,
+    release_title: str,
+    reason: str,
+):
+    subject = f"Release Sent Back for Changes: {release_title}"
+
+    html = f"""
+    <div style="font-family:Arial,Helvetica,sans-serif; color:#111; line-height:1.65;">
+        <p>Hi {escape(artist_name)},</p>
+
+        <p>
+            Your release <strong>{escape(release_title)}</strong> was reviewed and has been sent back to drafts for changes.
+        </p>
+
+        <p>
+            <strong>Reason:</strong><br>
+            {escape(reason)}
+        </p>
+
+        <p>
+            You can return to your release drafts, edit the submission, and resubmit it once the requested changes are complete.
+        </p>
+
+        <p style="margin-top:24px;">
+            Sammi Fishbein<br>
+            IT & Operations<br>
+            SpacedOut Studios Entertainment<br>
+        </p>
+    </div>
+    """
+
     return send_email(to_email, subject, html)

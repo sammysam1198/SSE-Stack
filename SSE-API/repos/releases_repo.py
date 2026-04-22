@@ -1,9 +1,5 @@
 from typing import Any
-
 from config.db import fetch_all, fetch_one, execute_write, get_db_conn
-
-
-from config.db import execute_write, fetch_one
 
 
 def update_release_draft_by_id(
@@ -239,6 +235,8 @@ def create_release_draft(
     finally:
         conn.close()
 
+
+
 def list_releases_for_creator(created_by_user_id: int):
     query = """
         SELECT *
@@ -380,3 +378,251 @@ def list_saved_release_artists_for_creator(created_by_user_id: int):
             rsa.id DESC
     """
     return fetch_all(query, (created_by_user_id,))
+
+def list_saved_release_artists_global(search_query: str | None = None):
+    like_term = f"%{(search_query or '').strip()}%"
+
+    query = """
+        SELECT DISTINCT ON (
+            LOWER(COALESCE(rsa.email, '')),
+            LOWER(COALESCE(rsa.display_name, ''))
+        )
+            rsa.id,
+            rsa.display_name,
+            rsa.email,
+            rsa.first_name,
+            rsa.last_name,
+            rsa.ipi,
+            rsa.pro,
+            rsa.publisher,
+            rsa.spotify_url,
+            rsa.apple_music_url,
+            rsa.youtube_url,
+            rsa.soundcloud_url
+        FROM release_submission_artists rsa
+        WHERE COALESCE(TRIM(rsa.display_name), '') <> ''
+          AND (
+                %s = '%%'
+                OR LOWER(COALESCE(rsa.display_name, '')) LIKE LOWER(%s)
+                OR LOWER(COALESCE(rsa.email, '')) LIKE LOWER(%s)
+                OR LOWER(COALESCE(rsa.first_name, '')) LIKE LOWER(%s)
+                OR LOWER(COALESCE(rsa.last_name, '')) LIKE LOWER(%s)
+              )
+        ORDER BY
+            LOWER(COALESCE(rsa.email, '')),
+            LOWER(COALESCE(rsa.display_name, '')),
+            rsa.id DESC
+    """
+    return fetch_all(query, (like_term, like_term, like_term, like_term, like_term))
+
+def replace_release_draft_by_id(
+    *,
+    release_id: int,
+    created_by_user_id: int,
+    release_title: str,
+    release_type: str,
+    preferred_release_date: str | None = None,
+    primary_genre: str | None = None,
+    other_genres: str | None = None,
+    release_pitch: str | None = None,
+    artwork_object_key: str | None = None,
+    artwork_original_filename: str | None = None,
+    artwork_mime_type: str | None = None,
+    artwork_size_bytes: int | None = None,
+    artwork_width: int | None = None,
+    artwork_height: int | None = None,
+    artists: list[dict[str, Any]] | None = None,
+    tracks: list[dict[str, Any]] | None = None,
+):
+    artists = artists or []
+    tracks = tracks or []
+
+    conn = get_db_conn()
+    try:
+        with conn:
+            with conn.cursor() as cur:
+                cur.execute(
+                    """
+                    UPDATE release_submissions
+                    SET
+                        release_title = %s,
+                        release_type = %s,
+                        preferred_release_date = %s,
+                        primary_genre = %s,
+                        other_genres = %s,
+                        release_pitch = %s,
+                        artwork_object_key = %s,
+                        artwork_original_filename = %s,
+                        artwork_mime_type = %s,
+                        artwork_size_bytes = %s,
+                        artwork_width = %s,
+                        artwork_height = %s,
+                        updated_at = NOW()
+                    WHERE id = %s
+                      AND created_by_user_id = %s
+                      AND status = 'draft'
+                    RETURNING *
+                    """,
+                    (
+                        release_title,
+                        release_type,
+                        preferred_release_date,
+                        primary_genre,
+                        other_genres,
+                        release_pitch,
+                        artwork_object_key,
+                        artwork_original_filename,
+                        artwork_mime_type,
+                        artwork_size_bytes,
+                        artwork_width,
+                        artwork_height,
+                        release_id,
+                        created_by_user_id,
+                    ),
+                )
+                updated_release = cur.fetchone()
+
+                if not updated_release:
+                    return None
+
+                cur.execute(
+                    """
+                    DELETE FROM release_track_credits
+                    WHERE release_track_id IN (
+                        SELECT id FROM release_tracks WHERE release_submission_id = %s
+                    )
+                    """,
+                    (release_id,),
+                )
+
+                cur.execute(
+                    "DELETE FROM release_tracks WHERE release_submission_id = %s",
+                    (release_id,),
+                )
+
+                cur.execute(
+                    "DELETE FROM release_submission_artists WHERE release_submission_id = %s",
+                    (release_id,),
+                )
+
+                for index, artist in enumerate(artists, start=1):
+                    cur.execute(
+                        """
+                        INSERT INTO release_submission_artists (
+                            release_submission_id,
+                            artist_order,
+                            role_type,
+                            display_name,
+                            first_name,
+                            last_name,
+                            ipi,
+                            pro,
+                            publisher,
+                            spotify_url,
+                            apple_music_url,
+                            youtube_url,
+                            soundcloud_url,
+                            saved_featured_artist_id,
+                            email,
+                            split_percent
+                        )
+                        VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+                        """,
+                        (
+                            release_id,
+                            index,
+                            artist.get("role_type"),
+                            artist.get("display_name"),
+                            artist.get("first_name"),
+                            artist.get("last_name"),
+                            artist.get("ipi"),
+                            artist.get("pro"),
+                            artist.get("publisher"),
+                            artist.get("spotify_url"),
+                            artist.get("apple_music_url"),
+                            artist.get("youtube_url"),
+                            artist.get("soundcloud_url"),
+                            artist.get("saved_featured_artist_id"),
+                            artist.get("email"),
+                            artist.get("split_percent"),
+                        ),
+                    )
+
+                for track in tracks:
+                    cur.execute(
+                        """
+                        INSERT INTO release_tracks (
+                            release_submission_id,
+                            track_number,
+                            track_title,
+                            track_artists_text,
+                            track_length,
+                            language,
+                            is_instrumental,
+                            lyrics,
+                            track_pitch,
+                            audio_object_key,
+                            audio_original_filename,
+                            audio_mime_type,
+                            audio_size_bytes,
+                            sample_rate_hz,
+                            bit_depth
+                        )
+                        VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+                        RETURNING id
+                        """,
+                        (
+                            release_id,
+                            track.get("track_number"),
+                            track.get("track_title"),
+                            track.get("track_artists_text"),
+                            track.get("track_length"),
+                            track.get("language"),
+                            track.get("is_instrumental", False),
+                            track.get("lyrics"),
+                            track.get("track_pitch"),
+                            track.get("audio_object_key"),
+                            track.get("audio_original_filename"),
+                            track.get("audio_mime_type"),
+                            track.get("audio_size_bytes"),
+                            track.get("sample_rate_hz"),
+                            track.get("bit_depth"),
+                        ),
+                    )
+                    track_row = cur.fetchone()
+                    track_id = track_row["id"]
+
+                    for credit_index, credit in enumerate(track.get("credits", []), start=1):
+                        cur.execute(
+                            """
+                            INSERT INTO release_track_credits (
+                                release_track_id,
+                                credit_order,
+                                credit_type,
+                                artist_name,
+                                first_name,
+                                last_name,
+                                email,
+                                ipi,
+                                pro,
+                                publisher
+                            )
+                            VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+                            """,
+                            (
+                                track_id,
+                                credit_index,
+                                credit.get("credit_type"),
+                                credit.get("artist_name"),
+                                credit.get("first_name"),
+                                credit.get("last_name"),
+                                credit.get("email"),
+                                credit.get("ipi"),
+                                credit.get("pro"),
+                                credit.get("publisher"),
+                            ),
+                        )
+
+        return get_release_package_by_id(release_id)
+    finally:
+        conn.close()
