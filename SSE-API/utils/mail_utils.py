@@ -348,3 +348,60 @@ def send_release_rejected_email(
     """
 
     return send_email(to_email, subject, html)
+
+import os
+from html import escape
+
+import resend
+
+CONTACT_FORM_TO_EMAIL = os.getenv("CONTACT_FORM_TO_EMAIL", "chromaglowsynths@gmail.com")
+CONTACT_FORM_FROM_EMAIL = os.getenv("CONTACT_FORM_FROM_EMAIL", "SpacedOut Studios <noreply@spacedoutstudiosent.com>")
+
+
+def send_contact_form_email(
+    *,
+    sender_name: str,
+    sender_email: str,
+    subject: str,
+    message: str,
+):
+    resend.api_key = os.environ["RESEND_API_KEY"]
+
+    safe_name = escape(sender_name)
+    safe_email = escape(sender_email)
+    safe_subject = escape(subject)
+    safe_message = escape(message).replace("\n", "<br>")
+
+    params: resend.Emails.SendParams = {
+        "from": CONTACT_FORM_FROM_EMAIL,
+        "to": [CONTACT_FORM_TO_EMAIL],
+        "subject": f"Contact Form: {subject}",
+        "reply_to": sender_email,
+        "html": f"""
+            <div style="font-family:Arial,Helvetica,sans-serif;color:#111;line-height:1.7;">
+                <h2 style="margin-bottom:16px;">New Contact Form Message</h2>
+
+                <p><strong>Name:</strong> {safe_name}</p>
+                <p><strong>Email:</strong> {safe_email}</p>
+                <p><strong>Subject:</strong> {safe_subject}</p>
+
+                <div style="margin-top:18px;">
+                    <strong>Message:</strong>
+                    <div style="margin-top:8px;padding:14px 16px;border:1px solid #ddd;border-radius:12px;">
+                        {safe_message}
+                    </div>
+                </div>
+            </div>
+        """,
+        "text": f"""New Contact Form Message
+
+Name: {sender_name}
+Email: {sender_email}
+Subject: {subject}
+
+Message:
+{message}
+""",
+    }
+
+    return resend.Emails.send(params)
