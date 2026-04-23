@@ -1,1 +1,430 @@
-contact form
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-2411712829601384"
+            crossorigin="anonymous"></script>
+
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Contact | SpacedOut Studios</title>
+    <meta
+            name="description"
+            content="Contact SpacedOut Studios for artist inquiries, business communication, and general questions."
+    />
+
+    <link rel="stylesheet" href="/static/css/base.css" />
+    <link rel="stylesheet" href="/static/css/header.css" />
+    <link rel="stylesheet" href="/static/css/auth.css" />
+    <link rel="icon" type="image/png" href="/favicon.png" />
+
+    <style>
+        .contact-page {
+            display: grid;
+            gap: 28px;
+        }
+
+        .contact-hero,
+        .contact-form-card,
+        .contact-info-card {
+            padding: clamp(22px, 3vw, 32px);
+        }
+
+        .contact-hero {
+            display: grid;
+            grid-template-columns: minmax(0, 1.1fr) minmax(260px, 0.9fr);
+            gap: 24px;
+            align-items: center;
+        }
+
+        .contact-logo-row {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            margin-bottom: 18px;
+        }
+
+        .contact-logo {
+            width: 74px;
+            height: 74px;
+            border-radius: 18px;
+            object-fit: cover;
+            border: 1px solid rgba(255,255,255,0.14);
+            box-shadow:
+                    0 0 24px rgba(255, 47, 171, 0.10),
+                    0 0 20px rgba(23, 220, 255, 0.08);
+            background: rgba(255,255,255,0.04);
+        }
+
+        .contact-hero-copy h1 {
+            margin: 0;
+            font-size: clamp(2.2rem, 5vw, 4rem);
+            line-height: 0.95;
+            letter-spacing: -0.05em;
+        }
+
+        .contact-hero-copy p {
+            margin: 14px 0 0;
+            color: var(--muted);
+            line-height: 1.9;
+            max-width: 68ch;
+        }
+
+        .contact-hero-side {
+            display: grid;
+            gap: 14px;
+        }
+
+        .contact-pill {
+            border-radius: 22px;
+            padding: 16px 18px;
+            border: 1px solid rgba(255,255,255,0.12);
+            background: rgba(255,255,255,0.06);
+            box-shadow: inset 0 1px 0 rgba(255,255,255,0.08);
+        }
+
+        .contact-pill strong {
+            display: block;
+            font-size: 0.95rem;
+            margin-bottom: 6px;
+        }
+
+        .contact-pill span {
+            color: var(--muted);
+            font-size: 0.95rem;
+            line-height: 1.6;
+        }
+
+        .contact-grid {
+            display: grid;
+            grid-template-columns: minmax(0, 1.2fr) minmax(280px, 0.8fr);
+            gap: 24px;
+        }
+
+        .contact-form-card h2,
+        .contact-info-card h2 {
+            margin: 0 0 10px;
+            font-size: clamp(1.4rem, 3vw, 2rem);
+            letter-spacing: -0.03em;
+        }
+
+        .contact-form-card .section-copy,
+        .contact-info-card .section-copy {
+            margin: 0;
+            line-height: 1.85;
+        }
+
+        .contact-form {
+            display: grid;
+            gap: 16px;
+            margin-top: 20px;
+        }
+
+        .contact-form-grid {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 16px;
+        }
+
+        .contact-form label {
+            display: grid;
+            gap: 8px;
+            font-size: 0.95rem;
+            color: rgba(255,255,255,0.94);
+        }
+
+        .contact-form input,
+        .contact-form select,
+        .contact-form textarea {
+            width: 100%;
+            border-radius: 16px;
+            border: 1px solid rgba(255,255,255,0.12);
+            background: rgba(255,255,255,0.06);
+            color: #fff;
+            padding: 14px 16px;
+            font: inherit;
+            outline: none;
+            transition:
+                    border-color var(--ease),
+                    background var(--ease),
+                    box-shadow var(--ease);
+        }
+
+        .contact-form textarea {
+            min-height: 180px;
+            resize: vertical;
+        }
+
+        .contact-form input:focus,
+        .contact-form select:focus,
+        .contact-form textarea:focus {
+            border-color: rgba(23,220,255,0.35);
+            background: rgba(255,255,255,0.08);
+            box-shadow: 0 0 0 3px rgba(23,220,255,0.08);
+        }
+
+        .contact-actions {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+
+        .contact-submit {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 48px;
+            padding: 0 18px;
+            border-radius: 999px;
+            border: 1px solid rgba(255,255,255,0.22);
+            background:
+                    linear-gradient(135deg, rgba(255, 47, 171, 0.16), rgba(23, 220, 255, 0.16)),
+                    rgba(255,255,255,0.10);
+            color: #fff;
+            cursor: pointer;
+            transition:
+                    transform var(--ease),
+                    border-color var(--ease),
+                    background var(--ease),
+                    box-shadow var(--ease);
+        }
+
+        .contact-submit:hover {
+            transform: translateY(-2px);
+            box-shadow:
+                    0 0 18px rgba(23,220,255,0.10),
+                    0 0 14px rgba(255,47,171,0.08);
+        }
+
+        .contact-status {
+            min-height: 24px;
+            font-size: 0.95rem;
+            color: var(--muted);
+        }
+
+        .contact-status.is-error {
+            color: #ff9cab;
+        }
+
+        .contact-status.is-success {
+            color: #9effd5;
+        }
+
+        .contact-info-stack {
+            display: grid;
+            gap: 16px;
+            margin-top: 20px;
+        }
+
+        .contact-info-box {
+            border-radius: 20px;
+            padding: 18px;
+            border: 1px solid rgba(255,255,255,0.10);
+            background: rgba(255,255,255,0.05);
+        }
+
+        .contact-info-box strong {
+            display: block;
+            margin-bottom: 8px;
+        }
+
+        .contact-info-box p {
+            margin: 0;
+            color: var(--muted);
+            line-height: 1.75;
+        }
+
+        @media (max-width: 980px) {
+            .contact-hero,
+            .contact-grid,
+            .contact-form-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+<div class="site-wrap">
+    <header class="site-header">
+        <div class="container">
+            <a class="brand" href="/">
+                <span class="brand-orb" aria-hidden="true"></span>
+                <div class="brand-copy">
+                    <p class="display brand-title">SpacedOut Studios</p>
+                    <p class="brand-subtitle">Independent Record Label</p>
+                </div>
+            </a>
+
+            <nav class="nav" aria-label="Main navigation">
+                <a href="/">Home</a>
+                <a href="/about">About</a>
+                <a href="/artists">Artists</a>
+                <a href="/coming_soon">Playlists</a>
+                <a href="/submissions">Submissions</a>
+                <a href="/contact" class="active">Contact</a>
+            </nav>
+
+            <div id="auth-slot"></div>
+        </div>
+    </header>
+
+    <main class="page-shell contact-page">
+        <section class="glass contact-hero">
+            <div class="contact-hero-copy">
+                <div class="contact-logo-row">
+                    <img
+                            src="/static/logos/sse.png"
+                            alt="SpacedOut Studios logo"
+                            class="contact-logo"
+                    />
+                    <div>
+                        <p class="eyebrow">Contact</p>
+                        <h1 class="display">Get in touch with SpacedOut Studios</h1>
+                    </div>
+                </div>
+
+                <p>
+                    Use the form below for artist questions, business communication, partnerships,
+                    release-related inquiries, or general contact. This inbox is monitored directly.
+                </p>
+            </div>
+
+            <div class="contact-hero-side">
+                <div class="contact-pill">
+                    <strong>Business Communication</strong>
+                    <span>Artist inquiries, label questions, and operational communication.</span>
+                </div>
+                <div class="contact-pill">
+                    <strong>Simple & Direct</strong>
+                    <span>Your message is sent straight through the site using Resend.</span>
+                </div>
+            </div>
+        </section>
+
+        <section class="contact-grid">
+            <article class="glass contact-form-card">
+                <p class="eyebrow">Send a Message</p>
+                <h2>Contact Form</h2>
+                <p class="section-copy">
+                    Keep it simple and direct. We’ll receive your message by email.
+                </p>
+
+                <form id="contact-form" class="contact-form" novalidate>
+                    <div class="contact-form-grid">
+                        <label>
+                            Name
+                            <input type="text" id="contact-name" name="name" required />
+                        </label>
+
+                        <label>
+                            Email
+                            <input type="email" id="contact-email" name="email" required />
+                        </label>
+                    </div>
+
+                    <label>
+                        Subject
+                        <input type="text" id="contact-subject" name="subject" required />
+                    </label>
+
+                    <label>
+                        Message
+                        <textarea id="contact-message" name="message" required></textarea>
+                    </label>
+
+                    <div class="contact-actions">
+                        <button type="submit" id="contact-submit" class="contact-submit">
+                            Send Message
+                        </button>
+                    </div>
+
+                    <div id="contact-status" class="contact-status" aria-live="polite"></div>
+                </form>
+            </article>
+
+            <aside class="glass contact-info-card">
+                <p class="eyebrow">Information</p>
+                <h2>What this is for</h2>
+                <p class="section-copy">
+                    This form is best for general communication, artist questions, partnerships,
+                    and label-related inquiries.
+                </p>
+
+                <div class="contact-info-stack">
+                    <div class="contact-info-box">
+                        <strong>Artist Questions</strong>
+                        <p>Questions about the label, artist pages, releases, or working with SpacedOut Studios.</p>
+                    </div>
+
+                    <div class="contact-info-box">
+                        <strong>Business Inquiries</strong>
+                        <p>Partnerships, promotion, media, and business communication.</p>
+                    </div>
+
+                    <div class="contact-info-box">
+                        <strong>Response</strong>
+                        <p>If your message is relevant, someone from the team will follow up directly.</p>
+                    </div>
+                </div>
+            </aside>
+        </section>
+    </main>
+</div>
+
+<div id="signin-modal-container"></div>
+<script src="/static/js/partials.js"></script>
+<script>
+    loadPartial("signin-modal-container", "/static/partials/signin_modal.html");
+</script>
+
+<script src="/static/js/api.js"></script>
+<script src="/static/js/auth.js"></script>
+<script src="/static/js/header_auth.js"></script>
+
+<script>
+    document.addEventListener("DOMContentLoaded", () => {
+        const form = document.getElementById("contact-form");
+        const submitButton = document.getElementById("contact-submit");
+        const statusEl = document.getElementById("contact-status");
+
+        function setStatus(message, variant = "") {
+            statusEl.textContent = message || "";
+            statusEl.className = "contact-status";
+            if (variant) {
+                statusEl.classList.add(variant);
+            }
+        }
+
+        form?.addEventListener("submit", async (event) => {
+            event.preventDefault();
+            setStatus("");
+
+            submitButton.disabled = true;
+            submitButton.textContent = "Sending...";
+
+            const payload = {
+                name: document.getElementById("contact-name")?.value.trim() || "",
+                email: document.getElementById("contact-email")?.value.trim() || "",
+                subject: document.getElementById("contact-subject")?.value.trim() || "",
+                message: document.getElementById("contact-message")?.value.trim() || "",
+            };
+
+            try {
+                await apiFetch("/api/contact", {
+                    method: "POST",
+                    body: payload,
+                });
+
+                form.reset();
+                setStatus("Message sent successfully.", "is-success");
+            } catch (error) {
+                setStatus(error.message || "Failed to send message.", "is-error");
+            } finally {
+                submitButton.disabled = false;
+                submitButton.textContent = "Send Message";
+            }
+        });
+    });
+</script>
+</body>
+</html>
