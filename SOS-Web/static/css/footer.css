@@ -72,3 +72,40 @@
 .footer-legal-block a:hover {
     color: #7ee7ff;
 }
+
+.footer-affiliations {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+
+.footer-affiliations h4 {
+    font-size: 0.85rem;
+    text-transform: uppercase;
+    opacity: 0.6;
+}
+
+.affiliation-logos {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    align-items: center;
+}
+
+.affiliation-logos img {
+    height: 22px;
+    opacity: 0.75;
+    filter: grayscale(100%);
+    transition: 0.2s ease;
+}
+
+.affiliation-logos img:hover {
+    opacity: 1;
+    filter: grayscale(0%);
+}
+
+.affiliation-note {
+    font-size: 0.75rem;
+    opacity: 0.5;
+    line-height: 1.4;
+}
