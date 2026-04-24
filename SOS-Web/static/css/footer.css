@@ -1,0 +1,22 @@
+.site-footer {
+    padding: 2rem 1rem;
+    background: #050509;
+    color: rgba(255, 255, 255, 0.72);
+}
+
+.footer-legal-links {
+    display: flex;
+    justify-content: center;
+    gap: 1.25rem;
+    flex-wrap: wrap;
+}
+
+.footer-legal-links a {
+    color: rgba(255, 255, 255, 0.72);
+    text-decoration: none;
+    font-size: 0.9rem;
+}
+
+.footer-legal-links a:hover {
+    color: #7ee7ff;
+}
