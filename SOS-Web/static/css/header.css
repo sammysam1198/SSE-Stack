@@ -13,6 +13,22 @@
             inset 0 1px 0 rgba(255,255,255,0.08);
 }
 
+.auth-slot {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    min-height: 42px;
+}
+
+.auth-slot-pending {
+    opacity: 1;
+}
+
+.auth-pending-link {
+    pointer-events: none;
+    opacity: 0.72;
+}
+
 .site-header .container {
     min-height: var(--nav-height);
     display: flex;

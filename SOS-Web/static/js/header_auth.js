@@ -3,6 +3,9 @@ window.addEventListener("load", async () => {
     let currentUser = await getCurrentUser();
     renderAuthUI();
 
+
+
+
     document.addEventListener("click", async (event) => {
         const openBtn = event.target.closest("[data-open-signin]");
         if (openBtn) {
@@ -83,6 +86,21 @@ window.addEventListener("load", async () => {
             }
         }
     });
+    document.addEventListener("DOMContentLoaded", async () => {
+        const authSlot = document.getElementById("auth-slot");
+
+        bindSigninButtons();
+
+        let currentUser = null;
+
+        try {
+            currentUser = await getCurrentUser();
+        } catch (error) {
+            currentUser = null;
+        }
+
+        renderAuthUI(currentUser);
+    });
 
     function renderAuthUI() {
         if (!authSlot) return;
@@ -108,14 +126,27 @@ window.addEventListener("load", async () => {
     }
 
     function openSigninModal() {
-        const modal = document.getElementById("signin-modal");
-        if (!modal) return;
-        modal.classList.add("is-open");
+        const signinModal = document.getElementById("signin-modal");
+        if (!signinModal) return;
+        signinModal.classList.add("is-open");
     }
 
     function closeSigninModal() {
-        const modal = document.getElementById("signin-modal");
-        if (!modal) return;
-        modal.classList.remove("is-open");
+        const signinModal = document.getElementById("signin-modal");
+        if (!signinModal) return;
+        signinModal.classList.remove("is-open");
+    }
+
+    function bindSigninButtons() {
+        document.querySelectorAll("[data-open-signin]").forEach((button) => {
+            if (button.dataset.signinBound === "true") return;
+
+            button.dataset.signinBound = "true";
+            button.addEventListener("click", (event) => {
+                event.preventDefault();
+                openSigninModal();
+            });
+        });
     }
 });
+
