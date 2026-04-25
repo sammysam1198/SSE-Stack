@@ -1,13 +1,25 @@
+function showSigninInsteadOfRedirect(message = "Please sign in to continue.") {
+    const statusEl = document.getElementById("artist-editor-status");
+
+    if (statusEl) {
+        statusEl.textContent = message;
+    }
+
+    if (typeof openSigninModal === "function") {
+        openSigninModal();
+    }
+}
+
 function requireRole(user, allowedRoles = []) {
     if (!user) {
-        window.location.href = "/";
+        showSigninInsteadOfRedirect("Please sign in to access your dashboard.");
         return false;
     }
 
     if (user.role === "developer") return true;
 
     if (!allowedRoles.includes(user.role)) {
-        window.location.href = "/";
+        showSigninInsteadOfRedirect("This dashboard is not available for your account.");
         return false;
     }
 
@@ -488,16 +500,16 @@ document.addEventListener("DOMContentLoaded", async () => {
 
     try {
         const user = await getCurrentUser();
-        if (!user) {
-            window.location.href = "/";
-            return;
-        }
+            if (!user) {
+                showSigninInsteadOfRedirect("Please sign in to access your dashboard.");
+                return;
+}
 
         bindProfileMenu();
 
         // admin/dev release review card
         if (document.getElementById("release-review-body")) {
-            loadReleaseReview();
+            await loadReleaseReview();
         }
 
         // load avatar/profile art anywhere an artist is signed in
