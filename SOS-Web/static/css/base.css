@@ -51,6 +51,7 @@ body {
     min-height: 100%;
 }
 
+
 html {
     scroll-behavior: smooth;
 }
@@ -354,4 +355,16 @@ img {
                 url("/static/logos/sse.png") center 28% / 320px auto no-repeat;
         opacity: 0.12;
     }
+}
+
+*,
+*::before,
+*::after {
+    box-sizing: border-box;
+}
+
+img,
+video,
+iframe {
+    max-width: 100%;
 }
