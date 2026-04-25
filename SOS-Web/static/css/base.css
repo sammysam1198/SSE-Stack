@@ -201,20 +201,53 @@ img {
     inset: 0;
     pointer-events: none;
     background:
-            linear-gradient(120deg, rgba(255,255,255,0.26) 0%, rgba(255,255,255,0.06) 20%, transparent 40%),
-            radial-gradient(circle at top left, rgba(255, 47, 171, 0.20), transparent 30%),
-            radial-gradient(circle at bottom right, rgba(23, 220, 255, 0.18), transparent 34%);
+            linear-gradient(118deg,
+            rgba(255,255,255,0.34) 0%,
+            rgba(255,255,255,0.11) 9%,
+            rgba(255,255,255,0.035) 18%,
+            transparent 34%
+            ),
+            linear-gradient(150deg,
+            transparent 0%,
+            transparent 66%,
+            rgba(0,234,255,0.16) 83%,
+            rgba(255,255,255,0.16) 100%
+            ),
+            radial-gradient(circle at 6% 7%, rgba(255, 255, 255, 0.20), transparent 12%),
+            radial-gradient(circle at 3% 22%, rgba(255, 20, 157, 0.16), transparent 28%),
+            radial-gradient(circle at 98% 4%, rgba(0, 234, 255, 0.16), transparent 30%);
     opacity: 1;
 }
 
 .glass::after {
     content: "";
     position: absolute;
-    inset: auto 10% 0 10%;
-    height: 36%;
+    inset: 1px;
+    border-radius: inherit;
     pointer-events: none;
-    background: linear-gradient(to top, rgba(255,255,255,0.05), transparent);
-    opacity: 0.6;
+    background:
+            linear-gradient(90deg,
+            rgba(255, 20, 157, 0.32),
+            transparent 18%,
+            transparent 74%,
+            rgba(0, 234, 255, 0.34)
+            ),
+            linear-gradient(180deg,
+            rgba(255,255,255,0.20),
+            transparent 22%,
+            transparent 74%,
+            rgba(0,234,255,0.12)
+            );
+    opacity: 0.34;
+    mask:
+            linear-gradient(#000 0 0) content-box,
+            linear-gradient(#000 0 0);
+    -webkit-mask:
+            linear-gradient(#000 0 0) content-box,
+            linear-gradient(#000 0 0);
+    padding: 1px;
+    -webkit-mask-composite: xor;
+    mask-composite: exclude;
 }
 
 .glass > * {
@@ -275,33 +308,36 @@ img {
 
 :root {
     --bg: #000106;
-    --bg-2: #050711;
-    --panel: rgba(8, 10, 18, 0.82);
-    --panel-strong: rgba(4, 6, 12, 0.94);
+    --bg-2: #03050c;
+    --bg-3: #070a12;
 
-    --border: rgba(255, 255, 255, 0.20);
+    --panel: rgba(3, 5, 12, 0.88);
+    --panel-strong: rgba(1, 2, 8, 0.96);
+
+    --border: rgba(255, 255, 255, 0.16);
     --border-strong: rgba(255, 255, 255, 0.34);
 
-    --muted: rgba(255, 255, 255, 0.90);
-    --soft: rgba(255, 255, 255, 0.74);
-    --faint: rgba(255, 255, 255, 0.58);
+    --muted: rgba(255, 255, 255, 0.88);
+    --soft: rgba(255, 255, 255, 0.66);
+    --faint: rgba(255, 255, 255, 0.46);
 
     --pink: #ff149d;
-    --hot-pink: #ff3fc7;
-    --cyan: #00e5ff;
+    --hot-pink: #ff4fd8;
+    --cyan: #00eaff;
     --blue: #4f7dff;
     --violet: #8a4dff;
 
-    --glow-cyan: 0 0 54px rgba(0, 229, 255, 0.38);
-    --glow-pink: 0 0 54px rgba(255, 20, 157, 0.34);
+    --glow-cyan: 0 0 58px rgba(0, 234, 255, 0.34);
+    --glow-pink: 0 0 58px rgba(255, 20, 157, 0.30);
 }
 
 body {
     background:
-            radial-gradient(circle at 10% 14%, rgba(255, 20, 157, 0.42), transparent 24%),
-            radial-gradient(circle at 88% 18%, rgba(0, 229, 255, 0.38), transparent 26%),
-            radial-gradient(circle at 62% 82%, rgba(138, 77, 255, 0.26), transparent 26%),
-            linear-gradient(180deg, #000106 0%, #060814 46%, #000106 100%);
+            radial-gradient(circle at 14% 10%, rgba(255, 20, 157, 0.34), transparent 24%),
+            radial-gradient(circle at 92% 12%, rgba(0, 234, 255, 0.38), transparent 26%),
+            radial-gradient(circle at 72% 82%, rgba(79, 125, 255, 0.20), transparent 24%),
+            radial-gradient(circle at 22% 76%, rgba(138, 77, 255, 0.16), transparent 22%),
+            linear-gradient(180deg, #000106 0%, #03050b 42%, #000106 100%);
 }
 
 body::before {
@@ -314,16 +350,22 @@ body::after {
 }
 
 .glass {
-    border-color: rgba(255, 255, 255, 0.22);
+    border-color: rgba(255, 255, 255, 0.18);
     background:
-            linear-gradient(180deg, rgba(255,255,255,0.24) 0%, rgba(255,255,255,0.075) 18%, rgba(255,255,255,0.025) 100%),
-            linear-gradient(135deg, rgba(255, 20, 157, 0.18), rgba(0, 229, 255, 0.15) 54%, rgba(138, 77, 255, 0.12)),
-            rgba(4, 6, 14, 0.84);
+            linear-gradient(180deg, rgba(255,255,255,0.105) 0%, rgba(255,255,255,0.022) 22%, rgba(0,0,0,0.02) 100%),
+            radial-gradient(circle at 8% 0%, rgba(255, 255, 255, 0.16), transparent 18%),
+            radial-gradient(circle at 0% 18%, rgba(255, 20, 157, 0.18), transparent 30%),
+            radial-gradient(circle at 100% 14%, rgba(0, 234, 255, 0.20), transparent 34%),
+            linear-gradient(135deg, rgba(255, 20, 157, 0.10), rgba(0, 234, 255, 0.08) 58%, rgba(79, 125, 255, 0.07)),
+            rgba(2, 4, 11, 0.90);
+    backdrop-filter: blur(26px) saturate(170%) contrast(1.08);
+    -webkit-backdrop-filter: blur(26px) saturate(170%) contrast(1.08);
     box-shadow:
-            0 38px 110px rgba(0, 0, 0, 0.66),
-            0 0 42px rgba(255, 20, 157, 0.13),
-            0 0 48px rgba(0, 229, 255, 0.11),
-            inset 0 1px 0 rgba(255,255,255,0.30);
+            0 36px 110px rgba(0, 0, 0, 0.78),
+            0 0 46px rgba(255, 20, 157, 0.10),
+            0 0 52px rgba(0, 234, 255, 0.10),
+            inset 0 1px 0 rgba(255,255,255,0.34),
+            inset 0 -1px 0 rgba(0,234,255,0.12);
 }
 
 .button.primary {
