@@ -318,7 +318,6 @@
                 <iframe id="application-pdf-frame" class="application-pdf-frame" title="Application PDF Viewer"></iframe>
             </div>
         </div>
-
         <article class="dashboard-card dashboard-card--full">
             <div class="applications-review-head">
                 <div>
@@ -343,6 +342,69 @@
                     <tbody id="release-review-body">
                     <tr>
                         <td colspan="5">Loading releases...</td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </article>
+        <article class="dashboard-card dashboard-card--wide">
+            <div class="dashboard-card__topline">
+                <div>
+                    <p class="eyebrow">System Activity</p>
+                    <h2>Audit Logs</h2>
+                    <p class="dashboard-card__intro">
+                        Console-style record of important system actions.
+                    </p>
+                </div>
+            </div>
+
+            <div class="applications-table-wrap">
+                <table class="applications-table">
+                    <thead>
+                    <tr>
+                        <th>Time</th>
+                        <th>Event</th>
+                        <th>Actor</th>
+                        <th>Entity</th>
+                        <th>Message</th>
+                    </tr>
+                    </thead>
+                    <tbody id="audit-logs-body">
+                    <tr>
+                        <td colspan="5">Loading audit logs...</td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </article>
+
+        <article class="dashboard-card dashboard-card--wide">
+            <div class="dashboard-card__topline">
+                <div>
+                    <p class="eyebrow">Artist Support</p>
+                    <h2>Contact Requests</h2>
+                    <p class="dashboard-card__intro">
+                        Review artist/public messages routed to Owner, IT, or Operations.
+                    </p>
+                </div>
+            </div>
+
+            <div class="applications-table-wrap">
+                <table class="applications-table">
+                    <thead>
+                    <tr>
+                        <th>From</th>
+                        <th>Issue</th>
+                        <th>Dept</th>
+                        <th>Subject</th>
+                        <th>Date</th>
+                        <th>Status</th>
+                        <th>Actions</th>
+                    </tr>
+                    </thead>
+                    <tbody id="contact-requests-body">
+                    <tr>
+                        <td colspan="7">Loading contact requests...</td>
                     </tr>
                     </tbody>
                 </table>
