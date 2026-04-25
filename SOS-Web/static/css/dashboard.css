@@ -722,37 +722,3 @@
         grid-column: auto;
     }
 }
-
-@media (max-width: 640px) {
-    .signin-modal {
-        align-items: center;
-        justify-content: center;
-        padding: 1rem;
-        overflow-x: hidden;
-    }
-
-    .signin-panel {
-        width: 100%;
-        max-width: calc(100vw - 2rem);
-        box-sizing: border-box;
-        padding: 1.35rem;
-        border-radius: 22px;
-        margin: 0 auto;
-    }
-
-    .signin-form input {
-        width: 100%;
-        max-width: 100%;
-        box-sizing: border-box;
-    }
-
-    .signin-actions {
-        justify-content: stretch;
-    }
-
-    .signin-cancel,
-    .signin-submit {
-        flex: 1;
-        min-width: 0;
-    }
-}
