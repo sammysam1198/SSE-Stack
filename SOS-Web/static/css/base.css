@@ -181,18 +181,41 @@ img {
 .glass {
     position: relative;
     overflow: hidden;
-    border-radius: var(--radius-xl);
-    border: 1px solid rgba(255,255,255,0.14);
+
+    border: 1px solid rgba(255, 255, 255, 0.18);
+
     background:
-            linear-gradient(180deg, rgba(255,255,255,0.18) 0%, rgba(255,255,255,0.06) 14%, rgba(255,255,255,0.02) 100%),
-            linear-gradient(135deg, rgba(255, 47, 171, 0.10), rgba(23, 220, 255, 0.09) 54%, rgba(255, 90, 107, 0.08)),
-            rgba(12, 14, 20, 0.70);
-    backdrop-filter: blur(24px) saturate(148%);
-    -webkit-backdrop-filter: blur(24px) saturate(148%);
+        /* sharp white paint reflection */
+            linear-gradient(
+                    115deg,
+                    rgba(255, 255, 255, 0.28) 0%,
+                    rgba(255, 255, 255, 0.11) 7%,
+                    rgba(255, 255, 255, 0.035) 15%,
+                    transparent 28%
+            ),
+
+                /* neon reflections crawling across black paint */
+            radial-gradient(circle at 0% 12%, rgba(255, 0, 180, 0.30), transparent 34%),
+            radial-gradient(circle at 105% 18%, rgba(0, 230, 255, 0.28), transparent 36%),
+            radial-gradient(circle at 80% 105%, rgba(80, 80, 255, 0.18), transparent 38%),
+
+                /* black lacquer base */
+            linear-gradient(
+                    145deg,
+                    rgba(10, 12, 20, 0.96),
+                    rgba(2, 3, 8, 0.98) 48%,
+                    rgba(0, 1, 5, 0.98)
+            );
+
     box-shadow:
-            var(--shadow-xl),
-            inset 0 1px 0 rgba(255,255,255,0.22),
-            inset 0 -1px 0 rgba(255,255,255,0.05);
+            0 34px 90px rgba(0, 0, 0, 0.82),
+            0 0 42px rgba(255, 0, 180, 0.14),
+            0 0 46px rgba(0, 230, 255, 0.13),
+            inset 0 1px 0 rgba(255, 255, 255, 0.36),
+            inset 0 -1px 0 rgba(0, 230, 255, 0.16);
+
+    backdrop-filter: blur(18px) saturate(155%);
+    -webkit-backdrop-filter: blur(18px) saturate(155%);
 }
 
 .glass::before {
@@ -201,22 +224,30 @@ img {
     inset: 0;
     pointer-events: none;
     background:
-            linear-gradient(118deg,
-            rgba(255,255,255,0.34) 0%,
-            rgba(255,255,255,0.11) 9%,
-            rgba(255,255,255,0.035) 18%,
-            transparent 34%
+        /* long hood-like shine */
+            linear-gradient(
+                    105deg,
+                    transparent 0%,
+                    transparent 42%,
+                    rgba(255, 255, 255, 0.09) 48%,
+                    rgba(255, 255, 255, 0.22) 51%,
+                    rgba(255, 255, 255, 0.06) 56%,
+                    transparent 66%
             ),
-            linear-gradient(150deg,
-            transparent 0%,
-            transparent 66%,
-            rgba(0,234,255,0.16) 83%,
-            rgba(255,255,255,0.16) 100%
+
+                /* blue supergiant side gleam */
+            linear-gradient(
+                    155deg,
+                    transparent 0%,
+                    transparent 62%,
+                    rgba(0, 230, 255, 0.18) 79%,
+                    rgba(255, 255, 255, 0.16) 100%
             ),
-            radial-gradient(circle at 6% 7%, rgba(255, 255, 255, 0.20), transparent 12%),
-            radial-gradient(circle at 3% 22%, rgba(255, 20, 157, 0.16), transparent 28%),
-            radial-gradient(circle at 98% 4%, rgba(0, 234, 255, 0.16), transparent 30%);
-    opacity: 1;
+
+                /* magenta underside glow */
+            radial-gradient(circle at 4% 88%, rgba(255, 0, 180, 0.18), transparent 36%);
+
+    opacity: 0.95;
 }
 
 .glass::after {
@@ -225,29 +256,36 @@ img {
     inset: 1px;
     border-radius: inherit;
     pointer-events: none;
+
     background:
-            linear-gradient(90deg,
-            rgba(255, 20, 157, 0.32),
-            transparent 18%,
-            transparent 74%,
-            rgba(0, 234, 255, 0.34)
+            linear-gradient(
+                    90deg,
+                    rgba(255, 0, 180, 0.55),
+                    transparent 18%,
+                    transparent 74%,
+                    rgba(0, 230, 255, 0.55)
             ),
-            linear-gradient(180deg,
-            rgba(255,255,255,0.20),
-            transparent 22%,
-            transparent 74%,
-            rgba(0,234,255,0.12)
+            linear-gradient(
+                    180deg,
+                    rgba(255, 255, 255, 0.28),
+                    transparent 18%,
+                    transparent 78%,
+                    rgba(0, 230, 255, 0.22)
             );
-    opacity: 0.34;
-    mask:
-            linear-gradient(#000 0 0) content-box,
-            linear-gradient(#000 0 0);
+
+    padding: 1px;
+
     -webkit-mask:
             linear-gradient(#000 0 0) content-box,
             linear-gradient(#000 0 0);
-    padding: 1px;
     -webkit-mask-composite: xor;
+
+    mask:
+            linear-gradient(#000 0 0) content-box,
+            linear-gradient(#000 0 0);
     mask-composite: exclude;
+
+    opacity: 0.72;
 }
 
 .glass > * {
@@ -382,6 +420,14 @@ body::after {
 .auth-signout-button {
     border-color: rgba(255,255,255,0.22);
     background: rgba(255,255,255,0.095);
+}
+
+body {
+    background:
+            radial-gradient(circle at 8% 18%, rgba(255, 0, 160, 0.36), transparent 28%),
+            radial-gradient(circle at 92% 16%, rgba(0, 230, 255, 0.34), transparent 30%),
+            radial-gradient(circle at 50% 120%, rgba(255, 0, 180, 0.18), transparent 34%),
+            linear-gradient(180deg, #000104 0%, #02040a 44%, #000104 100%);
 }
 
 

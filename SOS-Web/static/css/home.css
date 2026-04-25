@@ -390,3 +390,13 @@
             0 0 18px rgba(0, 234, 255, 0.22),
             0 0 18px rgba(255, 20, 157, 0.10);
 }
+
+
+.hero-panel,
+.luxury-card,
+.pulse-card,
+.quality-card,
+.artist-card {
+    background-color: rgba(0, 1, 7, 0.88);
+}
+
