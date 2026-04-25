@@ -74,16 +74,28 @@
                 <div class="artist-profile-menu__dropdown" id="artist-profile-dropdown">
                     <div class="artist-profile-menu__section">
                         <p class="artist-profile-menu__label">Account</p>
-                        <button type="button" class="artist-profile-menu__item">Edit Profile Picture</button>
-                        <button type="button" class="artist-profile-menu__item">Edit Artist Page</button>
-                        <button type="button" class="artist-profile-menu__item">Account Settings</button>
+                        <button type="button" class="artist-profile-menu__item" data-profile-action="profile-picture">
+                            Edit Profile Picture
+                        </button>
+                        <button type="button" class="artist-profile-menu__item" data-profile-action="artist-page">
+                            Edit Artist Page
+                        </button>
+                        <button type="button" class="artist-profile-menu__item" data-profile-action="account-settings">
+                            Account Settings
+                        </button>
                     </div>
 
                     <div class="artist-profile-menu__section">
                         <p class="artist-profile-menu__label">Security</p>
-                        <button type="button" class="artist-profile-menu__item">Change Password</button>
-                        <button type="button" class="artist-profile-menu__item">Change Email</button>
-                        <button type="button" class="artist-profile-menu__item">Change Username</button>
+                        <button type="button" class="artist-profile-menu__item" data-profile-action="change-password">
+                            Change Password
+                        </button>
+                        <button type="button" class="artist-profile-menu__item" data-profile-action="change-email">
+                            Change Email
+                        </button>
+                        <button type="button" class="artist-profile-menu__item" data-profile-action="change-username">
+                            Change Username
+                        </button>
                     </div>
                 </div>
             </div>
@@ -95,20 +107,7 @@
     </div>
 </header>
 
-<main class="dashboard-shell">
-    <aside class="dashboard-sidebar">
-        <div class="dashboard-sidebar_brand">SpacedOut Studios</div>
-        <div class="dashboard-sidebar_role">Developer Portal</div>
-
-        <nav class="dashboard-sidebar-nav">
-            <a href="#" class="is-active">System Overview</a>
-            <a href="#applications-review-card">Applications Review</a>
-            <a href="#">Logs</a>
-            <a href="#">Mail Events</a>
-            <a href="#">Debug Tools</a>
-        </nav>
-    </aside>
-
+<main class="dashboard-shell dashboard-shell--single">
     <div class="dashboard-main">
         <section class="dashboard-main">
         <section class="dashboard-hero" id="dashboard-hero">
@@ -319,7 +318,6 @@
                 <iframe id="application-pdf-frame" class="application-pdf-frame" title="Application PDF Viewer"></iframe>
             </div>
         </div>
-
         <article class="dashboard-card dashboard-card--full">
             <div class="applications-review-head">
                 <div>
@@ -344,6 +342,69 @@
                     <tbody id="release-review-body">
                     <tr>
                         <td colspan="5">Loading releases...</td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </article>
+        <article class="dashboard-card dashboard-card--wide">
+            <div class="dashboard-card__topline">
+                <div>
+                    <p class="eyebrow">System Activity</p>
+                    <h2>Audit Logs</h2>
+                    <p class="dashboard-card__intro">
+                        Console-style record of important system actions.
+                    </p>
+                </div>
+            </div>
+
+            <div class="applications-table-wrap">
+                <table class="applications-table">
+                    <thead>
+                    <tr>
+                        <th>Time</th>
+                        <th>Event</th>
+                        <th>Actor</th>
+                        <th>Entity</th>
+                        <th>Message</th>
+                    </tr>
+                    </thead>
+                    <tbody id="audit-logs-body">
+                    <tr>
+                        <td colspan="5">Loading audit logs...</td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </article>
+
+        <article class="dashboard-card dashboard-card--wide">
+            <div class="dashboard-card__topline">
+                <div>
+                    <p class="eyebrow">Artist Support</p>
+                    <h2>Contact Requests</h2>
+                    <p class="dashboard-card__intro">
+                        Review artist/public messages routed to Owner, IT, or Operations.
+                    </p>
+                </div>
+            </div>
+
+            <div class="applications-table-wrap">
+                <table class="applications-table">
+                    <thead>
+                    <tr>
+                        <th>From</th>
+                        <th>Issue</th>
+                        <th>Dept</th>
+                        <th>Subject</th>
+                        <th>Date</th>
+                        <th>Status</th>
+                        <th>Actions</th>
+                    </tr>
+                    </thead>
+                    <tbody id="contact-requests-body">
+                    <tr>
+                        <td colspan="7">Loading contact requests...</td>
                     </tr>
                     </tbody>
                 </table>

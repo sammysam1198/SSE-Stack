@@ -341,6 +341,21 @@
                     </div>
 
                     <label>
+                        What kind of issue is this?
+                        <select id="contact-issue-type" name="issue_type" required>
+                            <option value="general">General / Operations</option>
+                            <option value="release">Release Question</option>
+                            <option value="website">Website / IT / Tools</option>
+                            <option value="login">Login / Account Help</option>
+                            <option value="advertising">Advertising / Promotion</option>
+                            <option value="legal">Legal / Publishing / Royalties</option>
+                            <option value="business">Business / Partnership</option>
+                            <option value="other">Other</option>
+                        </select>
+                    </label>
+
+
+                    <label>
                         Subject
                         <input type="text" id="contact-subject" name="subject" required />
                     </label>
@@ -426,6 +441,7 @@
                 email: document.getElementById("contact-email")?.value.trim() || "",
                 subject: document.getElementById("contact-subject")?.value.trim() || "",
                 message: document.getElementById("contact-message")?.value.trim() || "",
+                issue_type: document.getElementById("contact-issue-type")?.value || "general",
             };
 
             try {

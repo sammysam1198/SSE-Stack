@@ -1,27 +1,30 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-2411712829601384"
+            crossorigin="anonymous"></script>
+
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;850&display=swap" rel="stylesheet">
     <link rel="icon" type="image/png" href="/favicon.png">
+
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta property="og:title" content="SpacedOut Studios">
+
+    <meta property="og:title" content="Apply to SpacedOut Studios">
     <meta property="og:description" content="Your music. Your voice. Your choice.">
     <meta property="og:image" content="https://www.spacedoutstudiosent.com/static/logos/sse.png">
-    <meta property="og:url" content="https://www.spacedoutstudiosent.com">
+    <meta property="og:url" content="https://www.spacedoutstudiosent.com/submissions">
     <meta property="og:type" content="website">
 
     <meta name="twitter:card" content="summary_large_image">
-    <meta name="twitter:title" content="SpacedOut Studios">
+    <meta name="twitter:title" content="Apply to SpacedOut Studios">
     <meta name="twitter:description" content="Your music. Your voice. Your choice.">
     <meta name="twitter:image" content="https://www.spacedoutstudiosent.com/static/logos/sse.png">
+
     <title>Artist Application | SpacedOut Studios</title>
-    <meta
-            name="description"
-            content="Apply to SpacedOut Studios through the official artist application."
-    />
+    <meta name="description" content="Apply to SpacedOut Studios through the official artist application." />
 
     <link rel="stylesheet" href="/static/css/base.css" />
     <link rel="stylesheet" href="/static/css/header.css" />
@@ -31,13 +34,13 @@
     <style>
         .application-shell {
             display: grid;
-            gap: 28px;
+            gap: 30px;
             padding-top: 18px;
         }
 
         .application-hero {
             display: grid;
-            grid-template-columns: 1.1fr 0.9fr;
+            grid-template-columns: minmax(0, 1.12fr) minmax(280px, 0.88fr);
             gap: 24px;
             align-items: stretch;
         }
@@ -45,38 +48,45 @@
         .application-hero-card,
         .application-side-card,
         .application-form-card {
-            padding: 30px;
+            padding: clamp(24px, 3.5vw, 42px);
+        }
+
+        .application-hero-card {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            min-height: 420px;
         }
 
         .application-title {
             margin: 0;
-            font-size: clamp(2.8rem, 7vw, 5.4rem);
-            line-height: 0.92;
-            letter-spacing: -0.06em;
+            font-size: clamp(3rem, 7vw, 5.8rem);
+            line-height: 0.9;
+            letter-spacing: -0.065em;
         }
 
         .application-copy {
-            margin: 16px 0 0;
-            max-width: 760px;
-            color: rgba(255,255,255,0.82);
-            line-height: 1.85;
-            font-size: 1.02rem;
+            margin: 20px 0 0;
+            max-width: 780px;
+            color: var(--muted);
+            line-height: 1.68;
+            font-size: clamp(1rem, 1.35vw, 1.14rem);
         }
 
         .application-points {
-            margin: 22px 0 0;
+            margin: 24px 0 0;
             padding: 0;
             list-style: none;
             display: grid;
-            gap: 12px;
+            gap: 13px;
         }
 
         .application-points li {
             display: flex;
             gap: 12px;
             align-items: flex-start;
-            color: var(--muted);
-            line-height: 1.7;
+            color: rgba(255,255,255,0.82);
+            line-height: 1.6;
         }
 
         .application-points li::before {
@@ -87,40 +97,48 @@
             margin-top: 0.45rem;
             flex: 0 0 auto;
             background: linear-gradient(135deg, var(--pink), var(--cyan));
-            box-shadow: 0 0 18px rgba(255, 47, 171, 0.32);
+            box-shadow: 0 0 18px rgba(255, 20, 157, 0.32);
+        }
+
+        .application-side-stack {
+            display: grid;
+            gap: 24px;
+        }
+
+        .application-side-card {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
         }
 
         .application-side-card h3,
         .application-section-title {
             margin: 0;
+            color: #fff;
             font-size: 1rem;
-            letter-spacing: 0.08em;
+            letter-spacing: 0.09em;
             text-transform: uppercase;
         }
 
         .application-side-card p {
-            margin: 12px 0 0;
+            margin: 13px 0 0;
             color: var(--muted);
-            line-height: 1.8;
-        }
-
-        .application-side-stack {
-            display: grid;
-            gap: 20px;
+            line-height: 1.65;
         }
 
         .signal-list {
-            margin-top: 18px;
+            margin-top: 20px;
             display: grid;
-            gap: 12px;
+            gap: 0;
         }
 
         .signal-row {
-            display: flex;
-            justify-content: space-between;
-            gap: 14px;
-            padding-bottom: 12px;
-            border-bottom: 1px solid rgba(255,255,255,0.08);
+            display: grid;
+            grid-template-columns: 1fr auto;
+            align-items: center;
+            gap: 18px;
+            padding: 14px 0;
+            border-bottom: 1px solid rgba(255,255,255,0.11);
         }
 
         .signal-row:last-child {
@@ -129,15 +147,15 @@
         }
 
         .signal-label {
-            color: rgba(255,255,255,0.50);
+            color: rgba(255,255,255,0.62);
             text-transform: uppercase;
             letter-spacing: 0.12em;
             font-size: 0.76rem;
         }
 
         .signal-value {
-            color: rgba(255,255,255,0.94);
-            font-weight: 700;
+            color: #fff;
+            font-weight: 850;
             text-align: right;
         }
 
@@ -147,15 +165,15 @@
 
         .application-form {
             display: grid;
-            gap: 26px;
-            margin-top: 26px;
+            gap: 30px;
+            margin-top: 28px;
         }
 
         .application-section {
             display: grid;
-            gap: 16px;
-            padding-top: 22px;
-            border-top: 1px solid rgba(255,255,255,0.08);
+            gap: 18px;
+            padding-top: 24px;
+            border-top: 1px solid rgba(255,255,255,0.10);
         }
 
         .application-section:first-of-type {
@@ -165,9 +183,9 @@
 
         .application-section-copy {
             margin: 8px 0 0;
-            max-width: 780px;
+            max-width: 820px;
             color: var(--muted);
-            line-height: 1.75;
+            line-height: 1.65;
         }
 
         .form-grid {
@@ -187,14 +205,15 @@
 
         .field label {
             font-size: 0.92rem;
-            color: rgba(255,255,255,0.88);
+            color: rgba(255,255,255,0.90);
+            font-weight: 650;
         }
 
         .field-help {
             margin: 0;
-            color: rgba(255,255,255,0.48);
+            color: rgba(255,255,255,0.50);
             font-size: 0.84rem;
-            line-height: 1.55;
+            line-height: 1.5;
         }
 
         .field input,
@@ -205,7 +224,9 @@
             padding: 0 16px;
             border-radius: 16px;
             border: 1px solid rgba(255,255,255,0.14);
-            background: rgba(255,255,255,0.06);
+            background:
+                    linear-gradient(135deg, rgba(255,255,255,0.045), rgba(255,255,255,0.015)),
+                    rgba(0,1,7,0.72);
             color: var(--text);
             font: inherit;
             transition:
@@ -224,11 +245,13 @@
         .field select:focus,
         .field textarea:focus {
             outline: none;
-            border-color: rgba(23, 220, 255, 0.42);
+            border-color: rgba(0, 234, 255, 0.44);
             box-shadow:
-                    0 0 0 1px rgba(23, 220, 255, 0.24),
-                    0 0 24px rgba(23, 220, 255, 0.08);
-            background: rgba(255,255,255,0.08);
+                    0 0 0 1px rgba(0, 234, 255, 0.22),
+                    0 0 24px rgba(0, 234, 255, 0.10);
+            background:
+                    linear-gradient(135deg, rgba(255,255,255,0.065), rgba(255,255,255,0.02)),
+                    rgba(0,1,7,0.82);
         }
 
         .application-actions {
@@ -236,12 +259,13 @@
             flex-wrap: wrap;
             gap: 14px;
             align-items: center;
-            margin-top: 8px;
+            margin-top: 4px;
         }
 
         .application-status {
             min-height: 1.2rem;
             font-size: 0.94rem;
+            color: var(--muted);
         }
 
         .application-status.error {
@@ -260,49 +284,60 @@
         .notice-card {
             padding: 22px;
             border-radius: 24px;
-            border: 1px solid rgba(255,255,255,0.10);
-            background: rgba(255,255,255,0.04);
+            border: 1px solid rgba(255,255,255,0.12);
+            background:
+                    radial-gradient(circle at 0% 0%, rgba(255,20,157,0.10), transparent 32%),
+                    radial-gradient(circle at 100% 0%, rgba(0,234,255,0.10), transparent 32%),
+                    rgba(255,255,255,0.035);
         }
 
         .notice-card p {
             margin: 0 0 14px;
             color: var(--muted);
-            line-height: 1.75;
+            line-height: 1.65;
         }
 
         .notice-card p:last-child {
             margin-bottom: 0;
         }
 
+        select {
+            color: #000;
+            background-color: #fff;
+        }
+
+        select option {
+            color: #000;
+            background-color: #fff;
+        }
+
         @media (max-width: 1050px) {
             .application-hero {
                 grid-template-columns: 1fr;
             }
+
+            .application-hero-card {
+                min-height: auto;
+            }
         }
 
         @media (max-width: 780px) {
-            .application-hero-card,
-            .application-side-card,
-            .application-form-card {
-                padding: 24px 20px;
-            }
-
             .form-grid {
                 grid-template-columns: 1fr;
             }
-        }
 
-        select {
-            color: black;
-            background-color: white;
-        }
+            .signal-row {
+                grid-template-columns: 1fr;
+                gap: 6px;
+            }
 
-        select option {
-            color: black;
-            background-color: white;
+            .signal-value {
+                text-align: left;
+            }
         }
     </style>
 </head>
+
 <body>
 <div class="site-wrap">
     <header class="site-header">
@@ -338,37 +373,38 @@
     <main class="page-shell">
         <section class="application-shell">
             <section class="application-hero">
-                <article class="glass application-hero-card">
-                    <p class="eyebrow">SpacedOut Studios</p>
-                    <h1 class="display application-title">Artist Application.</h1>
+                <article class="glass glass-lacquer application-hero-card">
+                    <p class="eyebrow">Artist Application</p>
+                    <h1 class="display application-title">Apply to SpacedOut Studios.</h1>
+
                     <p class="application-copy">
-                        We are fair, but we are selective. This application helps us understand your music,
-                        your trajectory, your self-awareness, and whether your project is the right fit for SpacedOut Studios.
+                        We are fair, but selective. This application helps us understand your music, your direction,
+                        your self-awareness, and whether your project is the right fit for the SpacedOut roster.
                     </p>
 
                     <ul class="application-points">
                         <li>Use full secure links beginning with <strong>https://</strong>.</li>
-                        <li>Give honest answers. We care more about clarity and direction than trying to sound perfect.</li>
-                        <li>This is an application, not a contact form. Treat it like one.</li>
+                        <li>Give honest answers. Clarity matters more than trying to sound perfect.</li>
+                        <li>This is an artist application, not a casual contact form. Treat it like one.</li>
                     </ul>
                 </article>
 
                 <div class="application-side-stack">
-                    <aside class="glass application-side-card">
+                    <aside class="glass glass-rim application-side-card">
                         <h3>What We Look For</h3>
                         <p>
                             Identity. Direction. Consistency. Taste. Growth potential. We want artists who understand
-                            what they do well, what they do not, and where they are trying to go next.
+                            what they do well, where they need leverage, and where they are trying to go next.
                         </p>
 
                         <div class="signal-list">
                             <div class="signal-row">
-                                <span class="signal-label">Intake Type</span>
-                                <span class="signal-value">Artist Application</span>
+                                <span class="signal-label">Intake</span>
+                                <span class="signal-value">Application</span>
                             </div>
                             <div class="signal-row">
                                 <span class="signal-label">Review</span>
-                                <span class="signal-value">Manual Label Review</span>
+                                <span class="signal-value">Manual</span>
                             </div>
                             <div class="signal-row">
                                 <span class="signal-label">Fit</span>
@@ -377,23 +413,23 @@
                         </div>
                     </aside>
 
-                    <aside class="glass application-side-card">
+                    <aside class="glass glass-depth application-side-card">
                         <h3>Before You Apply</h3>
                         <p>
                             Make sure your artist name is entered exactly how you want it shown, your links are correct,
-                            and your answers reflect your actual project rather than what you think we want to hear.
+                            and your answers reflect your real project instead of what you think a label wants to hear.
                         </p>
                     </aside>
                 </div>
             </section>
 
-            <section class="glass application-form-card">
+            <section class="glass glass-depth application-form-card">
                 <div class="section-head">
                     <p class="eyebrow">Artist Intake</p>
-                    <h2 class="section-title">Apply to SpacedOut Studios</h2>
+                    <h2 class="section-title">Application Form</h2>
                     <p class="section-copy">
-                        Fill out the artist application below. We use this to evaluate fit, readiness, trajectory,
-                        and where we may or may not be able to help.
+                        Fill out the form below. We use this to evaluate fit, readiness, trajectory, and where we may
+                        or may not be able to help.
                     </p>
                 </div>
 
@@ -401,9 +437,7 @@
                     <section class="application-section">
                         <div>
                             <h3 class="application-section-title">Identity</h3>
-                            <p class="application-section-copy">
-                                Basic information about you and your artist project.
-                            </p>
+                            <p class="application-section-copy">Basic information about you and your artist project.</p>
                         </div>
 
                         <div class="form-grid">
@@ -481,9 +515,7 @@
                     <section class="application-section">
                         <div>
                             <h3 class="application-section-title">Professional Info</h3>
-                            <p class="application-section-copy">
-                                Give us a clear snapshot of where your project stands right now.
-                            </p>
+                            <p class="application-section-copy">Give us a clear snapshot of where your project stands right now.</p>
                         </div>
 
                         <div class="form-grid">
@@ -500,13 +532,13 @@
 
                             <div class="field">
                                 <label for="current-distributor">Current Distributor</label>
-                                <input id="current-distributor" name="current_distributor" type="text" placeholder="DistroKid, CD Baby, Too Lost, None, etc." />
+                                <input id="current-distributor" name="current_distributor" type="text" placeholder="DistroKid, CD Baby, TooLost, None, etc." />
                             </div>
 
                             <div class="field">
                                 <label for="total-releases">Total Releases</label>
                                 <input id="total-releases" name="total_releases" type="number" min="0" step="1" />
-                                <p class="field-help">Albums, EPs, Singles. One album = 1 release</p>
+                                <p class="field-help">Albums, EPs, Singles. One album = 1 release.</p>
                             </div>
 
                             <div class="field">
@@ -524,9 +556,7 @@
                     <section class="application-section">
                         <div>
                             <h3 class="application-section-title">Links</h3>
-                            <p class="application-section-copy">
-                                These should point to the main places your project currently lives online.
-                            </p>
+                            <p class="application-section-copy">These should point to the main places your project currently lives online.</p>
                         </div>
 
                         <div class="form-grid">
@@ -551,7 +581,7 @@
                             <div class="field">
                                 <label for="bandcamp-link">Bandcamp Link</label>
                                 <input id="bandcamp-link" name="bandcamp_link" type="url" placeholder="https://..." />
-                                <p class="field-help">Must contain “bandcamp”</p>
+                                <p class="field-help">Must contain “bandcamp” if provided</p>
                             </div>
 
                             <div class="field full">
@@ -564,9 +594,7 @@
                     <section class="application-section">
                         <div>
                             <h3 class="application-section-title">Application Questions</h3>
-                            <p class="application-section-copy">
-                                These questions help us evaluate fit, readiness, and where your project currently stands.
-                            </p>
+                            <p class="application-section-copy">These questions help us evaluate fit, readiness, and direction.</p>
                         </div>
 
                         <div class="form-grid">
@@ -637,14 +665,14 @@
 
                         <div class="form-grid">
                             <div class="field">
-                                <label for="bank-account-access">Do you have access to a bank account (for publishing royalties)?</label>
+                                <label for="bank-account-access">Do you have access to a bank account?</label>
                                 <select id="bank-account-access" name="bank_account_access" required>
                                     <option value="">Select</option>
                                     <option value="Yes">Yes</option>
                                     <option value="No">No</option>
                                     <option value="Other">Other</option>
                                 </select>
-                                <p class="field-help">Publishing royalties are typically paid through a linked bank account. Distribution payouts may be handled separately.</p>
+                                <p class="field-help">Publishing royalties are typically paid through a linked bank account.</p>
                             </div>
 
                             <div class="field full">
@@ -698,47 +726,14 @@
     </main>
 </div>
 
-<div class="signin-modal" id="signin-modal" aria-hidden="true">
-    <div class="signin-panel">
-        <h2>Sign In</h2>
-        <p>Access your SpacedOut Studios account.</p>
-
-        <form class="signin-form" id="signin-form">
-            <label>
-                Email
-                <input type="email" name="email" required />
-            </label>
-
-            <label>
-                Password
-                <div class="signin-password-wrap">
-                    <input id="signin-password" type="password" name="password" required />
-                    <button
-                            type="button"
-                            class="signin-password-toggle"
-                            id="signin-password-toggle"
-                            aria-label="Show password"
-                    >
-                        <img
-                                id="signin-password-toggle-icon"
-                                src="/static/assets/hide_password.png"
-                                alt=""
-                                aria-hidden="true"
-                        />
-                    </button>
-                </div>
-            </label>
-
-            <div class="signin-error" id="signin-error"></div>
-
-            <div class="signin-actions">
-                <button class="signin-cancel" type="button" data-close-signin>Cancel</button>
-                <button class="signin-submit" type="submit">Sign In</button>
-            </div>
-        </form>
-    </div>
-</div>
 <div id="footer-placeholder"></div>
+
+<div id="signin-modal-container"></div>
+<script src="/static/js/partials.js"></script>
+<script>
+    loadPartial("signin-modal-container", "/static/partials/signin_modal.html");
+</script>
+
 <script src="/static/js/api.js"></script>
 <script src="/static/js/auth.js"></script>
 <script src="/static/js/header_auth.js"></script>

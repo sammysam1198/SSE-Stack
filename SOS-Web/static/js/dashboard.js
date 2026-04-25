@@ -574,3 +574,116 @@ document.addEventListener("DOMContentLoaded", async () => {
         }
     }
 });
+
+function closeProfileMenu() {
+    const dropdown = document.getElementById("artist-profile-dropdown");
+    const trigger = document.getElementById("artist-profile-trigger");
+
+    if (dropdown) dropdown.classList.remove("is-open");
+    if (trigger) trigger.setAttribute("aria-expanded", "false");
+}
+
+function openProfileMenu() {
+    const dropdown = document.getElementById("artist-profile-dropdown");
+    const trigger = document.getElementById("artist-profile-trigger");
+
+    if (dropdown) dropdown.classList.add("is-open");
+    if (trigger) trigger.setAttribute("aria-expanded", "true");
+}
+
+function toggleProfileMenu() {
+    const dropdown = document.getElementById("artist-profile-dropdown");
+    if (!dropdown) return;
+
+    if (dropdown.classList.contains("is-open")) {
+        closeProfileMenu();
+    } else {
+        openProfileMenu();
+    }
+}
+
+function scrollToArtistEditor() {
+    const editor = document.getElementById("artist-editor-form");
+
+    if (editor) {
+        editor.scrollIntoView({ behavior: "smooth", block: "start" });
+        return;
+    }
+
+    window.location.href = "/dashboard-artist#artist-editor-form";
+}
+
+function openProfilePicturePicker() {
+    const fileInput =
+        document.getElementById("artist-portrait-file-input") ||
+        document.getElementById("artist-logo-file-input");
+
+    if (fileInput) {
+        fileInput.click();
+        return;
+    }
+
+    window.location.href = "/dashboard-artist#artist-editor-form";
+}
+
+function handleProfileAction(action) {
+    closeProfileMenu();
+
+    switch (action) {
+        case "profile-picture":
+            openProfilePicturePicker();
+            break;
+
+        case "artist-page":
+            scrollToArtistEditor();
+            break;
+
+        case "account-settings":
+            alert("Account settings are coming soon.");
+            break;
+
+        case "change-password":
+            alert("Change password is coming soon.");
+            break;
+
+        case "change-email":
+            alert("Change email is coming soon.");
+            break;
+
+        case "change-username":
+            alert("Change username is coming soon.");
+            break;
+
+        default:
+            break;
+    }
+}
+
+document.addEventListener("DOMContentLoaded", () => {
+    const trigger = document.getElementById("artist-profile-trigger");
+
+    if (trigger) {
+        trigger.addEventListener("click", (event) => {
+            event.stopPropagation();
+            toggleProfileMenu();
+        });
+    }
+
+    document.addEventListener("click", (event) => {
+        const menu = document.getElementById("artist-profile-menu");
+        if (menu && !menu.contains(event.target)) {
+            closeProfileMenu();
+        }
+
+        const actionButton = event.target.closest("[data-profile-action]");
+        if (actionButton) {
+            handleProfileAction(actionButton.dataset.profileAction);
+        }
+    });
+
+    document.addEventListener("keydown", (event) => {
+        if (event.key === "Escape") {
+            closeProfileMenu();
+        }
+    });
+});

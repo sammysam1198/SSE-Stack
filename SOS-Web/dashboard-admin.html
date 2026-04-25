@@ -73,16 +73,28 @@
                 <div class="artist-profile-menu__dropdown" id="artist-profile-dropdown">
                     <div class="artist-profile-menu__section">
                         <p class="artist-profile-menu__label">Account</p>
-                        <button type="button" class="artist-profile-menu__item">Edit Profile Picture</button>
-                        <button type="button" class="artist-profile-menu__item">Edit Artist Page</button>
-                        <button type="button" class="artist-profile-menu__item">Account Settings</button>
+                        <button type="button" class="artist-profile-menu__item" data-profile-action="profile-picture">
+                            Edit Profile Picture
+                        </button>
+                        <button type="button" class="artist-profile-menu__item" data-profile-action="artist-page">
+                            Edit Artist Page
+                        </button>
+                        <button type="button" class="artist-profile-menu__item" data-profile-action="account-settings">
+                            Account Settings
+                        </button>
                     </div>
 
                     <div class="artist-profile-menu__section">
                         <p class="artist-profile-menu__label">Security</p>
-                        <button type="button" class="artist-profile-menu__item">Change Password</button>
-                        <button type="button" class="artist-profile-menu__item">Change Email</button>
-                        <button type="button" class="artist-profile-menu__item">Change Username</button>
+                        <button type="button" class="artist-profile-menu__item" data-profile-action="change-password">
+                            Change Password
+                        </button>
+                        <button type="button" class="artist-profile-menu__item" data-profile-action="change-email">
+                            Change Email
+                        </button>
+                        <button type="button" class="artist-profile-menu__item" data-profile-action="change-username">
+                            Change Username
+                        </button>
                     </div>
                 </div>
             </div>
@@ -94,21 +106,7 @@
     </div>
 </header>
 
-<main class="dashboard-shell">
-    <aside class="dashboard-sidebar">
-        <div class="dashboard-sidebar_brand">SpacedOut Studios</div>
-        <div class="dashboard-sidebar_role">Admin Portal</div>
-
-        <nav class="dashboard-sidebar-nav">
-            <a href="#applications-review-card">Applications Review</a>
-            <a href="#">Artists</a>
-            <a href="#">Releases</a>
-            <a href="#">Requests</a>
-            <a href="#">News</a>
-            <a href="#">Security</a>
-        </nav>
-    </aside>
-
+<main class="dashboard-shell dashboard-shell--single">
     <div class="dashboard-main">
     <section class="dashboard-main">
         <section class="dashboard-hero" id="dashboard-hero">
@@ -325,7 +323,7 @@
             </div>
         </div>
 
-        <article class="dashboard-card dashboard-card--full">
+        <article class="dashboard-card dashboard-card--full" id="release-review-card">
             <div class="applications-review-head">
                 <div>
                     <h3>Release Review</h3>
