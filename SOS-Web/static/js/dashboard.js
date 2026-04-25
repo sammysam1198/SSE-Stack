@@ -12,7 +12,7 @@ function showSigninInsteadOfRedirect(message = "Please sign in to continue.") {
 
 function requireRole(user, allowedRoles = []) {
     if (!user) {
-        showSigninInsteadOfRedirect("Please sign in to access your dashboard.");
+        showSigninInsteadOfRedirect("Please sign in to continue.");
         return false;
     }
 
@@ -493,29 +493,36 @@ async function handleAssetUploads(statusEl) {
     }
 }
 
-document.addEventListener("DOMContentLoaded", async () => {
+document.addEventListener("DOMContentLoaded", () => {
+    initDashboard();
+});
+
+async function initDashboard() {
     const form = document.getElementById("artist-editor-form");
     const statusEl = document.getElementById("artist-editor-status");
     const saveButton = document.getElementById("artist-profile-save");
 
     try {
         const user = await getCurrentUser();
-            if (!user) {
-                showSigninInsteadOfRedirect("Please sign in to access your dashboard.");
-                return;
-}
+
+        // 🔥 DO NOT REDIRECT ANYMORE
+        if (!user) {
+            showSigninInsteadOfRedirect("Please sign in to access your dashboard.");
+            return;
+        }
 
         bindProfileMenu();
 
-        // admin/dev release review card
+        // ✅ FIXED: properly await async function
         if (document.getElementById("release-review-body")) {
             await loadReleaseReview();
         }
 
-        // load avatar/profile art anywhere an artist is signed in
+        // preload artist data for avatar + spotlight
         if (user.role === "artist") {
             try {
                 const profile = await getMyArtistProfile();
+
                 if (profile) {
                     setAvatarFromProfile(profile);
                     setReleaseSpotlightArtFromProfile(profile);
@@ -525,11 +532,11 @@ document.addEventListener("DOMContentLoaded", async () => {
                     }
                 }
             } catch (error) {
-                console.warn("Could not preload artist profile for avatar:", error);
+                console.warn("Could not preload artist profile:", error);
             }
         }
 
-        // artist dashboard only
+        // artist dashboard form logic
         if (form) {
             if (!requireRole(user, ["artist"])) return;
 
@@ -559,6 +566,7 @@ document.addEventListener("DOMContentLoaded", async () => {
                     }
                 } catch (error) {
                     console.error("Failed to save artist profile:", error);
+
                     if (statusEl) {
                         statusEl.textContent = error.message || "Could not save profile.";
                     }
@@ -567,13 +575,15 @@ document.addEventListener("DOMContentLoaded", async () => {
                 }
             });
         }
+
     } catch (error) {
         console.error("Dashboard load failed:", error);
+
         if (statusEl) {
             statusEl.textContent = "Could not load your artist profile.";
         }
     }
-});
+}
 
 function closeProfileMenu() {
     const dropdown = document.getElementById("artist-profile-dropdown");
