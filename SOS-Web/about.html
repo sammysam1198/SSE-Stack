@@ -6,21 +6,20 @@
 
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta property="og:title" content="SpacedOut Studios">
+
+    <meta property="og:title" content="About SpacedOut Studios">
     <meta property="og:description" content="Your music. Your voice. Your choice.">
     <meta property="og:image" content="https://www.spacedoutstudiosent.com/static/logos/sse.png">
-    <meta property="og:url" content="https://www.spacedoutstudiosent.com">
+    <meta property="og:url" content="https://www.spacedoutstudiosent.com/about">
     <meta property="og:type" content="website">
 
     <meta name="twitter:card" content="summary_large_image">
-    <meta name="twitter:title" content="SpacedOut Studios">
+    <meta name="twitter:title" content="About SpacedOut Studios">
     <meta name="twitter:description" content="Your music. Your voice. Your choice.">
     <meta name="twitter:image" content="https://www.spacedoutstudiosent.com/static/logos/sse.png">
+
     <title>About | SpacedOut Studios</title>
-    <meta
-            name="description"
-            content="Learn more about SpacedOut Studios, our mission, our services, and the team building a modern artist-first label platform."
-    />
+    <meta name="description" content="Learn more about SpacedOut Studios, the independent record label building modern infrastructure for artist development, release support, promotion, and fairer artist-first systems." />
 
     <link rel="stylesheet" href="/static/css/base.css" />
     <link rel="stylesheet" href="/static/css/header.css" />
@@ -31,61 +30,66 @@
     <style>
         .about-page {
             display: grid;
-            gap: 28px;
+            gap: 30px;
         }
 
         .about-hero-card,
         .about-card,
         .about-profile-card,
         .about-cta-card {
-            padding: clamp(22px, 3vw, 32px);
+            padding: clamp(24px, 3.4vw, 42px);
         }
 
         .about-hero-card {
             display: grid;
             grid-template-columns: minmax(0, 1.15fr) minmax(280px, 0.85fr);
-            gap: 24px;
-            align-items: center;
+            gap: 26px;
+            align-items: stretch;
         }
 
         .about-hero-copy {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
             min-width: 0;
         }
 
         .about-logo-row {
             display: flex;
             align-items: center;
-            gap: 16px;
-            margin-bottom: 18px;
+            gap: 18px;
+            margin-bottom: 22px;
         }
 
         .about-logo {
-            width: 74px;
-            height: 74px;
-            border-radius: 18px;
+            width: 76px;
+            height: 76px;
+            border-radius: 20px;
             object-fit: cover;
-            border: 1px solid rgba(255,255,255,0.14);
-            box-shadow:
-                    0 0 24px rgba(255, 47, 171, 0.10),
-                    0 0 20px rgba(23, 220, 255, 0.08);
+            border: 1px solid rgba(255,255,255,0.18);
             background: rgba(255,255,255,0.04);
+            box-shadow:
+                    0 0 26px rgba(255, 20, 157, 0.16),
+                    0 0 22px rgba(0, 234, 255, 0.12),
+                    inset 0 1px 0 rgba(255,255,255,0.18);
         }
 
         .about-brand-lockup h1 {
             margin: 0;
-            font-size: clamp(2.2rem, 5vw, 4rem);
-            line-height: 0.95;
-            letter-spacing: -0.05em;
+            font-size: clamp(2.45rem, 5.6vw, 4.8rem);
+            line-height: 0.92;
+            letter-spacing: -0.06em;
         }
 
         .about-brand-lockup p {
-            margin: 8px 0 0;
+            margin: 10px 0 0;
             color: var(--muted);
+            line-height: 1.55;
         }
 
         .about-hero-copy .section-copy {
-            max-width: 72ch;
-            line-height: 1.9;
+            max-width: 78ch;
+            line-height: 1.72;
         }
 
         .about-hero-stats {
@@ -95,22 +99,25 @@
 
         .about-stat-pill {
             border-radius: 22px;
-            padding: 16px 18px;
+            padding: 18px;
             border: 1px solid rgba(255,255,255,0.12);
-            background: rgba(255,255,255,0.06);
-            box-shadow: inset 0 1px 0 rgba(255,255,255,0.08);
+            background:
+                    linear-gradient(135deg, rgba(255,255,255,0.055), rgba(255,255,255,0.018)),
+                    rgba(0,1,7,0.46);
+            box-shadow: inset 0 1px 0 rgba(255,255,255,0.10);
         }
 
         .about-stat-pill strong {
             display: block;
             font-size: 0.95rem;
-            margin-bottom: 6px;
+            margin-bottom: 7px;
+            color: #fff;
         }
 
         .about-stat-pill span {
             color: var(--muted);
             font-size: 0.95rem;
-            line-height: 1.6;
+            line-height: 1.55;
         }
 
         .about-grid-3 {
@@ -125,25 +132,64 @@
             gap: 24px;
         }
 
+        .about-card,
+        .about-profile-card {
+            min-height: 100%;
+        }
+
         .about-card h2,
         .about-profile-card h2,
         .about-cta-card h2 {
-            margin: 0 0 10px;
-            font-size: clamp(1.4rem, 3vw, 2rem);
-            letter-spacing: -0.03em;
+            margin: 0 0 12px;
+            font-size: clamp(1.45rem, 3vw, 2.15rem);
+            letter-spacing: -0.035em;
+            line-height: 1;
         }
 
         .about-card .eyebrow,
         .about-profile-card .eyebrow,
         .about-cta-card .eyebrow {
-            margin-bottom: 10px;
+            margin-bottom: 12px;
         }
 
         .about-card .section-copy,
         .about-profile-card .section-copy,
         .about-cta-card .section-copy {
             margin: 0;
-            line-height: 1.85;
+            line-height: 1.7;
+        }
+
+        .about-proof-list {
+            display: grid;
+            gap: 12px;
+            margin-top: 20px;
+        }
+
+        .about-proof-row {
+            display: grid;
+            grid-template-columns: 1fr auto;
+            gap: 18px;
+            align-items: center;
+            padding: 14px 0;
+            border-bottom: 1px solid rgba(255,255,255,0.10);
+        }
+
+        .about-proof-row:last-child {
+            border-bottom: 0;
+            padding-bottom: 0;
+        }
+
+        .about-proof-label {
+            color: rgba(255,255,255,0.62);
+            text-transform: uppercase;
+            letter-spacing: 0.13em;
+            font-size: 0.76rem;
+        }
+
+        .about-proof-value {
+            color: #fff;
+            font-weight: 850;
+            text-align: right;
         }
 
         .about-profile-card {
@@ -156,10 +202,24 @@
             overflow: hidden;
             border-radius: 24px;
             min-height: 320px;
-            border: 1px solid rgba(255,255,255,0.10);
+            border: 1px solid rgba(255,255,255,0.12);
             background:
-                    linear-gradient(180deg, rgba(255,255,255,0.10), rgba(255,255,255,0.03)),
-                    rgba(10,12,18,0.64);
+                    linear-gradient(145deg, rgba(255,255,255,0.08), rgba(255,255,255,0.02)),
+                    rgba(0,1,7,0.70);
+            box-shadow:
+                    inset 0 1px 0 rgba(255,255,255,0.12),
+                    0 22px 70px rgba(0,0,0,0.48);
+        }
+
+        .about-profile-image::after {
+            content: "";
+            position: absolute;
+            inset: 0;
+            pointer-events: none;
+            background:
+                    linear-gradient(120deg, rgba(255,255,255,0.18), transparent 32%),
+                    radial-gradient(circle at 0% 18%, rgba(255,20,157,0.16), transparent 32%),
+                    radial-gradient(circle at 100% 8%, rgba(0,234,255,0.16), transparent 34%);
         }
 
         .about-profile-image img {
@@ -181,52 +241,19 @@
         .about-cta-card {
             display: flex;
             justify-content: space-between;
-            align-items: end;
+            align-items: flex-end;
             gap: 24px;
             flex-wrap: wrap;
         }
 
         .about-cta-copy {
-            max-width: 760px;
+            max-width: 780px;
         }
 
         .about-cta-actions {
             display: flex;
             gap: 12px;
             flex-wrap: wrap;
-        }
-
-        .about-cta-button {
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            min-height: 48px;
-            padding: 0 18px;
-            border-radius: 999px;
-            border: 1px solid rgba(255,255,255,0.14);
-            background: rgba(255,255,255,0.08);
-            color: #fff;
-            transition:
-                    transform var(--ease),
-                    border-color var(--ease),
-                    background var(--ease),
-                    box-shadow var(--ease);
-        }
-
-        .about-cta-button:hover {
-            transform: translateY(-2px);
-            background: rgba(255,255,255,0.12);
-            border-color: rgba(255,255,255,0.20);
-            box-shadow:
-                    0 0 18px rgba(23,220,255,0.10),
-                    0 0 14px rgba(255,47,171,0.08);
-        }
-
-        .about-cta-button.primary {
-            background:
-                    linear-gradient(135deg, rgba(255, 47, 171, 0.16), rgba(23, 220, 255, 0.16)),
-                    rgba(255,255,255,0.10);
-            border-color: rgba(255,255,255,0.22);
         }
 
         @media (max-width: 1080px) {
@@ -238,22 +265,41 @@
         }
 
         @media (max-width: 720px) {
+            .about-logo-row {
+                align-items: flex-start;
+            }
+
+            .about-logo {
+                width: 62px;
+                height: 62px;
+                border-radius: 16px;
+            }
+
             .about-profile-image,
             .about-profile-image img {
                 min-height: 260px;
             }
 
             .about-brand-lockup h1 {
-                font-size: clamp(2rem, 8vw, 3rem);
+                font-size: clamp(2.1rem, 10vw, 3.3rem);
+            }
+
+            .about-proof-row {
+                grid-template-columns: 1fr;
+                gap: 6px;
+            }
+
+            .about-proof-value {
+                text-align: left;
             }
         }
     </style>
 </head>
+
 <body>
 <div class="site-wrap">
     <header class="site-header">
         <div class="container">
-
             <a class="brand" href="/">
                 <span class="brand-orb" aria-hidden="true"></span>
                 <div class="brand-copy">
@@ -279,7 +325,6 @@
                     Sign In
                 </button>
             </div>
-
         </div>
     </header>
 
@@ -287,58 +332,47 @@
         <section class="glass glass-lacquer about-hero-card">
             <div class="about-hero-copy">
                 <div class="about-logo-row">
-                    <img
-                            src="/static/logos/sse.png"
-                            alt="SpacedOut Studios logo"
-                            class="about-logo"
-                    />
+                    <img src="/static/logos/sse.png" alt="SpacedOut Studios logo" class="about-logo" />
+
                     <div class="about-brand-lockup">
-                        <h1 class="display">About SpacedOut Studios</h1>
-                        <p>Modern label infrastructure for artist growth, promotion, and release support.</p>
+                        <p class="eyebrow">About The Label</p>
+                        <h1 class="display">A modern label built around artist control.</h1>
+                        <p>Your music. Your voice. Your choice.</p>
                     </div>
                 </div>
 
                 <p class="section-copy">
-                    SpacedOut Studios is a modern independent record label focused on helping artists build
-                    momentum with stronger branding, better release support, and clearer long-term strategy.
-                    We are building a professional system where creative direction, promotion, artist identity,
-                    and operational infrastructure work together instead of living in separate disconnected tools.
+                    SpacedOut Studios is an independent record label building a more direct, artist-first system for releases,
+                    roster identity, promotion, and long-term creative momentum. The goal is simple: give serious artists real structure
+                    without stripping away the control that made their work matter in the first place.
                 </p>
             </div>
 
             <div class="about-hero-stats">
                 <div class="about-stat-pill">
-                    <strong>Artist Development</strong>
-                    <span>Support for positioning, identity, and long-term growth.</span>
+                    <strong>Artist-First Splits</strong>
+                    <span>Our model is centered around artists keeping the majority of their royalties.</span>
                 </div>
+
                 <div class="about-stat-pill">
-                    <strong>Release Support</strong>
-                    <span>Structured release intake, organization, and submission workflow.</span>
+                    <strong>Real Infrastructure</strong>
+                    <span>Registered LLC with BMI, ASCAP, TooLost, and SubmitHub systems in place.</span>
                 </div>
+
                 <div class="about-stat-pill">
-                    <strong>Brand & Promotion</strong>
-                    <span>Modern marketing, social media, promotion, and monetization support.</span>
+                    <strong>Selective Roster Growth</strong>
+                    <span>We use applications and direct invitations to keep the label focused and intentional.</span>
                 </div>
             </div>
         </section>
 
         <section class="about-grid-3">
-            <article class="glass glass-soft about-card">
+            <article class="glass glass-depth about-card">
                 <p class="eyebrow">What We Do</p>
                 <h2>Artist Development</h2>
                 <p class="section-copy">
-                    We work with artists who want more than a one-time release. Our focus is on building
-                    a stronger foundation around the artist, including identity, presentation, direction,
-                    and a more cohesive public presence.
-                </p>
-            </article>
-
-            <article class="glass glass-soft about-card">
-                <p class="eyebrow">What We Do</p>
-                <h2>Promotion & Brand Building</h2>
-                <p class="section-copy">
-                    SpacedOut Studios supports promotion, advertising, social media direction, monetization,
-                    and broader brand development so artists can grow with more structure and more consistency.
+                    We help artists sharpen the world around their music: identity, presentation, sound, visual direction,
+                    positioning, and the story listeners understand when they first encounter the artist.
                 </p>
             </article>
 
@@ -346,37 +380,62 @@
                 <p class="eyebrow">What We Do</p>
                 <h2>Release Support</h2>
                 <p class="section-copy">
-                    We are building a cleaner release pipeline that helps artists manage submissions, assets,
-                    metadata, and review in a more professional and reliable way.
+                    We are building a cleaner release pipeline for metadata, assets, artist pages, review, and communication,
+                    so releases are handled with more clarity and less chaos.
+                </p>
+            </article>
+
+            <article class="glass glass-rim about-card">
+                <p class="eyebrow">What We Do</p>
+                <h2>Promotion & Presence</h2>
+                <p class="section-copy">
+                    A release needs more than distribution. We focus on the public-facing layer too: social presence,
+                    playlist strategy, brand consistency, artist pages, and visibility.
                 </p>
             </article>
         </section>
 
         <section class="about-grid-2">
-            <aside class="glass glass-rim about-note">
-                <p class="eyebrow">Our Approach</p>
-                <h2>Built for the modern music landscape</h2>
+            <aside class="glass glass-rim about-card">
+                <p class="eyebrow">Proof</p>
+                <h2>Real company. Real systems.</h2>
                 <p class="section-copy">
-                    We believe artists need more than vague promises and outdated workflows. SpacedOut Studios
-                    is being built as a serious platform with real infrastructure behind it, designed to help
-                    artists move faster, present themselves better, and work with a team that values both
-                    creativity and execution.
+                    SpacedOut Studios is not just a logo on a page. The platform is being built as a working label operating system
+                    with artist accounts, application intake, release workflows, storage infrastructure, and public roster pages.
                 </p>
+
+                <div class="about-proof-list">
+                    <div class="about-proof-row">
+                        <span class="about-proof-label">Business</span>
+                        <span class="about-proof-value">SpacedOut Studios LLC</span>
+                    </div>
+                    <div class="about-proof-row">
+                        <span class="about-proof-label">Publishing Rights</span>
+                        <span class="about-proof-value">BMI + ASCAP</span>
+                    </div>
+                    <div class="about-proof-row">
+                        <span class="about-proof-label">Distribution</span>
+                        <span class="about-proof-value">TooLost</span>
+                    </div>
+                    <div class="about-proof-row">
+                        <span class="about-proof-label">Discovery</span>
+                        <span class="about-proof-value">SubmitHub</span>
+                    </div>
+                </div>
             </aside>
 
-            <aside class="glass glass-rim about-note">
-                <p class="eyebrow">Why It Matters</p>
-                <h2>A label should create momentum</h2>
+            <aside class="glass glass-depth about-card">
+                <p class="eyebrow">Our Standard</p>
+                <h2>A label should create momentum.</h2>
                 <p class="section-copy">
-                    The goal is not simply to attach a logo to a release. A strong label should help artists
-                    develop positioning, maintain consistency, and build real momentum around their work.
-                    That is the standard we are building toward.
+                    The goal is not simply to attach a logo to a song. A strong label should help artists move with more direction,
+                    stay organized, improve presentation, and build a stronger foundation around every release.
                 </p>
             </aside>
         </section>
 
         <section class="about-grid-2">
-            <article class="glass about-profile-card">
+            <article class="glass glass-soft about-profile-card">
                 <div class="about-profile-image">
                     <img src="/static/artists/aliem.jpg" alt="Aliem" />
                 </div>
@@ -388,14 +447,12 @@
                 </div>
 
                 <p class="section-copy">
-                    Aliem is the founder and owner of SpacedOut Studios. He leads the label’s broader vision,
-                    with a focus on advertising, promotions, social media, monetization, brand building,
-                    and release strategy. His role is centered on helping artists gain visibility and build
-                    stronger momentum in the market.
+                    Aliem is the founder and owner of SpacedOut Studios. He leads the label’s broader vision, including artist direction,
+                    promotion, marketing, monetization, and release strategy.
                 </p>
             </article>
 
-            <article class="glass about-profile-card">
+            <article class="glass glass-soft about-profile-card">
                 <div class="about-profile-image">
                     <img src="/static/artists/sammi.jpg" alt="Sammi" />
                 </div>
@@ -407,31 +464,31 @@
                 </div>
 
                 <p class="section-copy">
-                    Sammi leads the technical side of the platform, building the systems that support artist
-                    pages, release workflows, backend operations, and the infrastructure behind the label.
-                    The goal is to give SpacedOut Studios real operational depth, not just a public-facing site.
+                    Sammi leads the technical side of the platform, building the systems behind artist pages, dashboard tools,
+                    application workflows, backend operations, and the infrastructure that supports the label.
                 </p>
             </article>
         </section>
 
-        <section class="glass about-cta-card">
+        <section class="glass glass-lacquer about-cta-card">
             <div class="about-cta-copy">
                 <p class="eyebrow">Work With Us</p>
-                <h2 class="display">Built for artists who want real support and real structure.</h2>
+                <h2 class="display">For artists who want structure without surrendering control.</h2>
                 <p class="section-copy">
-                    If you are looking for a label that takes branding, promotion, release support, and artist
-                    development seriously, SpacedOut Studios is building with that future in mind.
+                    If your project has direction, identity, and serious intent, SpacedOut Studios is accepting artist applications.
                 </p>
             </div>
 
             <div class="about-cta-actions">
-                <a href="/submissions" class="about-cta-button primary">Apply Now</a>
-                <a href="/artists" class="about-cta-button">View Artists</a>
+                <a href="/submissions" class="button primary">Apply Now</a>
+                <a href="/artists" class="button">View Artists</a>
             </div>
         </section>
     </main>
 </div>
+
 <div id="footer-placeholder"></div>
+
 <div id="signin-modal-container"></div>
 <script src="/static/js/partials.js"></script>
 <script>
