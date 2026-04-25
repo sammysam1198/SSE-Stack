@@ -6,30 +6,206 @@
 
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta property="og:title" content="SpacedOut Studios">
-    <meta property="og:description" content="Your music. Your voice. Your choice.">
+
+    <meta property="og:title" content="Artists | SpacedOut Studios">
+    <meta property="og:description" content="Explore the SpacedOut Studios artist roster.">
     <meta property="og:image" content="https://www.spacedoutstudiosent.com/static/logos/sse.png">
-    <meta property="og:url" content="https://www.spacedoutstudiosent.com">
+    <meta property="og:url" content="https://www.spacedoutstudiosent.com/artists">
     <meta property="og:type" content="website">
 
     <meta name="twitter:card" content="summary_large_image">
-    <meta name="twitter:title" content="SpacedOut Studios">
-    <meta name="twitter:description" content="Your music. Your voice. Your choice.">
+    <meta name="twitter:title" content="Artists | SpacedOut Studios">
+    <meta name="twitter:description" content="Explore the SpacedOut Studios artist roster.">
     <meta name="twitter:image" content="https://www.spacedoutstudiosent.com/static/logos/sse.png">
+
     <title>Artists | SpacedOut Studios</title>
+    <meta name="description" content="Explore the SpacedOut Studios roster of electronic, hip-hop, pop, R&B, and genre-blending artists." />
 
     <link rel="stylesheet" href="/static/css/base.css">
     <link rel="stylesheet" href="/static/css/header.css">
     <link rel="stylesheet" href="/static/css/artist_directory.css">
     <link rel="stylesheet" href="/static/css/auth.css">
-    <link rel="icon" type="image/png" href="/favicon.png">
     <link rel="stylesheet" href="/static/css/footer.css" />
+    <link rel="icon" type="image/png" href="/favicon.png">
+
+    <style>
+        .artists-hero {
+            display: grid;
+            grid-template-columns: minmax(0, 1.12fr) minmax(280px, 0.88fr);
+            gap: 24px;
+            align-items: stretch;
+            margin-bottom: 30px;
+        }
+
+        .artists-hero-main,
+        .artists-hero-side {
+            padding: clamp(24px, 3.5vw, 42px);
+        }
+
+        .artists-hero-main {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            min-height: 340px;
+        }
+
+        .artists-title {
+            margin: 0;
+            font-size: clamp(3rem, 7vw, 5.8rem);
+            line-height: 0.9;
+            letter-spacing: -0.065em;
+        }
+
+        .artists-hero-copy {
+            margin: 20px 0 0;
+            max-width: 760px;
+            color: var(--muted);
+            line-height: 1.68;
+            font-size: clamp(1rem, 1.35vw, 1.14rem);
+        }
+
+        .artists-hero-side {
+            display: grid;
+            align-content: center;
+            gap: 18px;
+        }
+
+        .artist-signal-list {
+            display: grid;
+            gap: 0;
+        }
+
+        .artist-signal-row {
+            display: grid;
+            grid-template-columns: 1fr auto;
+            align-items: center;
+            gap: 18px;
+            padding: 15px 0;
+            border-bottom: 1px solid rgba(255,255,255,0.11);
+        }
+
+        .artist-signal-row:last-child {
+            border-bottom: 0;
+            padding-bottom: 0;
+        }
+
+        .artist-signal-label {
+            color: rgba(255,255,255,0.62);
+            text-transform: uppercase;
+            letter-spacing: 0.13em;
+            font-size: 0.76rem;
+        }
+
+        .artist-signal-value {
+            color: #fff;
+            font-weight: 850;
+            text-align: right;
+        }
+
+        .artist-filter-row {
+            margin: 22px 0 26px;
+        }
+
+        .artist-directory-grid {
+            align-items: stretch;
+        }
+
+        .artist-directory-card {
+            border-radius: var(--radius-xl);
+        }
+
+        .artist-card-image {
+            background:
+                    radial-gradient(circle at 0% 0%, rgba(255,20,157,0.20), transparent 36%),
+                    radial-gradient(circle at 100% 0%, rgba(0,234,255,0.18), transparent 36%),
+                    rgba(0,1,7,0.72);
+        }
+
+        .artist-card-body {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .artist-card-tagline {
+            color: rgba(255,255,255,0.78);
+            line-height: 1.58;
+        }
+
+        .artist-card-actions {
+            margin-top: auto;
+            padding-top: 18px;
+        }
+
+        .artist-directory-card:nth-child(4n + 1) {
+            border-color: rgba(0,230,255,0.22);
+        }
+
+        .artist-directory-card:nth-child(4n + 2) {
+            border-color: rgba(255,20,157,0.20);
+        }
+
+        .artist-directory-card:nth-child(4n + 3) {
+            border-color: rgba(255,255,255,0.13);
+        }
+
+        .artist-directory-card:nth-child(4n + 4) {
+            border-color: rgba(138,77,255,0.22);
+        }
+
+        .artists-cta {
+            margin-top: 34px;
+            padding: clamp(24px, 3.5vw, 42px);
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
+            gap: 24px;
+            flex-wrap: wrap;
+        }
+
+        .artists-cta-copy {
+            max-width: 760px;
+        }
+
+        .artists-cta h2 {
+            margin: 0;
+            font-size: clamp(1.8rem, 4vw, 3.2rem);
+            line-height: 0.95;
+            letter-spacing: -0.05em;
+        }
+
+        .artists-cta p {
+            margin: 14px 0 0;
+            color: var(--muted);
+            line-height: 1.65;
+        }
+
+        @media (max-width: 980px) {
+            .artists-hero {
+                grid-template-columns: 1fr;
+            }
+
+            .artists-hero-main {
+                min-height: auto;
+            }
+        }
+
+        @media (max-width: 720px) {
+            .artist-signal-row {
+                grid-template-columns: 1fr;
+                gap: 6px;
+            }
+
+            .artist-signal-value {
+                text-align: left;
+            }
+        }
+    </style>
 </head>
+
 <body>
 <div class="site-wrap">
     <header class="site-header">
         <div class="container">
-
             <a class="brand" href="/">
                 <span class="brand-orb" aria-hidden="true"></span>
                 <div class="brand-copy">
@@ -55,17 +231,50 @@
                     Sign In
                 </button>
             </div>
-
         </div>
     </header>
 
     <main class="page-shell">
+        <section class="artists-hero">
+            <article class="glass glass-lacquer artists-hero-main">
+                <p class="eyebrow">Roster</p>
+                <h1 class="display artists-title">Artists</h1>
+                <p class="artists-hero-copy">
+                    A selective roster of artists building distinct worlds across electronic music, hip-hop, pop,
+                    R&B, experimental sound, and genre-blending release identities.
+                </p>
+                <div class="hero-actions">
+                    <a class="button primary" href="/submissions">Apply Now</a>
+                    <a class="button" href="/about">About The Label</a>
+                </div>
+            </article>
+
+            <aside class="glass glass-rim artists-hero-side">
+                <p class="eyebrow">Roster Signal</p>
+
+                <div class="artist-signal-list">
+                    <div class="artist-signal-row">
+                        <span class="artist-signal-label">Model</span>
+                        <span class="artist-signal-value">Apply + Invite</span>
+                    </div>
+                    <div class="artist-signal-row">
+                        <span class="artist-signal-label">Focus</span>
+                        <span class="artist-signal-value">Identity + Releases</span>
+                    </div>
+                    <div class="artist-signal-row">
+                        <span class="artist-signal-label">Splits</span>
+                        <span class="artist-signal-value">80–90%</span>
+                    </div>
+                </div>
+            </aside>
+        </section>
+
         <section class="section">
             <div class="section-head">
-                <p class="eyebrow">Roster</p>
-                <h1 class="display section-title">Artists</h1>
+                <p class="eyebrow">Directory</p>
+                <h2 class="display section-title">Explore the roster</h2>
                 <p class="section-copy">
-                    A curated roster of artists representing the genres of vaporwave, EDM, R&amp;B, Rap, Hip-Hop and more.
+                    Filter by sound, role, or creative lane. Each artist page is moving toward a shared database-backed profile system.
                 </p>
             </div>
 
@@ -78,10 +287,11 @@
             </div>
 
             <div class="artist-directory-grid" id="artistDirectory">
-                <article class="artist-directory-card glass" data-tags="electronic producer synthwave">
+                <article class="artist-directory-card glass glass-depth" data-tags="electronic producer synthwave">
                     <div class="artist-card-image">
                         <img src="/static/logos/4nzek.png" alt="4nzek artist portrait">
                     </div>
+
                     <div class="artist-card-body">
                         <h2 class="artist-card-title">4nzek</h2>
                         <p class="artist-card-tagline">Textural producer with a moody, cinematic electronic edge.</p>
@@ -98,10 +308,11 @@
                     </div>
                 </article>
 
-                <article class="artist-directory-card glass" data-tags="electronic producer chillsynth">
+                <article class="artist-directory-card glass glass-rim" data-tags="electronic producer chillsynth">
                     <div class="artist-card-image">
                         <img src="/static/logos/chroma.png" alt="Chroma Glow logo">
                     </div>
+
                     <div class="artist-card-body">
                         <h2 class="artist-card-title">Chroma Glow</h2>
                         <p class="artist-card-tagline">Chillsynth and nostalgic neon atmosphere with emotional melodic focus.</p>
@@ -118,16 +329,17 @@
                     </div>
                 </article>
 
-                <article class="artist-directory-card glass" data-tags="vocals producer electronic">
+                <article class="artist-directory-card glass glass-depth" data-tags="vocals producer electronic hip-hop">
                     <div class="artist-card-image">
                         <img src="/static/artists/lmnvl_face.jpg" alt="LMNL FM artist portrait">
                     </div>
+
                     <div class="artist-card-body">
                         <h2 class="artist-card-title">LMNL FM</h2>
-                        <p class="artist-card-tagline">A dark, genre-blending artist crafting cinematic soundscapes that balance raw emotion with club-driven intensity.</p>
+                        <p class="artist-card-tagline">A dark, genre-blending artist balancing raw emotion with club-driven intensity.</p>
 
                         <div class="tag-row">
-                            <span class="tag">Hip Hop</span>
+                            <span class="tag">Hip-Hop</span>
                             <span class="tag">Vocals</span>
                             <span class="tag">Vaporwave</span>
                         </div>
@@ -138,13 +350,34 @@
                     </div>
                 </article>
 
-                <article class="artist-directory-card glass" data-tags="vocals electronic international">
+                <article class="artist-directory-card glass glass-soft" data-tags="vocals alternative dreamy">
+                    <div class="artist-card-image">
+                        <img src="/static/logos/sse.png" alt="Aliem artist portrait">
+                    </div>
+
+                    <div class="artist-card-body">
+                        <h2 class="artist-card-title">SpacedOut Studios</h2>
+                        <p class="artist-card-tagline">A mastermind in the music industry. A genius in the studio.</p>
+
+                        <div class="tag-row">
+                            <span class="tag">Atmospheric</span>
+                            <span class="tag">Beats</span>
+                        </div>
+
+                        <div class="artist-card-actions">
+                            <a class="button primary artist-read-more" href="/artists/artist?slug=spacedout" data-artist-slug="spacedout">Read More</a>
+                        </div>
+                    </div>
+                </article>
+
+                <article class="artist-directory-card glass glass-rim" data-tags="vocals electronic international producer">
                     <div class="artist-card-image">
                         <img src="/static/logos/ikatrin.png" alt="iKatrin artist logo">
                     </div>
+
                     <div class="artist-card-body">
                         <h2 class="artist-card-title">iKatrin</h2>
-                        <p class="artist-card-tagline">Polished electronic presence.</p>
+                        <p class="artist-card-tagline">Electronic artist and producer with a polished international presence.</p>
 
                         <div class="tag-row">
                             <span class="tag">Producer</span>
@@ -158,32 +391,14 @@
                     </div>
                 </article>
 
-                <article class="artist-directory-card glass" data-tags="vocals alternative dreamy">
-                    <div class="artist-card-image">
-                        <img src="/static/logos/sse.png" alt="Spacedout artist portrait">
-                    </div>
-                    <div class="artist-card-body">
-                        <h2 class="artist-card-title">SpacedOut Studios</h2>
-                        <p class="artist-card-tagline">A mastermind in the music industry. A creative genius in the studio. Aliem brings light to the darkness blending genres to make serene atmospheres. </p>
-
-                        <div class="tag-row">
-                            <span class="tag">Ambient</span>
-                            <span class="tag">Vaporwave</span>
-                        </div>
-
-                        <div class="artist-card-actions">
-                            <a class="button primary artist-read-more" href="/artists/artist?slug=spacedout" data-artist-slug="spacedout">Read More</a>
-                        </div>
-                    </div>
-                </article>
-
-                <article class="artist-directory-card glass" data-tags="vocals alternative dreamy">
+                <article class="artist-directory-card glass glass-soft" data-tags="vocals alternative dreamy">
                     <div class="artist-card-image">
                         <img src="/static/artists/rum.png" alt="Rumour artist portrait">
                     </div>
+
                     <div class="artist-card-body">
                         <h2 class="artist-card-title">Rumour</h2>
-                        <p class="artist-card-tagline">A self-made artist blending pop, R&amp;B, and EDM with atmospheric vocals and a focus on originality.</p>
+                        <p class="artist-card-tagline">A self-made artist blending pop, R&B, and EDM with atmospheric vocals.</p>
 
                         <div class="tag-row">
                             <span class="tag">Vocals</span>
@@ -196,18 +411,19 @@
                     </div>
                 </article>
 
-                <article class="artist-directory-card glass" data-tags="experimental producer electronic">
+                <article class="artist-directory-card glass glass-depth" data-tags="experimental producer electronic hip-hop">
                     <div class="artist-card-image">
                         <img src="/static/artists/dorzi.png" alt="Dorzi artist portrait">
                     </div>
+
                     <div class="artist-card-body">
                         <h2 class="artist-card-title">Dorzi</h2>
-                        <p class="artist-card-tagline">Sharp-edged electronic work with a dark, modern pulse.</p>
+                        <p class="artist-card-tagline">A sharp-witted UK lyricist blending raw realism with humor, energy and undeniable stage presence..</p>
 
                         <div class="tag-row">
-                            <span class="tag">Hip Hop</span>
+                            <span class="tag">Rap</span>
                             <span class="tag">Vocals</span>
-                            <span class="tag">Experimental</span>
+                            <span class="tag">Energetic</span>
                         </div>
 
                         <div class="artist-card-actions">
@@ -216,13 +432,14 @@
                     </div>
                 </article>
 
-                <article class="artist-directory-card glass" data-tags="electronic producer experimental">
+                <article class="artist-directory-card glass glass-rim" data-tags="electronic producer experimental hip-hop">
                     <div class="artist-card-image">
                         <img src="/static/artists/madgas.png" alt="Madgas artist portrait">
                     </div>
+
                     <div class="artist-card-body">
                         <h2 class="artist-card-title">Madgas</h2>
-                        <p class="artist-card-tagline">Raw, introspective rap forged from struggle, resilience, and relentless self-belief.</p>
+                        <p class="artist-card-tagline">Raw, introspective rap forged from struggle, resilience, and self-belief.</p>
 
                         <div class="tag-row">
                             <span class="tag">Producer</span>
@@ -236,13 +453,14 @@
                     </div>
                 </article>
 
-                <article class="artist-directory-card glass" data-tags="electronic producer melodic">
+                <article class="artist-directory-card glass glass-soft" data-tags="electronic producer melodic hip-hop">
                     <div class="artist-card-image">
                         <img src="/static/artists/erik.png" alt="Erikiih artist portrait">
                     </div>
+
                     <div class="artist-card-body">
                         <h2 class="artist-card-title">Erikiih</h2>
-                        <p class="artist-card-tagline">A cross-continental force blending Los Angeles grit with Kenyan energy through bilingual, hard-hitting hip-hop.</p>
+                        <p class="artist-card-tagline">Los Angeles grit and Kenyan energy through bilingual, hard-hitting hip-hop.</p>
 
                         <div class="tag-row">
                             <span class="tag">Producer</span>
@@ -256,18 +474,19 @@
                     </div>
                 </article>
 
-                <article class="artist-directory-card glass" data-tags="vocals pop electronic">
+                <article class="artist-directory-card glass glass-depth" data-tags="vocals pop electronic">
                     <div class="artist-card-image">
                         <img src="/static/artists/kayla.png" alt="Kayla Jay artist portrait">
                     </div>
+
                     <div class="artist-card-body">
                         <h2 class="artist-card-title">Kayla Jay</h2>
-                        <p class="artist-card-tagline">A genre-blending pop and R&amp;B artist shaped by a global upbringing and driven by undeniable passion.</p>
+                        <p class="artist-card-tagline">A genre-blending pop and R&B artist shaped by global influence.</p>
 
                         <div class="tag-row">
                             <span class="tag">Vocals</span>
                             <span class="tag">Pop</span>
-                            <span class="tag">R&amp;B</span>
+                            <span class="tag">R&B</span>
                         </div>
 
                         <div class="artist-card-actions">
@@ -275,53 +494,27 @@
                         </div>
                     </div>
                 </article>
-
-                <article class="artist-directory-card glass" data-tags="vocals sweet alternative">
-                    <div class="artist-card-image artist-card-placeholder">
-                        <span>2Confections</span>
-                    </div>
-                    <div class="artist-card-body">
-                        <h2 class="artist-card-title">2Confections</h2>
-                        <p class="artist-card-tagline">A stylized act with a playful identity and alt-pop edge.</p>
-
-                        <div class="tag-row">
-                            <span class="tag">Vocals</span>
-                            <span class="tag">Alt</span>
-                            <span class="tag">Stylized</span>
-                        </div>
-
-                        <div class="artist-card-actions">
-                            <a class="button primary artist-read-more" href="/artists/artist?slug=2confections" data-artist-slug="2confections">Read More</a>
-                        </div>
-                    </div>
-                </article>
-
-                <article class="artist-directory-card glass" data-tags="vocals identity pop">
-                    <div class="artist-card-image artist-card-placeholder">
-                        <span>Sammi Starlight</span>
-                    </div>
-                    <div class="artist-card-body">
-                        <h2 class="artist-card-title">Sammi Starlight</h2>
-                        <p class="artist-card-tagline">A separate artist identity centered on presence, voice, and emotion.</p>
-
-                        <div class="tag-row">
-                            <span class="tag">Vocals</span>
-                            <span class="tag">Identity</span>
-                            <span class="tag">Pop</span>
-                        </div>
-
-                        <div class="artist-card-actions">
-                            <a class="button primary artist-read-more" href="/artists/artist?slug=sammistarlight" data-artist-slug="sammistarlight">Read More</a>
-                        </div>
-                    </div>
-                </article>
             </div>
+        </section>
+
+        <section class="glass glass-lacquer artists-cta">
+            <div class="artists-cta-copy">
+                <p class="eyebrow">Join The Roster</p>
+                <h2 class="display">Think your sound belongs here?</h2>
+                <p>
+                    SpacedOut Studios is selective, but open. If your project has identity, direction, and serious intent,
+                    send an artist application.
+                </p>
+            </div>
+
+            <a class="button primary" href="/submissions">Apply Now</a>
         </section>
     </main>
 </div>
-<div id="footer-placeholder"></div>
-<div id="signin-modal-container"></div>
 
+<div id="footer-placeholder"></div>
+
+<div id="signin-modal-container"></div>
 <script src="/static/js/partials.js"></script>
 <script>
     loadPartial("signin-modal-container", "/static/partials/signin_modal.html");
