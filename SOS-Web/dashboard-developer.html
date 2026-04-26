@@ -482,7 +482,6 @@
     document.addEventListener("DOMContentLoaded", async () => {
         const user = await getCurrentUser();
         if (!requireRole(user, ["developer"])) return;
-        setHeroImage(null);
     });
 </script>
 </body>

@@ -668,32 +668,3 @@ function handleProfileAction(action) {
             break;
     }
 }
-
-document.addEventListener("DOMContentLoaded", () => {
-    const trigger = document.getElementById("artist-profile-trigger");
-
-    if (trigger) {
-        trigger.addEventListener("click", (event) => {
-            event.stopPropagation();
-            toggleProfileMenu();
-        });
-    }
-
-    document.addEventListener("click", (event) => {
-        const menu = document.getElementById("artist-profile-menu");
-        if (menu && !menu.contains(event.target)) {
-            closeProfileMenu();
-        }
-
-        const actionButton = event.target.closest("[data-profile-action]");
-        if (actionButton) {
-            handleProfileAction(actionButton.dataset.profileAction);
-        }
-    });
-
-    document.addEventListener("keydown", (event) => {
-        if (event.key === "Escape") {
-            closeProfileMenu();
-        }
-    });
-});
