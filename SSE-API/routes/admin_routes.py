@@ -108,8 +108,6 @@ def send_user_password_reset(user_id: int):
     # TODO: generate reset flow + email
     return jsonify({"message": "Password reset email sent.", "user_id": user_id}), 200
 
-admin_bp = Blueprint("admin", __name__)
-
 ALLOWED_INVITE_ROLES = {"artist", "admin", "developer"}
 
 @admin_bp.post("/users/create-artist")
