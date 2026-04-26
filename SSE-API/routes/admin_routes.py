@@ -8,7 +8,7 @@ from repos.user_action_tokens_repo import (
 from utils.token_utils import generate_raw_token, hash_token, expiry_from_now
 from utils.auth_utils import hash_password
 from utils.mail_utils import send_artist_invite_email
-from repos.artists_repo import create_artist_profile_for_user
+from repos.artists_repo import create_artist_profile_for_user, assign_artist_profile_to_user, get_artist_profile_by_slug
 
 admin_bp = Blueprint("admin", __name__)
 
@@ -159,11 +159,19 @@ def create_artist_user():
     artist_profile = None
 
     if role == "artist":
-        artist_profile = create_artist_profile_for_user(
-            user_id=new_user["id"],
-            artist_name=artist_name,
-            artist_page=artist_page,
-        )
+        existing_artist = get_artist_profile_by_slug(artist_page)
+
+        if existing_artist:
+            artist_profile = assign_artist_profile_to_user(
+                artist_profile_id=existing_artist["id"],
+                user_id=new_user["id"],
+            )
+        else:
+            artist_profile = create_artist_profile_for_user(
+                user_id=new_user["id"],
+                artist_name=artist_name,
+                artist_page=artist_page,
+            )
 
     invalidate_user_tokens(new_user["id"], "setup_account")
 
