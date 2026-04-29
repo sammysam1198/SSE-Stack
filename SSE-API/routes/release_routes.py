@@ -625,7 +625,8 @@ def approve_release(submission_id):
         SET status = 'approved',
             approved_at = NOW(),
             submitted_at = COALESCE(submitted_at, NOW()),
-            admin_notes = %s
+            admin_notes = %s,
+            updated_at = NOW()
         WHERE id = %s
         """,
         (f"Approved for release on {release_date}", submission_id),
@@ -640,7 +641,12 @@ def approve_release(submission_id):
             label_release_date=release_date,
         )
 
-    return jsonify({"message": "Release approved."}), 200
+    updated_release = get_release_package_by_id(submission_id)
+
+    return jsonify({
+        "message": "Release approved.",
+        "release": updated_release,
+    }), 200
 
 @release_bp.post("/<int:submission_id>/reject")
 def reject_release(submission_id):
