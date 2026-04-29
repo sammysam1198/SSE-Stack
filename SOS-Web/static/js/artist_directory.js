@@ -16,7 +16,7 @@ document.addEventListener("DOMContentLoaded", async () => {
             return raw;
         }
 
-        const base = (window.SSE_ASSET_BASE_URL || "").trim();
+        const base = (window.SSE_ASSET_BASE_URL || "https://pub-4d4f2d565e844d6fb3e84f51d1093198.r2.dev").trim();
         if (!base) return "";
 
         return `${base.replace(/\/+$/, "")}/${raw.replace(/^\/+/, "")}`;
