@@ -238,6 +238,24 @@ def _can_view_or_edit_own_profile(user: dict | None) -> bool:
     return user.get("role") in {"artist", "admin", "developer"}
 
 
+@artists_bp.get("/public")
+def get_public_artist_profiles():
+    profiles = list_artist_profiles()
+
+    visible_profiles = [
+        profile for profile in profiles
+        if profile.get("is_roster_active") is True
+        and (profile.get("artist_name") or "").strip()
+        and (profile.get("artist_page") or "").strip()
+    ]
+
+    return jsonify({
+        "artist_profiles": [
+            _serialize_artist_profile(profile)
+            for profile in visible_profiles
+        ]
+    }), 200
+
 @artists_bp.get("/me")
 def get_my_artist_profile():
     user, error_response = _require_logged_in_user()
