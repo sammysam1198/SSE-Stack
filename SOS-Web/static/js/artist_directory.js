@@ -1,33 +1,137 @@
-document.addEventListener("DOMContentLoaded", () => {
+document.addEventListener("DOMContentLoaded", async () => {
+    const grid = document.getElementById("artistDirectory");
     const filterButtons = document.querySelectorAll(".filter-chip");
-    const artistCards = document.querySelectorAll(".artist-directory-card");
-    const artistLinks = document.querySelectorAll(".artist-read-more");
+
+    if (!grid) return;
+
+    let artists = [];
+    let activeFilter = "all";
+
+    function resolveAssetUrl(value = "") {
+        const raw = String(value || "").trim();
+        if (!raw) return "";
+
+        if (/^https?:\/\//i.test(raw) || raw.startsWith("/")) {
+            return raw;
+        }
+
+        const base = (window.SSE_ASSET_BASE_URL || "").trim();
+        if (!base) return "";
+
+        return `${base.replace(/\/+$/, "")}/${raw.replace(/^\/+/, "")}`;
+    }
+
+    function escapeHtml(value = "") {
+        return String(value ?? "")
+            .replaceAll("&", "&amp;")
+            .replaceAll("<", "&lt;")
+            .replaceAll(">", "&gt;")
+            .replaceAll('"', "&quot;")
+            .replaceAll("'", "&#39;");
+    }
+
+    function getTags(profile) {
+        return [
+            profile.primary_genre,
+            profile.genre2,
+            profile.genre3,
+            profile.primary_instrument,
+            profile.role2,
+            profile.role3,
+            profile.primary_vibe,
+        ]
+            .map((tag) => String(tag || "").trim())
+            .filter(Boolean);
+    }
+
+    function artistMatchesFilter(profile) {
+        if (activeFilter === "all") return true;
+
+        const searchable = getTags(profile)
+            .join(" ")
+            .toLowerCase();
+
+        return searchable.includes(activeFilter);
+    }
+
+    function renderArtists() {
+        const visible = artists.filter(artistMatchesFilter);
+
+        if (!visible.length) {
+            grid.innerHTML = `
+                <article class="artist-directory-card glass glass-depth">
+                    <div class="artist-card-body">
+                        <h2 class="artist-card-title">No artists found</h2>
+                        <p class="artist-card-tagline">No roster profiles match this filter yet.</p>
+                    </div>
+                </article>
+            `;
+            return;
+        }
+
+        grid.innerHTML = visible.map((artist, index) => {
+            const tags = getTags(artist);
+            const imageKey = artist.profile_portrait_key || artist.artist_logo_key || artist.dashboard_banner_key;
+            const imageUrl = resolveAssetUrl(imageKey) || "/static/logos/sse.png";
+            const slug = artist.artist_page || artist.id;
+
+            const cardClass = [
+                "artist-directory-card",
+                "glass",
+                index % 3 === 0 ? "glass-depth" : index % 3 === 1 ? "glass-rim" : "glass-soft",
+            ].join(" ");
+
+            return `
+                <article class="${cardClass}" data-tags="${escapeHtml(tags.join(" ").toLowerCase())}">
+                    <div class="artist-card-image">
+                        <img src="${escapeHtml(imageUrl)}" alt="${escapeHtml(artist.artist_name || "Artist")} artist image">
+                    </div>
+
+                    <div class="artist-card-body">
+                        <h2 class="artist-card-title">${escapeHtml(artist.artist_name || "Artist")}</h2>
+                        <p class="artist-card-tagline">
+                            ${escapeHtml(artist.tagline || artist.bio || "SpacedOut Studios artist.")}
+                        </p>
+
+                        <div class="tag-row">
+                            ${
+                tags.slice(0, 3).map((tag) => `
+                                    <span class="tag">${escapeHtml(tag)}</span>
+                                `).join("")
+            }
+                        </div>
+
+                        <div class="artist-card-actions">
+                            <a class="button primary artist-read-more" href="/artists/artist?slug=${encodeURIComponent(slug)}" data-artist-slug="${escapeHtml(slug)}">
+                                Read More
+                            </a>
+                        </div>
+                    </div>
+                </article>
+            `;
+        }).join("");
+    }
 
     filterButtons.forEach((button) => {
         button.addEventListener("click", () => {
-            const filter = (button.dataset.filter || "").trim().toLowerCase();
+            activeFilter = (button.dataset.filter || "all").trim().toLowerCase();
 
             filterButtons.forEach((chip) => chip.classList.remove("active"));
             button.classList.add("active");
 
-            artistCards.forEach((card) => {
-                const tags = (card.dataset.tags || "").toLowerCase();
-
-                if (filter === "all" || tags.includes(filter)) {
-                    card.classList.remove("is-hidden");
-                } else {
-                    card.classList.add("is-hidden");
-                }
-            });
+            renderArtists();
         });
     });
 
-    artistLinks.forEach((link) => {
-        link.addEventListener("click", (event) => {
-            const slug = (link.dataset.artistSlug || "").trim();
-            if (!slug) {
-                event.preventDefault();
-            }
-        });
-    });
+    try {
+        grid.innerHTML = `<p class="section-copy">Loading roster...</p>`;
+
+        const data = await apiFetch("/api/artists/public");
+        artists = data.artist_profiles || [];
+
+        renderArtists();
+    } catch (error) {
+        console.error("Failed to load artist directory:", error);
+        grid.innerHTML = `<p class="section-copy">Could not load artist directory.</p>`;
+    }
 });
