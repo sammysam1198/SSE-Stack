@@ -305,11 +305,6 @@ def create_application():
         created_user_id=created_user_id,
     )
 
-    application = repo_create_application(
-        **payload,
-        created_user_id=created_user_id,
-    )
-
     pdf_path = None
     pdf_error = None
 
