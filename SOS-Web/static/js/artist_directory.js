@@ -76,7 +76,10 @@ document.addEventListener("DOMContentLoaded", async () => {
                 artist.primary_instrument,
                 artist.primary_vibe
             ].filter(Boolean);
-            const imageKey = artist.profile_portrait_key || artist.artist_logo_key || artist.dashboard_banner_key;
+            const imageKey =
+                artist.artist_logo_key ||
+                artist.profile_portrait_key ||
+                "";
             const imageUrl = resolveAssetUrl(imageKey) || "/static/logos/sse.png";
             const slug = artist.artist_page || artist.id;
 
