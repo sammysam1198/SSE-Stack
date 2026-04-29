@@ -1,6 +1,7 @@
 document.addEventListener("DOMContentLoaded", async () => {
     const grid = document.getElementById("artistDirectory");
     const filterButtons = document.querySelectorAll(".filter-chip");
+    const base = (window.SSE_ASSET_BASE_URL || "https://pub-4d4f2d565e844d6fb3e84f51d1093198.r2.dev").trim();
 
     if (!grid) return;
 
@@ -70,7 +71,11 @@ document.addEventListener("DOMContentLoaded", async () => {
         }
 
         grid.innerHTML = visible.map((artist, index) => {
-            const tags = getTags(artist);
+            const tags = [
+                artist.primary_genre,
+                artist.primary_instrument,
+                artist.primary_vibe
+            ].filter(Boolean);
             const imageKey = artist.profile_portrait_key || artist.artist_logo_key || artist.dashboard_banner_key;
             const imageUrl = resolveAssetUrl(imageKey) || "/static/logos/sse.png";
             const slug = artist.artist_page || artist.id;
@@ -90,15 +95,15 @@ document.addEventListener("DOMContentLoaded", async () => {
                     <div class="artist-card-body">
                         <h2 class="artist-card-title">${escapeHtml(artist.artist_name || "Artist")}</h2>
                         <p class="artist-card-tagline">
-                            ${escapeHtml(artist.tagline || artist.bio || "SpacedOut Studios artist.")}
+                            ${escapeHtml(artist.tagline || "SpacedOut Studios artist.")}
                         </p>
 
                         <div class="tag-row">
-                            ${
-                tags.slice(0, 3).map((tag) => `
-                                    <span class="tag">${escapeHtml(tag)}</span>
-                                `).join("")
-            }
+                        ${
+                         tags.map(tag => `
+                            <span class="tag">${escapeHtml(tag)}</span>
+                            `).join("")
+                       }
                         </div>
 
                         <div class="artist-card-actions">
