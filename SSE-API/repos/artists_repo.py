@@ -212,6 +212,6 @@ def list_artist_profiles():
     query = f"""
         SELECT {ARTIST_PROFILE_COLUMNS}
         FROM artist_profiles
-        ORDER BY artist_name ASC
+        ORDER BY display_order ASC, artist_name ASC
     """
     return fetch_all(query)
