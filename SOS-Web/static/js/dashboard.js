@@ -416,10 +416,10 @@ async function approveRelease(id) {
 
     await apiFetch(`/api/releases/${id}/approve`, {
         method: "POST",
-        body: { release_date: releaseDate }
+        body: {release_date: releaseDate}
     });
 
-    loadReleaseReview();
+    await loadReleaseReview();
 }
 
 async function rejectRelease(id) {
