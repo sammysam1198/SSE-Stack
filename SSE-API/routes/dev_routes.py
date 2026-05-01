@@ -1,10 +1,7 @@
 from flask import Blueprint, jsonify, session
+from repos.users_repo import get_user_by_id
 
 dev_bp = Blueprint("dev", __name__)
-
-
-def _require_developer():
-    return session.get("role") == "developer"
 
 
 @dev_bp.get("/dashboard")
@@ -46,18 +43,77 @@ def list_mail_events():
     # TODO
     return jsonify({"mail_events": []}), 200
 
+def _require_developer():
+    return session.get("role") == "developer"
+
 
 @dev_bp.post("/users/<int:user_id>/impersonate")
 def impersonate_user(user_id: int):
     if not _require_developer():
         return jsonify({"error": "Forbidden."}), 403
 
-    # TODO:
-    # store original identity in session
-    # switch effective session identity
+    target_user = get_user_by_id(user_id)
+    if not target_user:
+        return jsonify({"error": "Target user not found."}), 404
+
+    if not target_user["is_active"] or target_user["is_locked"]:
+        return jsonify({"error": "Cannot impersonate inactive or locked user."}), 400
+
+    session["impersonator_user_id"] = session.get("user_id")
+    session["impersonator_role"] = session.get("role")
+    session["impersonator_email"] = session.get("email")
+
+    session["user_id"] = target_user["id"]
+    session["role"] = target_user["role"]
+    session["email"] = target_user["email"]
+    session["is_impersonating"] = True
+
     return jsonify({
         "message": "Impersonation started.",
-        "user_id": user_id
+        "user": {
+            "id": target_user["id"],
+            "email": target_user["email"],
+            "role": target_user["role"],
+            "is_impersonating": True,
+            "impersonator_user_id": session.get("impersonator_user_id"),
+        }
+    }), 200
+
+
+@dev_bp.post("/impersonation/stop")
+def stop_impersonation():
+    if not session.get("is_impersonating"):
+        return jsonify({"error": "Not currently impersonating."}), 400
+
+    original_user_id = session.get("impersonator_user_id")
+    original_role = session.get("impersonator_role")
+
+    if not original_user_id or original_role != "developer":
+        session.clear()
+        return jsonify({"error": "Original developer session missing. Please sign in again."}), 400
+
+    original_user = get_user_by_id(original_user_id)
+    if not original_user:
+        session.clear()
+        return jsonify({"error": "Original developer user not found. Please sign in again."}), 404
+
+    session["user_id"] = original_user["id"]
+    session["role"] = original_user["role"]
+    session["email"] = original_user["email"]
+
+    session.pop("impersonator_user_id", None)
+    session.pop("impersonator_role", None)
+    session.pop("impersonator_email", None)
+    session.pop("is_impersonating", None)
+
+    return jsonify({
+        "message": "Impersonation stopped.",
+        "user": {
+            "id": original_user["id"],
+            "email": original_user["email"],
+            "role": original_user["role"],
+            "is_impersonating": False,
+        }
     }), 200
 
 

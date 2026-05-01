@@ -92,6 +92,9 @@ def me():
             "id": user["id"],
             "email": user["email"],
             "role": user["role"],
+            "is_impersonating": bool(session.get("is_impersonating")),
+            "impersonator_user_id": session.get("impersonator_user_id"),
+            "impersonator_role": session.get("impersonator_role"),
         }
     }), 200
 
