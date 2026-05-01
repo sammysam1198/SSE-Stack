@@ -4,17 +4,45 @@
         <p>Access your SpacedOut Studios account.</p>
 
         <form class="signin-form" id="signin-form" method="post" action="javascript:void(0);">
-            <label>
+            <label for="signin-email">
                 Email
-                <input id="signin-email" name="email" type="email" autocomplete="username">
+                <input
+                        id="signin-email"
+                        type="email"
+                        name="email"
+                        autocomplete="username"
+                        inputmode="email"
+                        autocapitalize="none"
+                        autocorrect="off"
+                        spellcheck="false"
+                        required
+                />
             </label>
 
-            <label>
+            <label for="signin-password">
                 Password
                 <div class="password-field-wrap">
-                    <input id="signin-password" name="password" type="password" autocomplete="current-password">
-                    <button type="button" class="password-toggle" id="signin-password-toggle" aria-label="Show password">
-                        <img src="/static/assets/hide_password.png" alt="" id="signin-password-toggle-icon" />
+                    <input
+                            id="signin-password"
+                            type="password"
+                            name="password"
+                            autocomplete="current-password"
+                            autocapitalize="none"
+                            autocorrect="off"
+                            spellcheck="false"
+                            required
+                    />
+                    <button
+                            id="signin-password-toggle"
+                            class="password-toggle"
+                            type="button"
+                            aria-label="Show password"
+                    >
+                        <img
+                                id="signin-password-toggle-icon"
+                                src="/static/assets/show_password.png"
+                                alt=""
+                        />
                     </button>
                 </div>
             </label>
