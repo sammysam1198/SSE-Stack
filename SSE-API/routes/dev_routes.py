@@ -115,12 +115,3 @@ def stop_impersonation():
             "is_impersonating": False,
         }
     }), 200
-
-
-@dev_bp.post("/impersonation/stop")
-def stop_impersonation():
-    if not _require_developer():
-        return jsonify({"error": "Forbidden."}), 403
-
-    # TODO: restore original session identity
-    return jsonify({"message": "Impersonation stopped."}), 200
