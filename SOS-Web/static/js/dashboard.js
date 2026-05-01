@@ -497,6 +497,60 @@ document.addEventListener("DOMContentLoaded", () => {
     initDashboard();
 });
 
+function bindImpersonationTools(user) {
+    const form = document.getElementById("impersonation-form");
+    const userIdInput = document.getElementById("impersonation-user-id");
+    const stopButton = document.getElementById("stop-impersonation-button");
+    const statusEl = document.getElementById("impersonation-status");
+
+    if (!form && !stopButton) return;
+
+    if (!user || user.role !== "developer") {
+        if (form) form.style.display = "none";
+        return;
+    }
+
+    form?.addEventListener("submit", async (event) => {
+        event.preventDefault();
+
+        const userId = Number(userIdInput?.value || 0);
+        if (!userId) {
+            if (statusEl) statusEl.textContent = "Enter a valid user ID.";
+            return;
+        }
+
+        try {
+            if (statusEl) statusEl.textContent = "Starting impersonation...";
+
+            const impersonatedUser = await impersonateUser(userId);
+
+            if (statusEl) {
+                statusEl.textContent = `Now impersonating ${impersonatedUser.email}. Redirecting...`;
+            }
+
+            window.location.href = getDashboardPathForRole(impersonatedUser.role);
+        } catch (error) {
+            if (statusEl) {
+                statusEl.textContent = error.message || "Could not impersonate user.";
+            }
+        }
+    });
+
+    stopButton?.addEventListener("click", async () => {
+        try {
+            if (statusEl) statusEl.textContent = "Stopping impersonation...";
+
+            await stopImpersonation();
+
+            window.location.href = "/dashboard-developer";
+        } catch (error) {
+            if (statusEl) {
+                statusEl.textContent = error.message || "Could not stop impersonation.";
+            }
+        }
+    });
+}
+
 async function initDashboard() {
     const form = document.getElementById("artist-editor-form");
     const statusEl = document.getElementById("artist-editor-status");
@@ -505,20 +559,18 @@ async function initDashboard() {
     try {
         const user = await getCurrentUser();
 
-        // 🔥 DO NOT REDIRECT ANYMORE
         if (!user) {
             showSigninInsteadOfRedirect("Please sign in to access your dashboard.");
             return;
         }
 
         bindProfileMenu();
+        bindImpersonationTools(user);
 
-        // ✅ FIXED: properly await async function
         if (document.getElementById("release-review-body")) {
             await loadReleaseReview();
         }
 
-        // preload artist data for avatar + spotlight
         if (user.role === "artist") {
             try {
                 const profile = await getMyArtistProfile();

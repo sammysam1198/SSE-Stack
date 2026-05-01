@@ -31,16 +31,51 @@ function renderAuthUI() {
     authSlot.classList.remove("auth-slot-pending");
 
     if (currentUser) {
+        const impersonationBanner = currentUser.is_impersonating
+            ? `
+        <div style="
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            background: linear-gradient(135deg, #ff4fcf, #6be7ff);
+            color: black;
+            padding: 0.5rem 1rem;
+            font-weight: 700;
+            z-index: 9999;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        ">
+            <span>
+                Impersonating ${currentUser.email}
+            </span>
+            <button id="stop-impersonation-btn" style="
+                background: black;
+                color: white;
+                border: none;
+                border-radius: 999px;
+                padding: 0.4rem 0.8rem;
+                cursor: pointer;
+            ">
+                Stop
+            </button>
+        </div>
+    `
+            : "";
+
         authSlot.innerHTML = `
-            <div class="auth-user-menu">
-                <a class="auth-dashboard-link" href="${getDashboardPathForRole(currentUser.role)}">
-                    Dashboard
-                </a>
-                <button class="auth-signout-button" id="auth-signout-button" type="button">
-                    Sign Out
-                </button>
-            </div>
-        `;
+        ${impersonationBanner}
+
+        <div class="auth-user-menu">
+            <a class="auth-dashboard-link" href="${getDashboardPathForRole(currentUser.role)}">
+                Dashboard
+            </a>
+            <button class="auth-signout-button" id="auth-signout-button" type="button">
+                Sign Out
+            </button>
+        </div>
+    `;
     } else {
         authSlot.innerHTML = `
             <a class="auth-dashboard-link" href="#" data-open-signin>
@@ -78,6 +113,16 @@ document.addEventListener("click", async (event) => {
     if (modal && event.target === modal) {
         closeSigninModal();
         return;
+    }
+
+    const stopBtn = event.target.closest("#stop-impersonation-btn");
+    if (stopBtn) {
+        try {
+            await stopImpersonation();
+            window.location.href = "/dashboard-developer";
+        } catch (error) {
+            console.error("Failed to stop impersonation:", error);
+        }
     }
 
     const passwordToggle = event.target.closest("#signin-password-toggle");

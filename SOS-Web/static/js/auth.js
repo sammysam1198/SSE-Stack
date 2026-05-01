@@ -22,6 +22,22 @@ async function signout() {
     });
 }
 
+async function impersonateUser(userId) {
+    const data = await apiFetch(`/api/dev/users/${userId}/impersonate`, {
+        method: "POST"
+    });
+
+    return data.user;
+}
+
+async function stopImpersonation() {
+    const data = await apiFetch("/api/dev/impersonation/stop", {
+        method: "POST"
+    });
+
+    return data.user;
+}
+
 function getDashboardPathForRole(role) {
     if (role === "developer") return "/dashboard-developer";
     if (role === "admin") return "/dashboard-admin";

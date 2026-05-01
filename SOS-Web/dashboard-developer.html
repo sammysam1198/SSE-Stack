@@ -140,9 +140,43 @@
                 </div>
             </article>
 
-            <article class="dashboard-card">
-                <h3>Users</h3>
-                <p>User records, role visibility, and future impersonation-safe tooling will live here.</p>
+            <article class="dashboard-card dashboard-card--full">
+                <div class="dashboard-card__topline">
+                    <div>
+                        <p class="eyebrow">Developer Tool</p>
+                        <h2>Impersonate User</h2>
+                        <p class="dashboard-card__intro">
+                            Enter a user ID to temporarily view the platform as that user.
+                        </p>
+                    </div>
+                </div>
+
+                <form id="impersonation-form" class="artist-editor-form">
+                    <div class="artist-editor-grid">
+                        <label class="artist-editor-field">
+                            <span>User ID</span>
+                            <input
+                                    id="impersonation-user-id"
+                                    type="number"
+                                    min="1"
+                                    placeholder="Example: 12"
+                                    required
+                            />
+                        </label>
+                    </div>
+
+                    <div class="artist-editor-actions">
+                        <button class="release-btn primary" type="submit">
+                            Impersonate User
+                        </button>
+
+                        <button class="release-btn secondary" id="stop-impersonation-button" type="button">
+                            Stop Impersonating
+                        </button>
+                    </div>
+
+                    <div id="impersonation-status" class="artist-editor-status"></div>
+                </form>
             </article>
 
             <article class="dashboard-card">
