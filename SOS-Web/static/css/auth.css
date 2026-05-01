@@ -196,3 +196,15 @@
         min-width: 0;
     }
 }
+
+.signin-panel,
+.signin-form,
+.signin-form label,
+.password-field-wrap {
+    max-width: 100%;
+    box-sizing: border-box;
+}
+
+.password-field-wrap input {
+    min-width: 0;
+}

@@ -6,13 +6,13 @@
         <form class="signin-form" id="signin-form" method="post" action="javascript:void(0);">
             <label>
                 Email
-                <input type="email" name="email" required />
+                <input id="signin-email" name="email" type="email" autocomplete="username">
             </label>
 
             <label>
                 Password
                 <div class="password-field-wrap">
-                    <input type="password" name="password" id="signin-password" required />
+                    <input id="signin-password" name="password" type="password" autocomplete="current-password">
                     <button type="button" class="password-toggle" id="signin-password-toggle" aria-label="Show password">
                         <img src="/static/assets/hide_password.png" alt="" id="signin-password-toggle-icon" />
                     </button>
