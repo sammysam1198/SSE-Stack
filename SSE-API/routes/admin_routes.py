@@ -1,6 +1,8 @@
 import os
 from flask import Blueprint, jsonify, request, session
 from repos.users_repo import get_user_by_email, create_user
+from repos.requests_repo import list_contact_requests
+from repos.artists_repo import create_artist_profile_for_user, assign_artist_profile_to_user, get_artist_profile_by_slug
 from repos.user_action_tokens_repo import (
     create_user_action_token,
     invalidate_user_tokens,
@@ -8,7 +10,6 @@ from repos.user_action_tokens_repo import (
 from utils.token_utils import generate_raw_token, hash_token, expiry_from_now
 from utils.auth_utils import hash_password
 from utils.mail_utils import send_artist_invite_email
-from repos.artists_repo import create_artist_profile_for_user, assign_artist_profile_to_user, get_artist_profile_by_slug
 
 admin_bp = Blueprint("admin", __name__)
 
@@ -212,3 +213,13 @@ def create_artist_user():
         },
         "artist_profile": artist_profile,
     }), 201
+
+
+@admin_bp.get("/contact-requests")
+def admin_list_contact_requests():
+    if not _require_admin_or_dev():
+        return jsonify({"error": "Forbidden."}), 403
+
+    return jsonify({
+        "contact_requests": list_contact_requests()
+    }), 200

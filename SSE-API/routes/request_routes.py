@@ -1,4 +1,5 @@
 from flask import Blueprint, request, jsonify, session
+from repos.requests_repo import get_contact_request_by_id, update_contact_request_status
 
 requests_bp = Blueprint("requests", __name__)
 
@@ -206,4 +207,26 @@ def update_merch_request(request_id: int):
         "message": "Merch request updated.",
         "request_id": request_id,
         "updated_fields": list(data.keys())
+    }), 200
+
+@requests_bp.patch("/contact/<int:request_id>")
+def patch_contact_request_status(request_id: int):
+    if not _is_admin_or_dev():
+        return jsonify({"error": "Forbidden."}), 403
+
+    existing = get_contact_request_by_id(request_id)
+    if not existing:
+        return jsonify({"error": "Contact request not found."}), 404
+
+    data = request.get_json(silent=True) or {}
+    status = (data.get("status") or "").strip()
+
+    if status not in {"open", "in_progress", "closed"}:
+        return jsonify({"error": "Invalid status."}), 400
+
+    updated = update_contact_request_status(request_id, status)
+
+    return jsonify({
+        "message": "Contact request updated.",
+        "contact_request": updated,
     }), 200
