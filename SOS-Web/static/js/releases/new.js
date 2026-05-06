@@ -655,29 +655,36 @@ document.addEventListener("DOMContentLoaded", async () => {
     }
 
     async function uploadTrackAudio(file, artistName, trackTitle) {
-        const formData = new FormData();
-        formData.append("audio", file);
-        formData.append("artist_name", artistName || "artist");
-        formData.append("track_title", trackTitle || "track");
-
-        const response = await fetch(`${API_BASE}/api/releases/upload-audio`, {
+        const presignData = await apiFetch("/api/releases/audio-upload-url", {
             method: "POST",
-            body: formData,
-            credentials: "include",
+            body: {
+                artist_name: artistName || "artist",
+                track_title: trackTitle || "track",
+                filename: file.name,
+                mime_type: file.type || "application/octet-stream",
+                size_bytes: file.size,
+            },
         });
 
-        let data = {};
-        try {
-            data = await response.json();
-        } catch (error) {
-            data = {};
+        const uploadUrl = presignData.upload_url;
+
+        if (!uploadUrl) {
+            throw new Error("API did not return an upload URL.");
         }
 
-        if (!response.ok) {
-            throw new Error(data.error || "Audio upload failed.");
+        const uploadResponse = await fetch(uploadUrl, {
+            method: "PUT",
+            headers: {
+                "Content-Type": file.type || "application/octet-stream",
+            },
+            body: file,
+        });
+
+        if (!uploadResponse.ok) {
+            throw new Error("Audio upload to storage failed.");
         }
 
-        return data.audio;
+        return presignData.audio;
     }
 
     async function submitReleaseForReview(submissionId) {

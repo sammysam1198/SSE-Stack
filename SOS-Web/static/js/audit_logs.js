@@ -6,7 +6,7 @@ function formatAuditDate(value) {
 }
 
 async function fetchAuditLogs() {
-    const data = await apiFetch("/api/admin/audit-logs");
+    const data = await apiFetch("/api/dev/audit-logs");
     return data.audit_logs || [];
 }
 
