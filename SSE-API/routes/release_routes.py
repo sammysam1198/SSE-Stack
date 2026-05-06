@@ -5,7 +5,7 @@ import io
 from io import BytesIO
 from config.db import execute_write
 from PIL import Image
-from utils.r2_utils import upload_bytes_to_r2, download_bytes_from_r2
+from utils.r2_utils import upload_bytes_to_r2, download_bytes_from_r2,create_presigned_put_url
 from flask import Blueprint, jsonify, request, session, send_file
 from repos.artists_repo import get_artist_profile_by_user_id, list_artist_profiles
 from utils.release_pdf_utils import build_release_details_pdf_bytes
@@ -24,6 +24,8 @@ from repos.releases_repo import (
     update_release_pdf_object_key,
     get_release_package_by_id
 )
+
+
 
 release_bp = Blueprint("releases", __name__)
 
@@ -811,3 +813,49 @@ def submit_release(submission_id: int):
             "error": "Release submit failed.",
             "details": str(exc),
         }), 500
+
+
+@release_bp.post("/audio-upload-url")
+def create_audio_upload_url():
+    if not _require_login():
+        return jsonify({"error": "Unauthorized."}), 401
+
+
+    data = request.get_json(silent=True) or {}
+
+    artist_name = _clean_text(data.get("artist_name")) or "artist"
+    track_title = _clean_text(data.get("track_title")) or "track"
+    filename = _clean_text(data.get("filename")) or "audio.wav"
+    mime_type = _clean_text(data.get("mime_type")) or "application/octet-stream"
+    size_bytes = int(data.get("size_bytes") or 0)
+
+    if not _allowed_audio_extension(filename):
+        return jsonify({"error": "Audio must be WAV, FLAC, or AAC. MP3 is not allowed."}), 400
+
+    max_size = 200 * 1024 * 1024
+    if size_bytes <= 0 or size_bytes > max_size:
+        return jsonify({"error": "Audio file must be 200 MB or smaller."}), 400
+
+    artist_part = _sanitize_filename_part(artist_name)
+    track_part = _sanitize_filename_part(track_title)
+    ext = filename.rsplit(".", 1)[-1].lower()
+
+    clean_filename = f"{artist_part}_{track_part}_audio.{ext}"
+    object_key = f"releases/audio/{clean_filename}"
+
+    upload_url = create_presigned_put_url(
+        object_key=object_key,
+        content_type=mime_type,
+    )
+
+    return jsonify({
+        "upload_url": upload_url,
+        "audio": {
+            "object_key": object_key,
+            "original_filename": filename,
+            "mime_type": mime_type,
+            "size_bytes": size_bytes,
+            "sample_rate_hz": None,
+            "bit_depth": None,
+        }
+    }), 200

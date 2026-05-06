@@ -151,3 +151,21 @@ def list_object_keys_with_prefix(prefix: str) -> list[str]:
         raise RuntimeError(f"Failed to list objects from R2: {exc}") from exc
 
     return keys
+
+def create_presigned_put_url(
+    *,
+    object_key: str,
+    content_type: str,
+    expires_in: int = 900,
+) -> str:
+    client, bucket_name = _get_r2_client()
+
+    return client.generate_presigned_url(
+        ClientMethod="put_object",
+        Params={
+            "Bucket": bucket_name,
+            "Key": object_key,
+            "ContentType": content_type,
+        },
+        ExpiresIn=expires_in,
+    )
