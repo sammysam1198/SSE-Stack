@@ -52,6 +52,7 @@ def signin():
     if not password_ok:
         return jsonify({"error": "Invalid credentials."}), 401
 
+    session.clear()
     session["user_id"] = user["id"]
     session["role"] = user["role"]
 
