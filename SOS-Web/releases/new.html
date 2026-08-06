@@ -90,12 +90,12 @@
         <section class="release-section">
             <h2>Basic Info</h2>
 
-            <label>
+            <label class="required">
                 Release Title
                 <input type="text" name="release_title" required />
             </label>
 
-            <label>
+            <label class="required">
                 Release Type
                 <select name="release_type" required>
                     <option value="">Select one</option>
@@ -110,9 +110,10 @@
                 <input type="date" name="preferred_release_date" />
             </label>
 
-            <label>
-                Primary Genre
+            <label
+                class="required">Primary Genre
                 <input type="text" name="primary_genre" placeholder="Synthwave, House, Trance, etc." />
+
             </label>
 
             <label>
@@ -130,8 +131,8 @@
             <h2>Release Artwork</h2>
 
             <div class="upload-box">
-                <label>
-                    Artwork Upload
+                <label
+                    class="required">Artwork Upload
                     <input
                             type="file"
                             id="release-artwork-file"
@@ -149,7 +150,7 @@
 
         <section class="release-section">
             <div class="section-row">
-                <h2>Artists</h2>
+                <h2 class="required">Artists</h2>
                 <div class="release-inline-actions">
                     <button type="button" id="add-existing-artist-button">+ Existing Artist</button>
                     <button type="button" id="add-artist-button">+ New Artist</button>
@@ -161,7 +162,7 @@
 
         <section class="release-section">
             <div class="section-row">
-                <h2>Tracks</h2>
+                <h2 class="required">Tracks</h2>
                 <button type="button" id="add-track-button">+ Add Track</button>
             </div>
 

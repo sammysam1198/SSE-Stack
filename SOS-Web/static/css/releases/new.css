@@ -3,6 +3,12 @@
     margin-bottom: 1.2rem;
 }
 
+.required::after {
+    content: ' *';
+    color: red;
+    font-weight: 700;
+}
+
 .release-section {
     margin-bottom: 2rem;
     padding: 1.25rem;
