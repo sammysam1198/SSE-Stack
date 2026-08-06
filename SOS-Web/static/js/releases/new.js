@@ -21,6 +21,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     let artistCount = 0;
     let trackCount = 0;
     let currentUser = null;
+    let activeAudioUploads = 0;
     let mainArtistProfile = null;
     let pendingSubmitMode = "draft";
 
@@ -548,10 +549,11 @@ document.addEventListener("DOMContentLoaded", async () => {
             clearMessages();
 
             const file = audioInput.files?.[0];
+
+            card._uploadedAudio = null;
+
             if (!file) {
-                audioStatus.textContent = card._uploadedAudio?.original_filename
-                    ? `Existing audio: ${card._uploadedAudio.original_filename}`
-                    : "";
+                audioStatus.textContent = "";
                 return;
             }
 
@@ -561,14 +563,36 @@ document.addEventListener("DOMContentLoaded", async () => {
             const trackTitle =
                 card.querySelector(".track-title")?.value?.trim() || `track_${trackCount}`;
 
+            activeAudioUploads += 1;
+
             try {
                 audioStatus.textContent = "Uploading audio...";
-                const uploadedAudio = await uploadTrackAudio(file, mainArtistName, trackTitle);
+
+                const uploadedAudio = await uploadTrackAudio(
+                    file,
+                    mainArtistName,
+                    trackTitle
+                );
+
                 card._uploadedAudio = uploadedAudio;
-                audioStatus.textContent = `Audio uploaded: ${uploadedAudio.original_filename}`;
+
+                audioStatus.textContent =
+                    `Audio uploaded successfully: ${uploadedAudio.original_filename}`;
+
             } catch (error) {
-                audioStatus.textContent = "";
-                errorBox.textContent = error.message || "Audio upload failed.";
+
+                card._uploadedAudio = null;
+
+                audioInput.value = "";
+
+                audioStatus.textContent =
+                    "Audio upload failed. Please choose a valid WAV, FLAC, or AAC file.";
+
+                errorBox.textContent =
+                    error.message || "Audio upload failed.";
+
+            } finally {
+                activeAudioUploads -= 1;
             }
         });
 
@@ -861,6 +885,13 @@ document.addEventListener("DOMContentLoaded", async () => {
         const formData = new FormData(form);
         const artists = Array.from(document.querySelectorAll(".artist-card")).map(collectArtistCard);
         const tracks = collectTracks();
+
+        if (activeAudioUploads > 0) {
+            errorBox.textContent =
+                "Audio is still uploading. Please wait for upload to finish.";
+            return;
+        }
+
         const missingTrackAudio = tracks.find((track) => !track.audio?.object_key);
 
         if (missingTrackAudio) {
